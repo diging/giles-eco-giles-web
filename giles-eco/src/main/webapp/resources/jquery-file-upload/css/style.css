@@ -1,0 +1,13 @@
+
+.bar {
+    height: 18px;
+    background: #337ab7;
+}
+
+.badge-success {
+	background-color: green;
+}
+
+.badge-failure {
+	background-color: red;
+}

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+
+	<!-- Base definitions -->
+	<definition name="base.definition" template="/WEB-INF/tiles/skeleton.jsp">
+		<put-attribute name="title" value="" />
+		<put-attribute name="navigation" value="" />
+		<put-attribute name="sidebar" value="" />
+		<put-attribute name="content" value="" />
+		<put-attribute name="header" value="" />
+		<put-attribute name="pageName" value="" />
+		<put-attribute name="currentPage" value="home" />
+		<put-attribute name="currentURL" value="" />
+	</definition>
+	
+	<definition name="login" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/login.jsp" />	
+	</definition>
+	
+	<definition name="files/upload" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/files/upload.jsp" />	
+	</definition>
+	
+	<definition name="files/file" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/uploads/showFile.jsp" />	
+	</definition>
+	
+	<definition name="uploads/upload" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/uploads/show.jsp" />	
+	</definition>
+	
+	<definition name="uploads" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/uploads/all.jsp" />	
+	</definition>
+	
+	<definition name="documents/document" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/uploads/showDocument.jsp" />	
+	</definition>
+	
+	<!-- profile -->
+	<definition name="profile" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/profile/profile.jsp" />	
+	</definition>
+	<definition name="profile/username/change" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/profile/changeUsername.jsp" />	
+	</definition>
+	
+	<!-- error pages -->
+	<definition name="notFound" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/notFound.jsp" />	
+	</definition>
+	
+	<definition name="forbidden" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/forbidden.jsp" />	
+	</definition>
+	
+	<definition name="403" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/error/403.jsp" />	
+	</definition>
+	
+	<!--  users -->
+	<definition name="users" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/users/users.jsp" />
+	</definition>
+	
+	<!--  admin -->
+	<definition name="admin/system/config" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/system_config.jsp" />
+	</definition>
+	
+	<!--  apps -->
+	<definition name="admin/apps" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/apps.jsp" />
+	</definition>
+	<definition name="admin/apps/register" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/register.jsp" />
+	</definition>
+	<definition name="admin/apps/app" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/app.jsp" />
+	</definition>
+	<definition name="admin/apps/delete" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/deleteApp.jsp" />
+	</definition>
+	
+	<!--  user errors -->
+	<definition name="error/noSuchRole" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/error/noSuchRole.jsp" />
+	</definition>
+	
+</tiles-definitions>
