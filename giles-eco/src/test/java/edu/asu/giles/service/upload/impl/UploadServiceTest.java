@@ -13,9 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import edu.asu.giles.core.DocumentAccess;
-import edu.asu.giles.core.DocumentType;
-import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.core.DocumentType;
+import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.upload.impl.UploadService;
 
 public class UploadServiceTest {
     

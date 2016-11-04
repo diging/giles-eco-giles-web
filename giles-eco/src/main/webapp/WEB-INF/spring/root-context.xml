@@ -14,7 +14,7 @@
 	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<mvc:annotation-driven />
-	<context:component-scan base-package="edu.asu.giles" />
+	<context:component-scan base-package="edu.asu.diging.gilesecosystem.web, edu.asu.diging.gilesecosystem.requests" />
 	
 	<task:executor id="tesseractExecutor" pool-size="${ocr.worker.count}"  />
 	<task:executor id="uploadExecutor" pool-size="${upload.worker.count}"  />
@@ -23,19 +23,19 @@
 	<import resource="spring-security.xml" />
 	<import resource="db4o-config.xml" />
 	
-	<bean id="fileStorageManager" class="edu.asu.giles.files.impl.FileStorageManager">
+	<bean id="fileStorageManager" class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
 		<property name="baseDirectory" value="${digilibBaseDir}" />
 	</bean>
 	
-	<bean id="pdfStorageManager" class="edu.asu.giles.files.impl.FileStorageManager">
+	<bean id="pdfStorageManager" class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
 		<property name="baseDirectory" value="${pdfBaseDir}" />
 	</bean>
 	
-	<bean id="textStorageManager" class="edu.asu.giles.files.impl.FileStorageManager">
+	<bean id="textStorageManager" class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
 		<property name="baseDirectory" value="${textBaseDir}" />
 	</bean>
 	
-	<bean id="tmpStorageManager" class="edu.asu.giles.files.impl.FileStorageManager">
+	<bean id="tmpStorageManager" class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
 		<property name="baseDirectory" value="${giles.file.tmp.dir}" />
 	</bean>
 	

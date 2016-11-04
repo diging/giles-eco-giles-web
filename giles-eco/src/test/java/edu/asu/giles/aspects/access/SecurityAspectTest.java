@@ -20,16 +20,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
-import edu.asu.giles.aspects.access.annotations.FileAccessCheck;
-import edu.asu.giles.aspects.access.annotations.UploadIdAccessCheck;
-import edu.asu.giles.core.IFile;
-import edu.asu.giles.core.IUpload;
-import edu.asu.giles.core.impl.File;
-import edu.asu.giles.core.impl.Upload;
-import edu.asu.giles.files.IFilesManager;
-import edu.asu.giles.users.AccountStatus;
-import edu.asu.giles.users.IUserManager;
-import edu.asu.giles.users.User;
+import edu.asu.diging.gilesecosystem.web.aspects.access.SecurityAspect;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
+import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.users.User;
 
 public class SecurityAspectTest {
 

@@ -16,12 +16,13 @@ import org.slf4j.Logger;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 
-import edu.asu.giles.core.IDocument;
-import edu.asu.giles.core.impl.Document;
-import edu.asu.giles.core.impl.Upload;
-import edu.asu.giles.db4o.impl.DatabaseManager;
-import edu.asu.giles.exceptions.UnstorableObjectException;
-import edu.asu.giles.files.IDocumentDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.impl.Document;
+import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager;
+import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.files.impl.DocumentDatabaseClient;
 
 public class DocumentDatabaseClientTest {
     
