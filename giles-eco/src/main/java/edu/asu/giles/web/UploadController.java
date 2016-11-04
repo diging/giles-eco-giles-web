@@ -2,6 +2,7 @@ package edu.asu.giles.web;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import edu.asu.giles.files.IFilesManager;
 import edu.asu.giles.files.impl.StorageStatus;
 import edu.asu.giles.users.User;
 import edu.asu.giles.util.FileUploadHelper;
+import edu.asu.giles.web.util.StatusHelper;
 
 @Controller
 public class UploadController {
@@ -39,6 +41,10 @@ public class UploadController {
     
     @Autowired
     private FileUploadHelper uploadHelper;
+    
+    @Autowired
+    private StatusHelper statusHelper;
+
 
     @AccountCheck
     @RequestMapping(value = "/files/upload", method = RequestMethod.GET)
@@ -50,7 +56,7 @@ public class UploadController {
     @RequestMapping(value = "/files/upload", method = RequestMethod.POST)
     public ResponseEntity<String> uploadFiles(Principal principal,
             @RequestParam("file") MultipartFile[] files,
-            @RequestParam("access") String access) {
+            @RequestParam("access") String access, Locale locale) {
 
         String username = "";
         if (principal instanceof UsernamePasswordAuthenticationToken) {
@@ -75,7 +81,7 @@ public class UploadController {
             ObjectNode fileNode = mapper.createObjectNode();
             fileNode.put("name", status.getFile().getFilename());
             fileNode.put("uploadId", status.getFile().getUploadId());
-            fileNode.put("status", status.getStatus());
+            fileNode.put("status", statusHelper.getLabelText(status.getStatus(), locale));
             filesNode.add(fileNode);
         }
 

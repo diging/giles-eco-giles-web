@@ -22,6 +22,7 @@ import edu.asu.giles.files.IFileStorageManager;
 import edu.asu.giles.files.IFilesDatabaseClient;
 import edu.asu.giles.service.IFileTypeHandler;
 import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.giles.service.requests.FileType;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -45,6 +46,11 @@ public class DefaultFileHandler extends AbstractFileHandler implements IFileType
         List<String> types = new ArrayList<String>();
         types.add(DEFAULT_HANDLER);
         return types;
+    }
+    
+    @Override
+    public FileType getHandledFileType() {
+        return FileType.OTHER;
     }
 
     @Override

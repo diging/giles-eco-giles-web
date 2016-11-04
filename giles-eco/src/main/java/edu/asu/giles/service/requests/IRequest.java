@@ -15,4 +15,8 @@ public interface IRequest {
 
     public abstract String getDocumentId();
 
+    public abstract void setRequestType(String requestType);
+
+    public abstract String getRequestType();
+
 }

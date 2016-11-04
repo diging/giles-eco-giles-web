@@ -4,10 +4,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,9 @@ import edu.asu.giles.files.IFilesManager;
 import edu.asu.giles.files.IUploadDatabaseClient;
 import edu.asu.giles.service.IFileHandlerRegistry;
 import edu.asu.giles.service.IFileTypeHandler;
+import edu.asu.giles.service.processing.IDistributedStorageManager;
 import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.giles.service.requests.RequestStatus;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -52,6 +52,9 @@ public class FilesManager implements IFilesManager {
 
     @Autowired
     private IFileHandlerRegistry fileHandlerRegistry;
+    
+    @Autowired
+    private IDistributedStorageManager distributedStorageManager;
 
     /*
      * (non-Javadoc)
@@ -77,7 +80,7 @@ public class FilesManager implements IFilesManager {
 
             if (content == null) {
                 statuses.add(new StorageStatus(file, null,
-                        StorageStatus.FAILURE));
+                        RequestStatus.FAILED));
                 continue;
             }
 
@@ -98,30 +101,23 @@ public class FilesManager implements IFilesManager {
             document.getFileIds().add(id);
             document.setUploadedFileId(file.getId());
 
-            IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
-                    .getContentType());
-
             try {
-                boolean success = handler.processFile(username, file, document,
+                // send file off to be stored
+                RequestStatus requestStatus = distributedStorageManager.storeFile(username, file, document,
                         upload, content);
                 documentDatabaseClient.saveDocument(document);
-                statuses.add(new StorageStatus(file, null,
-                        (success ? StorageStatus.SUCCESS
-                                : StorageStatus.FAILURE)));
+                statuses.add(new StorageStatus(file, null, requestStatus));
             } catch (GilesFileStorageException e) {
                 logger.error("Could not store uploaded files.", e);
-                statuses.add(new StorageStatus(file, e, StorageStatus.FAILURE));
-            } catch (Exception e) {
-                // this is meant to be Exception to make sure we give the
-                // user appropriate feedback
-                logger.error("An unexpected exception was thrown.", e);
-                statuses.add(new StorageStatus(file,
-                        new GilesFileStorageException(e), StorageStatus.FAILURE));
-            }
+                statuses.add(new StorageStatus(file, e, RequestStatus.FAILED));
+            } catch (UnstorableObjectException e) {
+                logger.error("Object is not storable. Please review your code.", e);
+                statuses.add(new StorageStatus(file, new GilesFileStorageException(e), RequestStatus.FAILED));
+            } 
         }
 
         boolean atLeastOneSuccess = statuses.stream().anyMatch(
-                status -> status.getStatus() == StorageStatus.SUCCESS);
+                status -> status.getStatus() != RequestStatus.FAILED);
         if (atLeastOneSuccess) {
             try {
                 uploadDatabaseClient.store(upload);

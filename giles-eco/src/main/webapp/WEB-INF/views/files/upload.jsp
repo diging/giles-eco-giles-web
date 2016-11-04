@@ -39,7 +39,7 @@
 	</div>
 	<div id="uploadDoneSuccess" class="hidden">
 		<i class="fa fa-check-circle" aria-hidden="true"></i> Your upload
-		successfully finished!
+		successfully finished! Your files have been submitted for processing. Please check the uploads page for processing updates.
 	</div>
 	<div id="uploadDoneFail" class="hidden">
 		<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> One or
@@ -121,12 +121,7 @@
                 var success = true;
                 response.files.forEach(function(element, index) {
                     var newItem = '<li class="list-group-item">';
-                    if (element.status == 0) {
-                        newItem += '<span class="badge badge-success">Success</span>';
-                    } else {
-                        newItem += '<span class="badge badge-failure">Failure</span>';
-                        success = false;
-                    }
+                    newItem += '<span class="label label-info pull-right" style="margin-top:3px">'+element.status+'</span>';
                     newItem += element.name;
                     newItem += '</li>';
                     $('#files').append(newItem);

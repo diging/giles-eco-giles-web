@@ -15,6 +15,9 @@ import edu.asu.giles.service.requests.RequestStatus;
 public class Request implements IRequest {
 
     @JsonProperty
+    private String requestType;
+
+    @JsonProperty
     private String uploadId;
     
     @JsonProperty
@@ -59,6 +62,14 @@ public class Request implements IRequest {
     @Override
     public void setDocumentId(String documentId) {
         this.documentId = documentId;
+    }
+    @Override
+    public String getRequestType() {
+        return requestType;
+    }
+    @Override
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
     }
     
 }

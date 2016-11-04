@@ -127,7 +127,7 @@ public class UploadImagesController {
             @PathVariable String id, 
             User user) {
         
-        Future<List<StorageStatus>> futureResult = uploadService.getUpload(id);
+        List<StorageStatus> futureResult = uploadService.getUpload(id);
         if (futureResult == null) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Upload does not exist.");
@@ -135,50 +135,51 @@ public class UploadImagesController {
             
             return generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
+        //FIXME
+//        if (!futureResult.isDone()) {
+//            Map<String, String> msgs = new HashMap<String, String>();
+//            msgs.put("msg", "Upload in progress. Please check back later.");
+//            msgs.put("msgCode", "010");
+//            
+//            return generateResponse(msgs, HttpStatus.ACCEPTED);
+//        }
         
-        if (!futureResult.isDone()) {
-            Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("msg", "Upload in progress. Please check back later.");
-            msgs.put("msgCode", "010");
-            
-            return generateResponse(msgs, HttpStatus.ACCEPTED);
-        }
+//        List<StorageStatus> statuses;
+//        try {
+//            statuses = futureResult.get();
+//        } catch (InterruptedException | ExecutionException e1) {
+//            logger.error("Could not get result.", e1);
+//            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
         
-        List<StorageStatus> statuses;
-        try {
-            statuses = futureResult.get();
-        } catch (InterruptedException | ExecutionException e1) {
-            logger.error("Could not get result.", e1);
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        
-        Set<String> docIds = new HashSet<String>();
-        statuses.forEach(status -> docIds.add(status.getFile().getDocumentId()));
+//        Set<String> docIds = new HashSet<String>();
+//        statuses.forEach(status -> docIds.add(status.getFile().getDocumentId()));
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+//        ArrayNode root = mapper.createArrayNode();
+//
+//        
+//        for (String docId : docIds) {
+//            IDocument doc = filesManager.getDocument(docId);
+//            ObjectNode docNode = mapper.createObjectNode();
+//            root.add(docNode);
+//
+//            jsonHelper.createDocumentJson(doc, mapper, docNode);  
+//        }
+//        
+//        StringWriter sw = new StringWriter();
+//        try {
+//            mapper.writeValue(sw, root);
+//        } catch (IOException e) {
+//            logger.error("Could not write json.", e);
+//            return new ResponseEntity<String>(
+//                    "{\"error\": \"Could not write json result.\" }",
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        ArrayNode root = mapper.createArrayNode();
-
-        
-        for (String docId : docIds) {
-            IDocument doc = filesManager.getDocument(docId);
-            ObjectNode docNode = mapper.createObjectNode();
-            root.add(docNode);
-
-            jsonHelper.createDocumentJson(doc, mapper, docNode);  
-        }
-        
-        StringWriter sw = new StringWriter();
-        try {
-            mapper.writeValue(sw, root);
-        } catch (IOException e) {
-            logger.error("Could not write json.", e);
-            return new ResponseEntity<String>(
-                    "{\"error\": \"Could not write json result.\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
+//        return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
+        return null;
     }
     
     private ResponseEntity<String> generateResponse(Map<String, String> msgs, HttpStatus status) {

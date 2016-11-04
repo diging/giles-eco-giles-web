@@ -16,6 +16,7 @@ import edu.asu.giles.core.IUpload;
 import edu.asu.giles.exceptions.GilesFileStorageException;
 import edu.asu.giles.files.IFileStorageManager;
 import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.giles.service.requests.FileType;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -33,6 +34,11 @@ public class TextFileHandler extends AbstractFileHandler {
         List<String> types = new ArrayList<String>();
         types.add(MediaType.TEXT_PLAIN_VALUE);
         return types;
+    }
+    
+    @Override
+    public FileType getHandledFileType() {
+        return FileType.TEXT;
     }
 
     @Override

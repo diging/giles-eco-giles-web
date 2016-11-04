@@ -22,6 +22,7 @@ import edu.asu.giles.files.IFileStorageManager;
 import edu.asu.giles.files.IFilesDatabaseClient;
 import edu.asu.giles.service.IFileTypeHandler;
 import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.giles.service.requests.FileType;
 
 @Service
 public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHandler {
@@ -51,6 +52,11 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
         fileTypes.add(MediaType.IMAGE_PNG_VALUE);
         fileTypes.add(com.google.common.net.MediaType.TIFF.toString());
         return fileTypes;
+    }
+    
+    @Override
+    public FileType getHandledFileType() {
+        return FileType.IMAGE;
     }
 
     @Override

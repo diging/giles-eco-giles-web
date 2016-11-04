@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import edu.asu.giles.aspects.access.annotations.AppTokenCheck;
+import edu.asu.giles.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.giles.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.giles.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.giles.aspects.access.annotations.TokenCheck;
@@ -76,6 +77,23 @@ public class RestSecurityAspect {
         checkers.forEach(checker -> tokenCheckers.put(checker.getId(), checker));
     }
     
+    @Around("within(edu.asu.giles.rest..*) && @annotation(tokenCheck)")
+    public Object checkAppTokenOnlyAccess(ProceedingJoinPoint joinPoint,
+            AppTokenOnlyCheck tokenCheck) throws Throwable {
+        logger.debug("Checking App access token for REST endpoint.");
+        
+        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, tokenCheck.value(), null);
+        
+        String token = userTokenObj.token;
+        
+        TokenHolder holder = new TokenHolder();
+        ResponseEntity<String> authResult = checkAuthorization(token, AppTokenChecker.ID, holder, null);
+        if (authResult != null) {
+            return authResult;
+        }
+        
+        return joinPoint.proceed();
+    }
     
     @Around("within(edu.asu.giles.rest..*) && @annotation(tokenCheck)")
     public Object checkAppTokenAccess(ProceedingJoinPoint joinPoint,
@@ -94,7 +112,7 @@ public class RestSecurityAspect {
         }
         
         TokenHolder holder = new TokenHolder();
-        ResponseEntity<String> authResult = checkAuthorization(user, token, AppTokenChecker.ID, holder, null);
+        ResponseEntity<String> authResult = checkAuthorization(token, AppTokenChecker.ID, holder, null);
         if (authResult != null) {
             return authResult;
         }
@@ -110,7 +128,7 @@ public class RestSecurityAspect {
         }
         
         TokenHolder apiTokenHolder = new TokenHolder();
-        ResponseEntity<String> apiTokenAuthResult = checkAuthorization(user, providerToken, checkerId, apiTokenHolder, appToken.getAppId());
+        ResponseEntity<String> apiTokenAuthResult = checkAuthorization(providerToken, checkerId, apiTokenHolder, appToken.getAppId());
         if (apiTokenAuthResult != null) {
             return apiTokenAuthResult;
         }
@@ -152,7 +170,7 @@ public class RestSecurityAspect {
         }
         
         TokenHolder holder = new TokenHolder();
-        ResponseEntity<String> authResult = checkAuthorization(user, token, GilesChecker.ID, holder, null);
+        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
         if (authResult != null) {
             return authResult;
         }
@@ -188,7 +206,7 @@ public class RestSecurityAspect {
         }
         
         TokenHolder holder = new TokenHolder();
-        ResponseEntity<String> authResult = checkAuthorization(user, token, GilesChecker.ID, holder, null);
+        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
         if (authResult != null) {
             return authResult;
         }
@@ -229,7 +247,7 @@ public class RestSecurityAspect {
         }
         
         TokenHolder holder = new TokenHolder();
-        ResponseEntity<String> authResult = checkAuthorization(user, token, GilesChecker.ID, holder, null);
+        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
         if (authResult != null) {
             return authResult;
         }
@@ -280,7 +298,7 @@ public class RestSecurityAspect {
         return new UserTokenObject(user, token, elementId);
     }
     
-    private ResponseEntity<String> checkAuthorization(User user, String token, String provider, TokenHolder tokenHolder, String appId) {
+    private ResponseEntity<String> checkAuthorization(String token, String provider, TokenHolder tokenHolder, String appId) {
         if (token == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

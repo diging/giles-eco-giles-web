@@ -2,18 +2,16 @@ package edu.asu.giles.files.impl;
 
 import edu.asu.giles.core.IFile;
 import edu.asu.giles.exceptions.GilesFileStorageException;
+import edu.asu.giles.service.requests.RequestStatus;
 
 public class StorageStatus {
 
-    public final static int SUCCESS = 0;
-    public final static int FAILURE = 1;
-
     private IFile file;
     private GilesFileStorageException exception;
-    private int status;
+    private RequestStatus status;
 
     public StorageStatus(IFile file, GilesFileStorageException exception,
-            int status) {
+            RequestStatus status) {
         super();
         this.file = file;
         this.exception = exception;
@@ -36,16 +34,11 @@ public class StorageStatus {
         this.exception = exception;
     }
 
-    /**
-     * Returns if an upload was successful.
-     * 
-     * @return 0 = SUCCESS, 1 = FAILURE
-     */
-    public int getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 

@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,7 @@ import edu.asu.giles.files.IFilesDatabaseClient;
 import edu.asu.giles.service.IFileTypeHandler;
 import edu.asu.giles.service.kafka.IRequestProducer;
 import edu.asu.giles.service.properties.IPropertiesManager;
+import edu.asu.giles.service.requests.FileType;
 import edu.asu.giles.service.requests.IRequestFactory;
 import edu.asu.giles.service.requests.IStorageRequest;
 import edu.asu.giles.service.requests.impl.StorageRequest;
@@ -37,7 +36,8 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    @Qualifier("tmpStorageManager") IFileStorageManager storageManager;
+    @Qualifier("tmpStorageManager") 
+    private IFileStorageManager storageManager;
 
     @Autowired
     private IFilesDatabaseClient filesDbClient;
@@ -54,11 +54,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     @Autowired
     private IPropertiesManager propertyManager;
     
-    @PostConstruct
-    public void init() {
-        requestFactory.config(StorageRequest.class);
-    }
-
     
     @Override
     public List<String> getHandledFileTypes() {
@@ -66,44 +61,17 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
         types.add(MediaType.APPLICATION_PDF_VALUE);
         return types;
     }
+    
+    @Override
+    public FileType getHandledFileType() {
+        return FileType.PDF;
+    }
 
     @Override
     public boolean processFile(String username, IFile file, IDocument document,
             IUpload upload, byte[] content) throws GilesFileStorageException {
         
-        storageManager.saveFile(username, upload.getId(), document.getId(), file.getFilename(), content);
-        try {
-            filesDbClient.saveFile(file);
-        } catch (UnstorableObjectException e) {
-            logger.error("Could not store file.", e);
-            return false;
-        }
-        
-        IStorageRequest request = null;
-        try {
-            request = requestFactory.createRequest(upload.getId());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new GilesFileStorageException(e);
-        }
-        
-        request.setDocumentId(document.getId());
-        request.setPathToFile(storageManager.getFileFolderPath(username, upload.getId(), document.getId()));
-        request.setDownloadUrl(getFileUrl(file));
-        document.setRequest(request);
-        try {
-            documentsDbClient.saveDocument(document);
-        } catch (UnstorableObjectException e1) {
-            logger.error("Could not store document.", e1);
-            return false;
-        }
-        
-        try {
-            requestProducer.sendRequest(request, propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_REQUEST));
-        } catch (MessageCreationException e) {
-            throw new GilesFileStorageException(e);
-        }
-        
-        return true;
+        return false;
     }
 
     @Override

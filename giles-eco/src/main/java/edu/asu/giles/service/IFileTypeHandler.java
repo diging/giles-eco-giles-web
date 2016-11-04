@@ -6,6 +6,7 @@ import edu.asu.giles.core.IDocument;
 import edu.asu.giles.core.IFile;
 import edu.asu.giles.core.IUpload;
 import edu.asu.giles.exceptions.GilesFileStorageException;
+import edu.asu.giles.service.requests.FileType;
 
 public interface IFileTypeHandler {
     
@@ -17,6 +18,8 @@ public interface IFileTypeHandler {
      * @return
      */
     List<String> getHandledFileTypes();
+    
+    FileType getHandledFileType();
     
     boolean processFile(String username, IFile file, IDocument document, IUpload upload, byte[] content) throws GilesFileStorageException;
 

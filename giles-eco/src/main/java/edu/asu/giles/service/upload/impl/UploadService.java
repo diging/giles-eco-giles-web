@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
@@ -22,17 +21,18 @@ import edu.asu.giles.core.DocumentType;
 import edu.asu.giles.files.impl.StorageStatus;
 import edu.asu.giles.service.properties.IPropertiesManager;
 import edu.asu.giles.service.upload.IUploadService;
+import edu.asu.giles.util.FileUploadHelper;
 
 @Service
 public class UploadService implements IUploadService {
     
     private final static long DEFAULT_EXPIRATION = 24 * 60 * 60 * 1000L;
 
-    private Map<String, Future<List<StorageStatus>>> currentUploads;
+    private Map<String, List<StorageStatus>> currentUploads;
     private Map<Long, List<String>> expirationList;
 
     @Autowired
-    private UploadThread uploadThread;
+    private FileUploadHelper uploadHelper;
 
     @Autowired
     private IPropertiesManager propertiesManager;
@@ -65,7 +65,7 @@ public class UploadService implements IUploadService {
 
         String uploadProgressId = generateId();
         currentUploads.put(uploadProgressId,
-                uploadThread.runUpload(access, type, files, fileBytes, username));
+                uploadHelper.processUpload(access, type, files, fileBytes, username));
 
         Long time = new Date().getTime();
         // make sure only one thread creates array list and adds to it
@@ -103,7 +103,7 @@ public class UploadService implements IUploadService {
     }
 
     @Override
-    public Future<List<StorageStatus>> getUpload(String id) {
+    public List<StorageStatus> getUpload(String id) {
         return currentUploads.get(id);
     }
 

@@ -10,4 +10,9 @@ public interface IStorageRequest extends IRequest {
 
     public abstract void setDownloadUrl(String downloadUrl);
 
+    public abstract void setFileType(FileType fileType);
+
+    public abstract FileType getFileType();
+
+
 }
