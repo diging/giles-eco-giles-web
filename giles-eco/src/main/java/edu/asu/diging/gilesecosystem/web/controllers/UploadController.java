@@ -58,10 +58,10 @@ public class UploadController {
             @RequestParam("file") MultipartFile[] files,
             @RequestParam("access") String access, Locale locale) {
 
-        String username = "";
+        User user = null;
         if (principal instanceof UsernamePasswordAuthenticationToken) {
-            username = ((User) ((UsernamePasswordAuthenticationToken) principal)
-                    .getPrincipal()).getUsername();
+            user = (User) ((UsernamePasswordAuthenticationToken) principal)
+                    .getPrincipal();
         }
 
         
@@ -71,7 +71,7 @@ public class UploadController {
                     + " does not exist.", HttpStatus.BAD_REQUEST);
         }
         
-        List<StorageStatus> statuses = uploadHelper.processUpload(docAccess, DocumentType.SINGLE_PAGE, files, null, username);
+        List<StorageStatus> statuses = uploadHelper.processUpload(docAccess, DocumentType.SINGLE_PAGE, files, null, user);
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();

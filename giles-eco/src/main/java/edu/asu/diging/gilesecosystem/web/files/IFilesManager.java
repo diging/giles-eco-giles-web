@@ -10,6 +10,7 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.users.User;
 
 public interface IFilesManager {
 
@@ -22,7 +23,7 @@ public interface IFilesManager {
      * @return The list of saved files with ids and upload id set.
      */
     public abstract List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            String username, DocumentType docType, DocumentAccess access);
+            User user, DocumentType docType, DocumentAccess access);
 
     /**
      * Get specified page of upload query. If pageSize is -1, default page size is 

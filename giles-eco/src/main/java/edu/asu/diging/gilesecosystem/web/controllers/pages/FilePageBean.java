@@ -96,5 +96,10 @@ public class FilePageBean implements IFile {
     public IFile clone() {
         throw new NotImplementedException("Not yet implemented.");
     }
+    public void setUsernameForStorage(String usernameForStorage) {
+    }
+    public String getUsernameForStorage() {
+        return null;
+    }
     
 }

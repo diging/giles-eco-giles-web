@@ -9,7 +9,7 @@ import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 
 public interface IDistributedStorageManager {
 
-    public abstract RequestStatus storeFile(String username, IFile file, IDocument document,
+    public abstract RequestStatus storeFile(String providerUsername, String provider, IFile file, IDocument document,
             IUpload upload, byte[] content) throws GilesFileStorageException, UnstorableObjectException;
 
     public abstract String getFileUrl(IFile file);

@@ -21,6 +21,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 
 @Service
@@ -59,13 +60,13 @@ public class UploadService implements IUploadService {
      */
     @Override
     public String startUpload(DocumentAccess access, DocumentType type,
-            MultipartFile[] files, List<byte[]> fileBytes, String username) {
+            MultipartFile[] files, List<byte[]> fileBytes, User user) {
         // clean out old uploads before adding new
         cleanUp();
 
         String uploadProgressId = generateId();
         currentUploads.put(uploadProgressId,
-                uploadHelper.processUpload(access, type, files, fileBytes, username));
+                uploadHelper.processUpload(access, type, files, fileBytes, user));
 
         Long time = new Date().getTime();
         // make sure only one thread creates array list and adds to it

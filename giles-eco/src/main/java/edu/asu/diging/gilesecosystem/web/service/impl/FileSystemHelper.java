@@ -26,7 +26,7 @@ public class FileSystemHelper implements IFileSystemHelper {
      */
     @Override
     public byte[] getFileContent(IFile file, IFileStorageManager storageManager) {
-        String folderPath = storageManager.getAndCreateStoragePath(file.getUsername(), file.getUploadId(), file.getDocumentId());
+        String folderPath = storageManager.getAndCreateStoragePath(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId());
         File fileObject = new File(folderPath + File.separator + file.getFilename());
         try {
             return getFileContentFromUrl(fileObject.toURI().toURL());

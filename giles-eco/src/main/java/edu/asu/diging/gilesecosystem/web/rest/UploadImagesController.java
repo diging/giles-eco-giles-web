@@ -110,7 +110,7 @@ public class UploadImagesController {
             }
         }
 
-        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes, user.getUsername());
+        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes, user);
        
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", id);

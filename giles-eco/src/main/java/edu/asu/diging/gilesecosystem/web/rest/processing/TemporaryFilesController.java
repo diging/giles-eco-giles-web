@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
@@ -37,7 +37,7 @@ public class TemporaryFilesController {
     private IDistributedStorageManager storageManager;
 
     @AppTokenOnlyCheck
-    @RequestMapping(value = GET_CONTENT_URL, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = GET_CONTENT_URL, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<String> getFile(
             @PathVariable String fileId,
             @RequestParam(defaultValue="") String accessToken, 

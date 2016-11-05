@@ -16,6 +16,7 @@ public class File implements IFile {
     private long size;
     private String filepath; 
     private String derivedFrom;
+    private String usernameForStorage;
 
     public File() {
     }
@@ -176,6 +177,16 @@ public class File implements IFile {
     public void setDerivedFrom(String derivedFrom) {
         this.derivedFrom = derivedFrom;
     }
+    
+    @Override
+    public String getUsernameForStorage() {
+        return usernameForStorage;
+    }
+
+    @Override
+    public void setUsernameForStorage(String usernameForStorage) {
+        this.usernameForStorage = usernameForStorage;
+    }
 
     @Override
     public IFile clone() {
@@ -189,8 +200,7 @@ public class File implements IFile {
         file.setUploadDate(uploadDate);
         file.setUploadId(uploadId);
         file.setUsername(username);
+        file.setUsernameForStorage(usernameForStorage);
         return file;
-    }
-
-    
+    }    
 }

@@ -31,6 +31,7 @@ import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.users.User;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -63,8 +64,9 @@ public class FilesManager implements IFilesManager {
      */
     @Override
     public List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            String username, DocumentType docType, DocumentAccess access) {
+            User user, DocumentType docType, DocumentAccess access) {
 
+        String username = user.getUsername();
         String uploadId = uploadDatabaseClient.generateId();
         String uploadDate = OffsetDateTime.now(ZoneId.of("UTC")).toString();
 
@@ -103,7 +105,7 @@ public class FilesManager implements IFilesManager {
 
             try {
                 // send file off to be stored
-                RequestStatus requestStatus = distributedStorageManager.storeFile(username, file, document,
+                RequestStatus requestStatus = distributedStorageManager.storeFile(user.getUserIdOfProvider(), user.getProvider(), file, document,
                         upload, content);
                 documentDatabaseClient.saveDocument(document);
                 statuses.add(new StorageStatus(file, null, requestStatus));

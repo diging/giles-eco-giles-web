@@ -50,4 +50,8 @@ public interface IFile extends IStorableObject {
 
     public abstract String getDerivedFrom();
 
+    public abstract void setUsernameForStorage(String usernameForStorage);
+
+    public abstract String getUsernameForStorage();
+
 }

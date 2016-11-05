@@ -89,8 +89,10 @@ public class DistributedStorageManager implements IDistributedStorageManager {
      * @see edu.asu.giles.service.processing.impl.IStorageManager#storeFile(java.lang.String, edu.asu.giles.core.IFile, edu.asu.giles.core.IDocument, edu.asu.giles.core.IUpload, byte[])
      */
     @Override
-    public RequestStatus storeFile(String username, IFile file, IDocument document,
+    public RequestStatus storeFile(String providerUsername, String provider, IFile file, IDocument document,
             IUpload upload, byte[] content) throws GilesFileStorageException, UnstorableObjectException {
+        String username = provider + "_" + providerUsername;
+        file.setUsernameForStorage(username);
         storageManager.saveFile(username, upload.getId(), document.getId(), file.getFilename(), content);
         try {
             filesDbClient.saveFile(file);
@@ -110,6 +112,10 @@ public class DistributedStorageManager implements IDistributedStorageManager {
         request.setPathToFile(storageManager.getFileFolderPath(username, upload.getId(), document.getId()));
         request.setDownloadUrl(getFileUrl(file));
         request.setFileType(fileTypes.get(file.getContentType()));
+        request.setUploadDate(file.getUploadDate());
+        request.setFilename(file.getFilename());
+        request.setUsername(username);
+        
         document.setRequest(request);
         
         documentsDbClient.saveDocument(document);

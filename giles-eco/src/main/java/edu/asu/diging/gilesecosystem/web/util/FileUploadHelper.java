@@ -18,6 +18,7 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Service
 public class FileUploadHelper {
@@ -27,7 +28,7 @@ public class FileUploadHelper {
     @Autowired
     private IFilesManager filesManager;
  
-    public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType, MultipartFile[] files, List<byte[]> fileBytes, String username) {
+    public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType, MultipartFile[] files, List<byte[]> fileBytes, User user) {
         Map<IFile, byte[]> uploadedFiles = new HashMap<>();
         
         if (access == null) {
@@ -69,6 +70,6 @@ public class FileUploadHelper {
             file.setAccess(access);
         }
 
-        return filesManager.addFiles(uploadedFiles, username, docType, access);
+        return filesManager.addFiles(uploadedFiles, user, docType, access);
     }
 }
