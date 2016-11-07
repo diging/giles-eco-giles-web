@@ -24,7 +24,6 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @PropertySource("classpath:/config.properties")
@@ -45,9 +44,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     
     @Autowired
     private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
-    
-    @Autowired
-    private IRequestProducer requestProducer;
     
     @Autowired
     private IPropertiesManager propertyManager;
