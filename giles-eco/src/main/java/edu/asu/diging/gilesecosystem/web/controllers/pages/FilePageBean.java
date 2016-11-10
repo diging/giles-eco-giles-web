@@ -4,6 +4,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 
 public class FilePageBean implements IFile {
 
@@ -19,6 +20,7 @@ public class FilePageBean implements IFile {
     private String filepath; 
     private String metadataLink;
     private String derivedFrom;
+    private ProcessingStatus processingStatus;
     
     public String getUploadId() {
         return uploadId;
@@ -100,6 +102,27 @@ public class FilePageBean implements IFile {
     }
     public String getUsernameForStorage() {
         return null;
+    }
+    public String getRequestId() {
+        return null;
+    }
+    public void setRequestId(String requestId) {
+    }
+    public void setDownloadUrl(String downloadUrl) {
+    }
+    public String getDownloadUrl() {
+        return null;
+    }
+    public void setStorageId(String storageId) {
+    }
+    public String getStorageId() {
+        return null;
+    }
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    }
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
     }
     
 }

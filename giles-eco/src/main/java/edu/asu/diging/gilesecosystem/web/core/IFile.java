@@ -54,4 +54,20 @@ public interface IFile extends IStorableObject {
 
     public abstract String getUsernameForStorage();
 
+    public abstract String getRequestId();
+
+    public abstract void setRequestId(String requestId);
+
+    public abstract void setDownloadUrl(String downloadUrl);
+
+    public abstract String getDownloadUrl();
+
+    public abstract void setStorageId(String storageId);
+
+    public abstract String getStorageId();
+
+    public abstract void setProcessingStatus(ProcessingStatus processingStatus);
+
+    public abstract ProcessingStatus getProcessingStatus();
+
 }

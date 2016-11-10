@@ -135,7 +135,7 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
 
     @Override
-    protected Object getById(String id) {
+    protected IUpload getById(String id) {
         return getUpload(id);
     }
 

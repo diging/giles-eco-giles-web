@@ -1,5 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.files;
 
+import java.io.File;
+
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 
 public interface IFileStorageManager {
@@ -31,5 +33,19 @@ public interface IFileStorageManager {
      */
     public abstract String getAndCreateStoragePath(String username,
             String uploadId, String documentId);
+
+    /**
+     * Deletes the file with the provided filename and the provided upload id and document
+     * id from the file system.
+     * @param username username of the owner of the file
+     * @param uploadId id of the upload that the file was part of
+     * @param documentId id of the document that the file belongs to
+     * @param filename name of the file to be deleted
+     * @param deleteEmptyFolders if set to true, the method will attempt to delete the folder
+     *        structure the file is in as well (if the folders are empty).
+     * @return true if the file was successfully deleted; otherwise false.
+     */
+    public abstract boolean deleteFile(String username, String uploadId, String documentId,
+            String filename, boolean deleteEmptyFolders);
 
 }

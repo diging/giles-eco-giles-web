@@ -69,4 +69,6 @@ public interface IFilesManager {
 
     public abstract Map<String, Map<String, String>> getUploadedFilenames(String username);
 
+    public abstract IFile getFileByRequestId(String requestId);
+
 }

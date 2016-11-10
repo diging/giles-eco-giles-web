@@ -1,6 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.db4o.impl;
 
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -18,11 +20,16 @@ public abstract class DatabaseClient<T extends IStorableObject> implements IData
      */
     @Override
     public String generateId() {
+        return generateId(getIdPrefix(), this::getById);
+    }
+    
+    @Override
+    public String generateId(String prefix, Function<String, T> f ) {
         String id = null;
         while (true) {
-            id = getIdPrefix() + generateUniqueId();
-            Object existingFile = getById(id);
-            if (existingFile == null) {
+            id = prefix + generateUniqueId();
+            Object existing = f.apply(id);
+            if (existing == null) {
                 break;
             }
         }
@@ -58,7 +65,7 @@ public abstract class DatabaseClient<T extends IStorableObject> implements IData
 
     protected abstract String getIdPrefix();
 
-    protected abstract Object getById(String id);
+    protected abstract T getById(String id);
     
     protected abstract ObjectContainer getClient();
 

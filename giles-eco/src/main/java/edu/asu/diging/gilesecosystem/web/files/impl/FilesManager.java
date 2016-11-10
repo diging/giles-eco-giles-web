@@ -19,9 +19,10 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
-import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
+import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
@@ -29,7 +30,8 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
+import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
+import edu.asu.diging.gilesecosystem.web.service.processing.impl.StorageRequestProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
@@ -55,7 +57,7 @@ public class FilesManager implements IFilesManager {
     private IFileHandlerRegistry fileHandlerRegistry;
     
     @Autowired
-    private IDistributedStorageManager distributedStorageManager;
+    private IProcessingCoordinator processCoordinator;
 
     /*
      * (non-Javadoc)
@@ -99,22 +101,30 @@ public class FilesManager implements IFilesManager {
             file.setUploadDate(uploadDate);
             file.setUsername(username);
             file.setFilepath(getRelativePathOfFile(file));
+            file.setProcessingStatus(ProcessingStatus.UNPROCESSED);
 
             document.getFileIds().add(id);
             document.setUploadedFileId(file.getId());
 
             try {
-                // send file off to be stored
-                RequestStatus requestStatus = distributedStorageManager.storeFile(user.getUserIdOfProvider(), user.getProvider(), file, document,
-                        upload, content);
                 documentDatabaseClient.saveDocument(document);
+                
+                // send file off to be stored
+                StorageRequestProcessingInfo info = new StorageRequestProcessingInfo();
+                info.setContent(content);
+                info.setDocument(document);
+                info.setFile(file);
+                info.setProvider(user.getProvider());
+                info.setProviderUsername(user.getUserIdOfProvider());
+                info.setUpload(upload);
+                RequestStatus requestStatus = processCoordinator.processFile(file, info);
                 statuses.add(new StorageStatus(file, null, requestStatus));
-            } catch (GilesFileStorageException e) {
+            } catch (GilesProcessingException e) {
                 logger.error("Could not store uploaded files.", e);
                 statuses.add(new StorageStatus(file, e, RequestStatus.FAILED));
             } catch (UnstorableObjectException e) {
                 logger.error("Object is not storable. Please review your code.", e);
-                statuses.add(new StorageStatus(file, new GilesFileStorageException(e), RequestStatus.FAILED));
+                statuses.add(new StorageStatus(file, new GilesProcessingException(e), RequestStatus.FAILED));
             } 
         }
 
@@ -195,6 +205,11 @@ public class FilesManager implements IFilesManager {
         }
 
         return files.get(0);
+    }
+    
+    @Override
+    public IFile getFileByRequestId(String requestId) {
+        return databaseClient.getFileByRequestId(requestId);
     }
 
     @Override

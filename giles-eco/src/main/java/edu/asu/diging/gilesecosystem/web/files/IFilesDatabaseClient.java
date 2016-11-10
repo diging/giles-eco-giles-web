@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.files;
 import java.util.List;
 
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.db4o.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 
@@ -19,5 +20,7 @@ public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
     public abstract IFile getFileById(String id);
 
     public abstract List<IFile> getFilesByUsername(String username);
+
+    public abstract IFile getFileByRequestId(String requestId);
 
 }

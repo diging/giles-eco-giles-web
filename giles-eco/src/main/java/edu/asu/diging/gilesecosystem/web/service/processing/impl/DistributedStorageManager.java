@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
+import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
@@ -24,7 +25,9 @@ import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
+import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
@@ -33,12 +36,17 @@ import edu.asu.diging.gilesecosystem.web.rest.processing.TemporaryFilesControlle
 import edu.asu.diging.gilesecosystem.web.service.IFileSystemHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
+import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
+import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
+import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
-public class DistributedStorageManager implements IDistributedStorageManager {
+public class DistributedStorageManager extends ProcessingPhase<StorageRequestProcessingInfo> implements IDistributedStorageManager {
     
     final Logger logger = LoggerFactory.getLogger(getClass());
+    
+    public final static String REQUEST_PREFIX = "STREQ";
 
     @Autowired
     @Qualifier("tmpStorageManager") 
@@ -84,55 +92,6 @@ public class DistributedStorageManager implements IDistributedStorageManager {
             }
         }
     }
-
-    /* (non-Javadoc)
-     * @see edu.asu.giles.service.processing.impl.IStorageManager#storeFile(java.lang.String, edu.asu.giles.core.IFile, edu.asu.giles.core.IDocument, edu.asu.giles.core.IUpload, byte[])
-     */
-    @Override
-    public RequestStatus storeFile(String providerUsername, String provider, IFile file, IDocument document,
-            IUpload upload, byte[] content) throws GilesFileStorageException, UnstorableObjectException {
-        String username = provider + "_" + providerUsername;
-        file.setUsernameForStorage(username);
-        storageManager.saveFile(username, upload.getId(), document.getId(), file.getFilename(), content);
-        try {
-            filesDbClient.saveFile(file);
-        } catch (UnstorableObjectException e) {
-            logger.error("Could not store file.", e);
-            return RequestStatus.FAILED;
-        }
-        
-        IStorageRequest request = null;
-        try {
-            request = requestFactory.createRequest(upload.getId());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new GilesFileStorageException(e);
-        }
-        
-        request.setDocumentId(document.getId());
-        request.setPathToFile(storageManager.getFileFolderPath(username, upload.getId(), document.getId()));
-        request.setDownloadUrl(getFileUrl(file));
-        request.setFileType(fileTypes.get(file.getContentType()));
-        request.setUploadDate(file.getUploadDate());
-        request.setFilename(file.getFilename());
-        request.setUsername(username);
-        
-        document.setRequest(request);
-        
-        documentsDbClient.saveDocument(document);
-        
-        
-        try {
-            requestProducer.sendRequest(request, propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_REQUEST));
-        } catch (MessageCreationException e) {
-            request.setStatus(RequestStatus.FAILED);
-            documentsDbClient.saveDocument(document);
-            throw new GilesFileStorageException(e);
-        }
-        
-        request.setStatus(RequestStatus.SUBMITTED);
-        documentsDbClient.saveDocument(document);
-        return request.getStatus();
-    }
     
     /* (non-Javadoc)
      * @see edu.asu.giles.service.processing.impl.IStorageManager#getFileUrl(edu.asu.giles.core.IFile)
@@ -149,4 +108,57 @@ public class DistributedStorageManager implements IDistributedStorageManager {
     public byte[] getFileContent(IFile file) {
         return filesHelper.getFileContent(file, storageManager);
     }
+
+    @Override
+    public ProcessingPhaseName getPhaseName() {
+        return ProcessingPhaseName.STORAGE;
+    }
+
+    @Override
+    protected IRequest createRequest(IFile file, IProcessingInfo info)
+            throws GilesProcessingException {
+        StorageRequestProcessingInfo storageInfo = (StorageRequestProcessingInfo) info;
+        
+        String username = storageInfo.getProvider() + "_" + storageInfo.getProviderUsername();
+        file.setUsernameForStorage(username);
+        // generate request id for file
+        file.setRequestId(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId));
+        
+        IUpload upload = storageInfo.getUpload();
+        IDocument document = storageInfo.getDocument();
+        byte[] content = storageInfo.getContent();
+        try {
+            storageManager.saveFile(username, upload.getId(), document.getId(), file.getFilename(), content);
+        } catch (GilesFileStorageException e1) {
+            throw new GilesProcessingException(e1);
+        }
+        try {
+            filesDbClient.saveFile(file);
+        } catch (UnstorableObjectException e) {
+            throw new GilesProcessingException(e);
+        }
+        
+        IStorageRequest request = null;
+        try {
+            request = requestFactory.createRequest(upload.getId());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new GilesProcessingException(e);
+        }
+        
+        request.setRequestId(file.getRequestId());
+        request.setDocumentId(document.getId());
+        request.setPathToFile(storageManager.getFileFolderPath(username, upload.getId(), document.getId()));
+        request.setDownloadUrl(getFileUrl(file));
+        request.setFileType(fileTypes.get(file.getContentType()));
+        request.setUploadDate(file.getUploadDate());
+        request.setFilename(file.getFilename());
+        request.setUsername(username);
+        return request;
+    }
+
+    @Override
+    protected String getTopic() {
+        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_REQUEST);
+    }
+    
 }

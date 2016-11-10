@@ -64,7 +64,6 @@ public class FilesController {
                 ObjectNode fileNode = filenameList.addObject();
                 fileNode.put("id", fileIdAndName.getKey());
                 fileNode.put("filename", fileIdAndName.getValue());
-                System.out.println(fileIdAndName.getValue());
             }
         }
         

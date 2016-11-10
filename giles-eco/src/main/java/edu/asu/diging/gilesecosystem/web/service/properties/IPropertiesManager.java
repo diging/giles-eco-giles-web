@@ -45,6 +45,7 @@ public interface IPropertiesManager {
     public final static String KAFKA_HOSTS = "kafka_hosts";
     public final static String KAFKA_TOPIC_OCR_REQUEST = "request_ocr_topic";
     public final static String KAFKA_TOPIC_STORAGE_REQUEST = "request_storage_topic";
+    public final static String KAFKA_TOPIC_TEXT_EXTRACTION_REQUEST = "request_text_extraction_topic";
     
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
 

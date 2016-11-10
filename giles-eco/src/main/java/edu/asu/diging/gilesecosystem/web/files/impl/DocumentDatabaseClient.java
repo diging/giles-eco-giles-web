@@ -101,7 +101,7 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
     }
 
     @Override
-    protected Object getById(String id) {
+    protected IDocument getById(String id) {
         return getDocumentById(id);
     }
 }

@@ -75,6 +75,13 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFile file = new File(filename);
         return queryByExampleGetFirst(file);
     }
+    
+    @Override
+    public IFile getFileByRequestId(String requestId) {
+        IFile file = new File();
+        file.setRequestId(requestId);
+        return queryByExampleGetFirst(file);
+    }
 
     /*
      * (non-Javadoc)
@@ -94,7 +101,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     }
 
     @Override
-    protected Object getById(String id) {
+    protected IFile getById(String id) {
         return getFileById(id);
     }
 

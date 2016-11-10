@@ -63,7 +63,7 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
     }
 
     @Override
-    protected Object getById(String id) {
+    protected IRegisteredApp getById(String id) {
         return getAppById(id);
     }
 

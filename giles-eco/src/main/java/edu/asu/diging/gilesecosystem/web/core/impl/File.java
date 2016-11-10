@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.core.impl;
 
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 
 public class File implements IFile {
 
@@ -17,9 +18,12 @@ public class File implements IFile {
     private String filepath; 
     private String derivedFrom;
     private String usernameForStorage;
+    private String requestId;
+    private String storageId;
+    private String downloadUrl;
+    private ProcessingStatus processingStatus;
 
-    public File() {
-    }
+    public File() {}
 
     public File(String filename) {
         this.filename = filename;
@@ -187,6 +191,46 @@ public class File implements IFile {
     public void setUsernameForStorage(String usernameForStorage) {
         this.usernameForStorage = usernameForStorage;
     }
+    
+    @Override
+    public String getRequestId() {
+        return requestId;
+    }
+
+    @Override
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }  
+
+    @Override
+    public String getStorageId() {
+        return storageId;
+    }
+
+    @Override
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
+    }
+
+    @Override
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    @Override
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+    
+    @Override
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    @Override
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    } 
 
     @Override
     public IFile clone() {
@@ -202,5 +246,5 @@ public class File implements IFile {
         file.setUsername(username);
         file.setUsernameForStorage(usernameForStorage);
         return file;
-    }    
+    } 
 }

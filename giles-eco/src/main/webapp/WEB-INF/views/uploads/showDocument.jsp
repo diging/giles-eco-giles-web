@@ -42,7 +42,13 @@
 
 
 <dl class="dl-horizontal">
-  <dt>Uploaded file: </dt><dd><a href="<c:url value="/files/${document.uploadedFile.id}" />" >${document.uploadedFile.filename}</a>&nbsp; &nbsp; <a href="${page.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a></dd>
+  <dt>Uploaded file: </dt>
+  <dd>
+  	<span class="label label-info">${document.uploadedFile.processingStatus}</span>
+  	<a href="<c:url value="/files/${document.uploadedFile.id}" />" >
+  	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
+  	<a href="${page.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+  </dd>
   <dt>Embedded text: </dt><dd><c:if test="${not empty document.extractedTextFile}"><a href="<c:url value="/files/${document.extractedTextFile.id}" />" >${document.extractedTextFile.filename}</a> &nbsp; &nbsp; <a href="${page.extractedTextFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a></c:if></dd>
 </dl>
 

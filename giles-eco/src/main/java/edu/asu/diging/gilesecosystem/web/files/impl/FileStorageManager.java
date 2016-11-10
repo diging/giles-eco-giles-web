@@ -52,15 +52,63 @@ public class FileStorageManager implements IFileStorageManager {
 
     @Override
     public String getFileFolderPath(String username, String uploadId,
-            String fileId) {
+            String documentId) {
         StringBuffer filePath = new StringBuffer();
         filePath.append(username);
         filePath.append(File.separator);
         filePath.append(uploadId);
         filePath.append(File.separator);
-        filePath.append(fileId);
+        filePath.append(documentId);
 
         return filePath.toString();
+    }
+    
+    public String getFolderPath(String username, String uploadId, String documentId) {
+        StringBuffer path = new StringBuffer(baseDirectory + File.separator);
+        
+        path.append(username);
+        if (uploadId == null) {
+            return path.toString();
+        }
+        
+        path.append(File.separator);
+        path.append(uploadId);
+        if (documentId == null) {
+            return path.toString();
+        }
+        
+        path.append(File.separator);
+        path.append(documentId);
+        return path.toString();
+    }
+    
+    @Override
+    public boolean deleteFile(String username, String uploadId, String documentId,
+            String filename, boolean deleteEmptyFolders) {
+        String path = baseDirectory + File.separator
+                + getFileFolderPath(username, uploadId, documentId);
+        File file = new File(path + File.separator + filename);
+        
+        if (file.exists()) {
+            file.delete();
+        }
+        
+        if (deleteEmptyFolders) {
+            File docFolder = new File(getFolderPath(username, uploadId, documentId));
+            if (docFolder.isDirectory() && docFolder.list().length == 0) {
+                boolean deletedDocFolder = docFolder.delete();
+                if (deletedDocFolder) {
+                    File uploadFolder = new File(getFolderPath(username, uploadId, null));
+                    // we now this is a folder because we just deleted docfolder from it
+                    // so no need to check
+                    if (uploadFolder.list().length == 0) {
+                        uploadFolder.delete();
+                    }
+                }
+            } 
+        }
+        
+        return true;
     }
 
     public String getBaseDirectory() {
