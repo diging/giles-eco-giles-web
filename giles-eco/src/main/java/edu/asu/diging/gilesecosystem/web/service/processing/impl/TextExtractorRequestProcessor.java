@@ -57,6 +57,7 @@ public class TextExtractorRequestProcessor extends ProcessingPhase<IProcessingIn
         request.setDownloadUrl(file.getDownloadUrl());
         request.setRequestId(file.getRequestId());
         request.setStatus(RequestStatus.SUBMITTED);
+        request.setFilename(file.getFilename());
         
         return request;
     }

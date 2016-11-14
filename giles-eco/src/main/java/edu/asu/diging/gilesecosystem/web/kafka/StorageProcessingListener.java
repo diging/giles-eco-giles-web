@@ -22,7 +22,7 @@ public class StorageProcessingListener {
     @Autowired
     private ICompletedStorageRequestProcessor requestProcessor;
     
-    @KafkaListener(topics = "${topic_storage_request_complete}")
+    @KafkaListener(id="giles.storage.complete", topics = "${topic_storage_request_complete}")
     public void receiveMessage(String message) {
         ObjectMapper mapper = new ObjectMapper();
         ICompletedStorageRequest request = null;

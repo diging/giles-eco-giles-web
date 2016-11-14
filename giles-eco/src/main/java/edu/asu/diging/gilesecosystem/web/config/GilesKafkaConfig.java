@@ -31,14 +31,14 @@ public class GilesKafkaConfig implements KafkaConfig {
         // list of host:port pairs used for establishing the initial connections
         // to the Kakfa cluster
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:9092");
+                getHosts());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 IntegerDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class);
         // consumer groups allow a pool of processes to divide the work of
         // consuming and processing records
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gileseco.storage");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "gileseco.web");
 
         return props;
     }

@@ -52,7 +52,6 @@ public class CompletedStorageRequestProcessor implements ICompletedStorageReques
             // this should never happen
         }
         
-        storageManager.deleteFile(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId(), file.getFilename(), true);
         try {
             processCoordinator.processFile(file, null);
         } catch (GilesProcessingException e) {
