@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
-import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
@@ -30,11 +28,12 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.rest.processing.TemporaryFilesController;
-import edu.asu.diging.gilesecosystem.web.service.IFileSystemHelper;
+import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
+import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
@@ -42,7 +41,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     
     final Logger logger = LoggerFactory.getLogger(getClass());
     
-    public final static String REQUEST_PREFIX = "STREQ";
+    public final static String REQUEST_PREFIX = "REQ";
 
     @Autowired
     @Qualifier("tmpStorageManager") 
@@ -52,10 +51,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     private IFilesDatabaseClient filesDbClient;
     
     @Autowired 
-    private IDocumentDatabaseClient documentsDbClient;
-    
-    @Autowired
-    private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
+    private IDocumentDatabaseClient documentsDbClient; 
     
     @Autowired
     private IRequestProducer requestProducer;
@@ -64,7 +60,10 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     private IPropertiesManager propertyManager;
     
     @Autowired
-    private IFileSystemHelper filesHelper;
+    private IFileContentHelper filesHelper;
+    
+    @Autowired
+    private RequestHelper requestHelper;
     
     @Autowired
     private ApplicationContext ctx;
@@ -73,7 +72,6 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     
     @PostConstruct
     public void init() {
-        requestFactory.config(StorageRequest.class);
         fileTypes = new HashMap<String, FileType>();
         
         // register what content types should be treated as what file type
@@ -115,7 +113,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
             throws GilesProcessingException {
         StorageRequestProcessingInfo storageInfo = (StorageRequestProcessingInfo) info;
         
-        String username = storageInfo.getProvider() + "_" + storageInfo.getProviderUsername();
+        String username = requestHelper.getUsernameForStorage(storageInfo.getProviderUsername(), storageInfo.getProvider());
         file.setUsernameForStorage(username);
         // generate request id for file
         file.setRequestId(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId));
@@ -134,21 +132,10 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
             throw new GilesProcessingException(e);
         }
         
-        IStorageRequest request = null;
-        try {
-            request = requestFactory.createRequest(upload.getId());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new GilesProcessingException(e);
-        }
+        IStorageRequest request = requestHelper.createStorageRequest(file,
+                storageManager.getFileFolderPath(username, upload.getId(), document.getId()), 
+                getFileUrl(file), fileTypes.get(file.getContentType()));
         
-        request.setRequestId(file.getRequestId());
-        request.setDocumentId(document.getId());
-        request.setPathToFile(storageManager.getFileFolderPath(username, upload.getId(), document.getId()));
-        request.setDownloadUrl(getFileUrl(file));
-        request.setFileType(fileTypes.get(file.getContentType()));
-        request.setUploadDate(file.getUploadDate());
-        request.setFilename(file.getFilename());
-        request.setUsername(username);
         return request;
     }
 

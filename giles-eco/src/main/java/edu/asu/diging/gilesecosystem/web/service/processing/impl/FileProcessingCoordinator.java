@@ -60,6 +60,9 @@ public class FileProcessingCoordinator implements IProcessingCoordinator {
     @Override
     public RequestStatus processFile(IFile file, IProcessingInfo info) throws GilesProcessingException {
         IProcessingPhase<IProcessingInfo> phase = processingPhases.get(processChain.get(file.getProcessingStatus()));
-        return phase.process(file, info);
+        if (phase != null) {
+            return phase.process(file, info);
+        }
+        return null;
     }
 }

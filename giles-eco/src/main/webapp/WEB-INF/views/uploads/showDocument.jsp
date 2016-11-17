@@ -21,6 +21,7 @@
    		<c:set var="labelType" value="danger" />
    	</c:if>
    	Document status: <span class="label label-${labelType}">${document.statusLabel}</span>
+   	<span class="label label-info">${document.processingLabel}</span>
    	</p>
 
 <div class="row">
@@ -44,7 +45,6 @@
 <dl class="dl-horizontal">
   <dt>Uploaded file: </dt>
   <dd>
-  	<span class="label label-info">${document.uploadedFile.processingStatus}</span>
   	<a href="<c:url value="/files/${document.uploadedFile.id}" />" >
   	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
   	<a href="${page.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>

@@ -26,9 +26,6 @@ public class TextFileHandler extends AbstractFileHandler {
     @Qualifier("textStorageManager")
     private IFileStorageManager textStorageManager;
     
-    @Autowired
-    private IPropertiesManager propertyManager;
-
     @Override
     public List<String> getHandledFileTypes() {
         List<String> types = new ArrayList<String>();
@@ -52,15 +49,6 @@ public class TextFileHandler extends AbstractFileHandler {
     public String getRelativePathOfFile(IFile file) {
         String directory = textStorageManager.getFileFolderPath(file.getUsername(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
-    }
-
-    @Override
-    public String getFileUrl(IFile file) {
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL).trim();
-        String contentEndpoint = propertyManager.getProperty(IPropertiesManager.GILES_FILE_ENDPOINT).trim();
-        String contentSuffix = propertyManager.getProperty(IPropertiesManager.GILES_FILE_CONTENT_SUFFIX).trim();
-        
-        return gilesUrl + contentEndpoint + file.getId() + contentSuffix;
     }
 
     @Override

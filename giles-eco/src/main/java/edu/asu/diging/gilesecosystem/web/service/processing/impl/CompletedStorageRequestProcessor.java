@@ -13,9 +13,7 @@ import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedStorageRequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 
 @Service
@@ -43,6 +41,7 @@ public class CompletedStorageRequestProcessor implements ICompletedStorageReques
         file.setStorageId(request.getFileId());
         file.setDownloadUrl(request.getDownloadUrl());
         file.setProcessingStatus(ProcessingStatus.STORED);
+        file.setFilepath(request.getPathToFile());
         
         try {
             filesDbClient.saveFile(file);

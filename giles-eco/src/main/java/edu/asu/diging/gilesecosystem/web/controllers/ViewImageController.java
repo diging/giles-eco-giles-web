@@ -70,7 +70,7 @@ public class ViewImageController {
         IFile file = filesManager.getFile(fileId);
         parameterBuffer.append("fn=");
         try {
-            parameterBuffer.append(URLEncoder.encode(filesManager.getRelativePathOfFile(file), "UTF-8"));
+            parameterBuffer.append(URLEncoder.encode(file.getFilepath(), "UTF-8"));
         } catch (UnsupportedEncodingException e1) {
             logger.error("Could not encode path.", e1);
             parameterBuffer.append(filesManager.getRelativePathOfFile(file));

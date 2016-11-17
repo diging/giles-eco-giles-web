@@ -16,6 +16,7 @@ package edu.asu.diging.gilesecosystem.web.core;
  */
 public enum ProcessingStatus {
     UNPROCESSED,
+    AWAITING_STORAGE,
     STORED,
     TEXT_EXTRACTION_COMPLETE,
     IMAGE_EXTRACTION_COMPLETE,

@@ -30,9 +30,6 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    private IPropertiesManager propertyManager;
-    
-    @Autowired
     @Qualifier("fileStorageManager")
     private IFileStorageManager storageManager;
     

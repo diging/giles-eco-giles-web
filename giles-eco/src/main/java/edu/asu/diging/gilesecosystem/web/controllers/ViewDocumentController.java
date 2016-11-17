@@ -57,9 +57,10 @@ public class ViewDocumentController {
         docBean.setRequest(doc.getRequest());
         docBean.setStatusLabel(statusHelper.getLabelText(doc.getRequest().getStatus(), locale));
         
-        
         IFile origFile = fileManager.getFile(doc.getUploadedFileId());  
         if (origFile != null) {
+            docBean.setProcessingLabel(statusHelper.getProcessText(origFile.getProcessingStatus(), locale));
+            
             FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
             bean.setMetadataLink(metadataService.getFileLink(origFile));
             docBean.setUploadedFile(bean);
@@ -77,14 +78,18 @@ public class ViewDocumentController {
             docBean.getPages().add(bean);
             
             IFile imageFile = fileManager.getFile(page.getImageFileId());
-            FilePageBean imageBean = fileMappingService.convertToT2(imageFile, new FilePageBean());
-            imageBean.setMetadataLink(metadataService.getFileLink(imageFile));
-            bean.setImageFile(imageBean);
+            if (imageFile != null) {
+                FilePageBean imageBean = fileMappingService.convertToT2(imageFile, new FilePageBean());
+                imageBean.setMetadataLink(metadataService.getFileLink(imageFile));
+                bean.setImageFile(imageBean);
+            }
             
             IFile pageTextFile = fileManager.getFile(page.getTextFileId());
-            FilePageBean textBean = fileMappingService.convertToT2(pageTextFile, new FilePageBean());
-            textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
-            bean.setTextFile(textBean);
+            if (pageTextFile != null) {
+                FilePageBean textBean = fileMappingService.convertToT2(pageTextFile, new FilePageBean());
+                textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
+                bean.setTextFile(textBean);
+            }
         }
         
         return "documents/document";

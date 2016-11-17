@@ -16,6 +16,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.kafka.KafkaConfig;
 import edu.asu.diging.gilesecosystem.web.kafka.StorageProcessingListener;
+import edu.asu.diging.gilesecosystem.web.kafka.TextExtractionProcessingListener;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Configuration
@@ -59,6 +60,11 @@ public class GilesKafkaConfig implements KafkaConfig {
     @Bean
     public StorageProcessingListener receiver() {
         return new StorageProcessingListener();
+    }
+    
+    @Bean
+    public TextExtractionProcessingListener textExtractionReceiver() {
+        return new TextExtractionProcessingListener();
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.net.URL;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 
-public interface IFileSystemHelper {
+public interface IFileContentHelper {
 
     public abstract byte[] getFileContent(IFile file, IFileStorageManager storageManager);
 

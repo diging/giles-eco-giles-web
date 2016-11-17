@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
-import edu.asu.diging.gilesecosystem.web.service.IFileSystemHelper;
+import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 
 @Component
-public class FileSystemHelper implements IFileSystemHelper {
+public class FileContentHelper implements IFileContentHelper {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

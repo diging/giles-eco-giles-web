@@ -74,7 +74,9 @@ public class RestSecurityAspect {
     @PostConstruct
     public void init() {
         tokenCheckers = new HashMap<>();
+        
         checkers.forEach(checker -> tokenCheckers.put(checker.getId(), checker));
+        
     }
     
     @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(tokenCheck)")

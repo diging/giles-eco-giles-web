@@ -45,10 +45,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     @Autowired
     private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
     
-    @Autowired
-    private IPropertiesManager propertyManager;
-    
-    
     @Override
     public List<String> getHandledFileTypes() {
         List<String> types = new ArrayList<String>();
@@ -73,15 +69,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
         String directory = storageManager.getFileFolderPath(
                 file.getUsername(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
-    }
-
-    @Override
-    public String getFileUrl(IFile file) {
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL).trim();
-        String pdfEndpoint = propertyManager.getProperty(IPropertiesManager.GILES_FILE_ENDPOINT).trim();
-        String contentSuffix = propertyManager.getProperty(IPropertiesManager.GILES_FILE_CONTENT_SUFFIX).trim();
-        
-        return gilesUrl + pdfEndpoint + file.getId() + contentSuffix;
     }
 
     @Override

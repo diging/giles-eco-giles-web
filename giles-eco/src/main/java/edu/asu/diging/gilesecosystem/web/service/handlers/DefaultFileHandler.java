@@ -1,8 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.service.handlers;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +20,6 @@ import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -33,9 +30,6 @@ public class DefaultFileHandler extends AbstractFileHandler implements IFileType
     @Autowired
     @Qualifier("fileStorageManager")
     private IFileStorageManager storageManager;
-    
-    @Autowired
-    private IPropertiesManager propertyManager;
     
     @Autowired
     private IFilesDatabaseClient databaseClient;
@@ -69,20 +63,6 @@ public class DefaultFileHandler extends AbstractFileHandler implements IFileType
     public String getRelativePathOfFile(IFile file) {
         String directory = storageManager.getFileFolderPath(file.getUsername(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
-    }
-
-    @Override
-    public String getFileUrl(IFile file) {
-        String relativePath = getRelativePathOfFile(file);
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL);
-        String gilesDigilibEndpoint = propertyManager.getProperty(IPropertiesManager.GILES_DIGILIB_ENDPOINT);
-        
-        try {
-            return gilesUrl + gilesDigilibEndpoint + "?fn=" + URLEncoder.encode(relativePath, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Could not encode path.", e);
-            return gilesUrl + gilesDigilibEndpoint + "?fn=" + relativePath;
-        }
     }
 
     @Override

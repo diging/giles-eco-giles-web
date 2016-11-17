@@ -33,6 +33,7 @@ public class DocumentPageBean implements IDocument {
     
     private IRequest request;
     private String statusLabel;
+    private String processingLabel;
     
     public String getId() {
         return id;
@@ -181,6 +182,12 @@ public class DocumentPageBean implements IDocument {
     }
     public void setStatusLabel(String statusLabel) {
         this.statusLabel = statusLabel;
+    }
+    public String getProcessingLabel() {
+        return processingLabel;
+    }
+    public void setProcessingLabel(String processingLabel) {
+        this.processingLabel = processingLabel;
     }
     
 }
