@@ -17,6 +17,7 @@ import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedImageExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 
 @Service

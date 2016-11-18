@@ -71,4 +71,8 @@ public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
         return ProcessingStatus.OCR_COMPLETE;
     }
 
+    @Override
+    protected void cleanup(IFile file) {
+        // nothing to do here
+    }
 }

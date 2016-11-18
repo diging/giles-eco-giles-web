@@ -16,15 +16,11 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @PropertySource("classpath:/config.properties")
 @Service
@@ -55,13 +51,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     @Override
     public FileType getHandledFileType() {
         return FileType.PDF;
-    }
-
-    @Override
-    public boolean processFile(String username, IFile file, IDocument document,
-            IUpload upload, byte[] content) throws GilesFileStorageException {
-        
-        return false;
     }
 
     @Override

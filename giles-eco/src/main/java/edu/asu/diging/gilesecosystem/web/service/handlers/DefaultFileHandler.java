@@ -12,11 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
@@ -45,18 +41,6 @@ public class DefaultFileHandler extends AbstractFileHandler implements IFileType
     @Override
     public FileType getHandledFileType() {
         return FileType.OTHER;
-    }
-
-    @Override
-    public boolean processFile(String username, IFile file, IDocument document, IUpload upload, byte[] content) throws GilesFileStorageException {
-        storageManager.saveFile(username, upload.getId(), document.getDocumentId(), file.getFilename(), content);
-        try {
-            databaseClient.saveFile(file);
-        } catch (UnstorableObjectException e) {
-            logger.error("Could not store file.", e);
-            return false;
-        }
-        return true;
     }
 
     @Override

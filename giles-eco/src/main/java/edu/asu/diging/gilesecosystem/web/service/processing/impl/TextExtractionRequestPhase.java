@@ -14,7 +14,6 @@ import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
@@ -79,4 +78,8 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         return ProcessingStatus.TEXT_EXTRACTION_COMPLETE;
     }
 
+    @Override
+    protected void cleanup(IFile file) {
+        // nothing to do here
+    }
 }

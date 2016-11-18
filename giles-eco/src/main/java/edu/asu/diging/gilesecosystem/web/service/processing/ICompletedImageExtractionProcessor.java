@@ -1,4 +1,4 @@
-package edu.asu.diging.gilesecosystem.web.service.processing.impl;
+package edu.asu.diging.gilesecosystem.web.service.processing;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
 

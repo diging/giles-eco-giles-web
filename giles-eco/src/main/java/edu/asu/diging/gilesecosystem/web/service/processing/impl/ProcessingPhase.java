@@ -18,7 +18,6 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
-import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 
 public abstract class ProcessingPhase<T extends IProcessingInfo> implements IProcessingPhase<T> {
 
@@ -56,7 +55,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
                 throw new GilesProcessingException(e);
             }
             try {
-                return processCoordinator.processFile(file, null);
+                RequestStatus status = processCoordinator.processFile(file, null);
+                cleanup(file);
+                return status;
             } catch (GilesProcessingException e) {
                 //FIXME: this should go in a monitoring app
                 logger.error("Exception occured in next processing phase.", e);
@@ -90,6 +91,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         } catch (UnstorableObjectException e) {
             throw new GilesProcessingException(e);
         }
+        
         return request.getStatus();
     }
     
@@ -98,4 +100,6 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     protected abstract String getTopic();
     
     protected abstract ProcessingStatus getCompletedStatus();
+    
+    protected abstract void cleanup(IFile file);
 }

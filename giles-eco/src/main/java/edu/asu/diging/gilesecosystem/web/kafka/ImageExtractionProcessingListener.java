@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest;
-import edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedImageExtractionProcessor;
+import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedImageExtractionProcessor;
 
 @PropertySource("classpath:/config.properties")
 public class ImageExtractionProcessingListener {

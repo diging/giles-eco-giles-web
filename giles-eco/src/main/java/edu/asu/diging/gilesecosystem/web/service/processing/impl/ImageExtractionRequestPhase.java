@@ -71,4 +71,8 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
         return ProcessingStatus.IMAGE_EXTRACTION_COMPLETE;
     }
 
+    @Override
+    protected void cleanup(IFile file) {
+        // nothing to do here
+    }
 }
