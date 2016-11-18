@@ -35,7 +35,7 @@ public class RequestHelper {
         
         request.setRequestId(file.getRequestId());
         request.setDocumentId(file.getDocumentId());
-        request.setPathToFile(pathToFile);
+        request.setDownloadPath(pathToFile);
         request.setDownloadUrl(downloadUrl);
         request.setFileType(filetype);
         request.setUploadDate(file.getUploadDate());
