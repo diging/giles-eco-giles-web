@@ -41,7 +41,7 @@ public class CompletedStorageRequestProcessor implements ICompletedStorageReques
         file.setStorageId(request.getFileId());
         file.setDownloadUrl(request.getDownloadUrl());
         file.setProcessingStatus(ProcessingStatus.STORED);
-        file.setFilepath(request.getPathToFile());
+        file.setFilepath(request.getDownloadPath());
         
         try {
             filesDbClient.saveFile(file);
