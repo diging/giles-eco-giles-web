@@ -60,6 +60,7 @@
 <dl class="dl-horizontal clearfix">
 	<dt><span class="label label-default">Page ${page.pageNr}</span>&nbsp; &nbsp; Image: </dt><dd><a href="<c:url value="/files/${page.imageFile.id}" />" >${page.imageFile.filename}</a>&nbsp; &nbsp; <a href="${page.imageFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a></dd>
 	<dt> Text: </dt><dd><a href="<c:url value="/files/${page.textFile.id}" />" >${page.textFile.filename}</a>&nbsp; &nbsp; <a href="${page.textFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a></dd>
+	<dt> OCR Result: </dt><dd><a href="<c:url value="/files/${page.ocrFile.id}" />" >${page.ocrFile.filename}</a>&nbsp; &nbsp; <a href="${page.ocrFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a></dd>
 </dl>
 </c:forEach>
 </c:if>

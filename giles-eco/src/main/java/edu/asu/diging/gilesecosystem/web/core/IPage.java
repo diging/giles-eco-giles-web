@@ -15,4 +15,8 @@ public interface IPage {
 
     public abstract void setTextFileId(String textFileId);
 
+    public abstract void setOcrFileId(String ocrFileId);
+
+    public abstract String getOcrFileId();
+
 }

@@ -81,6 +81,14 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         file.setProcessingStatus(ProcessingStatus.TEXT_EXTRACTION_COMPLETE);
         
         try {
+            filesDbClient.saveFile(file);
+        } catch (UnstorableObjectException e) {
+            logger.error("Could not store file.", e);
+            // fail silently...
+            // this should never happen
+        }
+        
+        try {
             docsDbClient.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // shoudl never happen

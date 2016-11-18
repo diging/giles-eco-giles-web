@@ -10,11 +10,15 @@ import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationExceptio
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
+import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 
 public abstract class ProcessingPhase<T extends IProcessingInfo> implements IProcessingPhase<T> {
 
@@ -24,7 +28,14 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     private IDocumentDatabaseClient documentsDbClient;
     
     @Autowired
-    private IRequestProducer requestProducer;   
+    private IFilesDatabaseClient filesDbClient;
+    
+    @Autowired
+    private IRequestProducer requestProducer;  
+    
+    @Autowired
+    private IProcessingCoordinator processCoordinator;
+    
     
     public RequestStatus process(IFile file, IProcessingInfo info)
             throws GilesProcessingException {
@@ -38,7 +49,18 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         }
         
         if (request == null) {
-            return RequestStatus.COMPLETE;
+            file.setProcessingStatus(getCompletedStatus());
+            try {
+                filesDbClient.saveFile(file);
+            } catch (UnstorableObjectException e) {
+                throw new GilesProcessingException(e);
+            }
+            try {
+                return processCoordinator.processFile(file, null);
+            } catch (GilesProcessingException e) {
+                //FIXME: this should go in a monitoring app
+                logger.error("Exception occured in next processing phase.", e);
+            }
         }
         
         IDocument document = documentsDbClient.getDocumentById(file.getDocumentId());
@@ -74,4 +96,6 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     protected abstract IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException ;
     
     protected abstract String getTopic();
+    
+    protected abstract ProcessingStatus getCompletedStatus();
 }

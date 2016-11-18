@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
-import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
@@ -17,12 +18,13 @@ import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedOCRProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 
 @Service
-public class CompletedImageExtractionProcessor extends ACompletedExtractionProcessor implements ICompletedImageExtractionProcessor {
+public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements ICompletedOCRProcessor {
 
-    public final static String REQUEST_PREFIX = "IMGREQ";
+    public final static String REQUEST_PREFIX = "STOCRREQ";
     
     @Autowired
     private IDocumentDatabaseClient docsDbClient;
@@ -37,40 +39,36 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
      */
     /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedImageExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest)
+     * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedOCRProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest)
      */
     @Override
-    public void processCompletedRequest(ICompletedImageExtractionRequest request) {
+    public void processCompletedRequest(ICompletedOCRRequest request) {
         IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
         IFile file = filesDbClient.getFileById(document.getUploadedFileId());
         
-        Map<Integer, IPage> pages = new HashMap<>();
-        document.getPages().forEach(page -> pages.put(page.getPageNr(), page));
+        Map<String, IPage> pages = new HashMap<>();
+        document.getPages().forEach(page -> pages.put(page.getImageFileId(), page));
         
-        if (request.getPages() != null ) {
-            for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
-                IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
-               
-                try {
-                    filesDbClient.saveFile(pageText);
-                } catch (UnstorableObjectException e) {
-                    // should never happen, we're setting the id
-                    logger.error("Could not store file.", e);
-                }
-                
-                IPage documentPage = pages.get(page.getPageNr());
-                if (documentPage == null) {
-                    documentPage = new Page();
-                    documentPage.setPageNr(page.getPageNr());
-                    document.getPages().add(documentPage);
-                }
-                documentPage.setImageFileId(pageText.getId());
-                
-                sendRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
-            }
+        IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+       
+        try {
+            filesDbClient.saveFile(pageText);
+        } catch (UnstorableObjectException e) {
+            // should never happen, we're setting the id
+            logger.error("Could not store file.", e);
         }
         
-        file.setProcessingStatus(ProcessingStatus.IMAGE_EXTRACTION_COMPLETE);
+        IPage documentPage = pages.get(request.getFileid());
+        if (documentPage == null) {
+            // FIXME what about page nr
+            documentPage = new Page();
+            document.getPages().add(documentPage);
+        }
+        documentPage.setOcrFileId(pageText.getId());
+        
+        sendRequest(pageText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+    
+        file.setProcessingStatus(ProcessingStatus.OCR_COMPLETE);
         
         try {
             filesDbClient.saveFile(file);

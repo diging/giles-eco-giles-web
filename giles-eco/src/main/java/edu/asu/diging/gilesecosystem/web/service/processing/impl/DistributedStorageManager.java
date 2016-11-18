@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
@@ -142,6 +144,11 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     @Override
     protected String getTopic() {
         return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_REQUEST);
+    }
+
+    @Override
+    protected ProcessingStatus getCompletedStatus() {
+        return ProcessingStatus.STORED;
     }
     
 }
