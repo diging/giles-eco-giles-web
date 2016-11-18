@@ -52,6 +52,7 @@ public class FileProcessingCoordinator implements IProcessingCoordinator {
         processChain.put(ProcessingStatus.STORED, ProcessingPhaseName.TEXT_EXTRACTION);
         processChain.put(ProcessingStatus.TEXT_EXTRACTION_COMPLETE, ProcessingPhaseName.IMAGE_EXTRACTION);
         processChain.put(ProcessingStatus.IMAGE_EXTRACTION_COMPLETE, ProcessingPhaseName.OCR);
+        processChain.put(ProcessingStatus.OCR_COMPLETE, ProcessingPhaseName.COMPLETE);
     }
     
     /* (non-Javadoc)
@@ -59,7 +60,8 @@ public class FileProcessingCoordinator implements IProcessingCoordinator {
      */
     @Override
     public RequestStatus processFile(IFile file, IProcessingInfo info) throws GilesProcessingException {
-        IProcessingPhase<IProcessingInfo> phase = processingPhases.get(processChain.get(file.getProcessingStatus()));
+        ProcessingPhaseName nextPhase = processChain.get(file.getProcessingStatus());
+        IProcessingPhase<IProcessingInfo> phase = processingPhases.get(nextPhase);
         if (phase != null) {
             return phase.process(file, info);
         }

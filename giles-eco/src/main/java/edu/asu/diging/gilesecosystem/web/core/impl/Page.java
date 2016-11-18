@@ -7,6 +7,7 @@ public class Page implements IPage {
     private int pageNr;
     private String imageFileId;
     private String textFileId;
+    private String ocrFileId;
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -49,6 +50,14 @@ public class Page implements IPage {
     @Override
     public void setTextFileId(String textFileId) {
         this.textFileId = textFileId;
+    }
+    @Override
+    public String getOcrFileId() {
+        return ocrFileId;
+    }
+    @Override
+    public void setOcrFileId(String ocrFileId) {
+        this.ocrFileId = ocrFileId;
     }
     
 }

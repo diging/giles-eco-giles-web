@@ -8,9 +8,12 @@ public class PagePageBean implements IPage {
     private int pageNr;
     private String imageFileId;
     private String textFileId;
+    private String ocrFileId;
     
     private IFile imageFile;
     private IFile textFile;
+    private IFile ocrFile;
+    
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -65,6 +68,18 @@ public class PagePageBean implements IPage {
     }
     public void setTextFile(IFile textFile) {
         this.textFile = textFile;
+    }
+    public void setOcrFileId(String ocrFileId) {
+        this.ocrFileId = ocrFileId;
+    }
+    public String getOcrFileId() {
+        return ocrFileId;
+    }
+    public IFile getOcrFile() {
+        return ocrFile;
+    }
+    public void setOcrFile(IFile ocrFile) {
+        this.ocrFile = ocrFile;
     }
     
     

@@ -5,5 +5,6 @@ public enum ProcessingPhaseName {
     STORAGE,
     TEXT_EXTRACTION,
     IMAGE_EXTRACTION,
-    OCR
+    OCR,
+    COMPLETE
 }

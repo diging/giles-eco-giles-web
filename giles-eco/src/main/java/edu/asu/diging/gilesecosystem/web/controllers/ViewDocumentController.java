@@ -90,6 +90,13 @@ public class ViewDocumentController {
                 textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
                 bean.setTextFile(textBean);
             }
+            
+            IFile ocrFile = fileManager.getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                FilePageBean ocrBean = fileMappingService.convertToT2(ocrFile, new FilePageBean());
+                ocrBean.setMetadataLink(metadataService.getFileLink(ocrFile));
+                bean.setOcrFile(ocrBean);
+            }
         }
         
         return "documents/document";
