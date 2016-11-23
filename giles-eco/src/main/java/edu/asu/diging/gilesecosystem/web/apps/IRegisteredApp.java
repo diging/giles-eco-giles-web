@@ -2,7 +2,7 @@ package edu.asu.diging.gilesecosystem.web.apps;
 
 import java.util.List;
 
-import edu.asu.diging.gilesecosystem.web.db4o.IStorableObject;
+import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 public interface IRegisteredApp extends IStorableObject {
 

@@ -1,10 +1,14 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 
+@Entity
 public class Upload implements IUpload {
 
-	private String id;
+    @Id private String id;
 	private String username;
 	private String createdDate;
 	

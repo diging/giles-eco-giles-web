@@ -3,7 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core;
 import java.util.List;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.web.db4o.IStorableObject;
+import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 public interface IDocument extends IStorableObject {
 

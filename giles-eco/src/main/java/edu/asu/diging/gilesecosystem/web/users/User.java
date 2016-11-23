@@ -4,6 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+
+@Entity
 public class User implements Serializable {
 
     /**
@@ -11,6 +17,7 @@ public class User implements Serializable {
      */
     private static final long serialVersionUID = 1019105087386557957L;
 
+    @Id
     private String username;
     private String firstname;
     private String lastname;
@@ -19,7 +26,7 @@ public class User implements Serializable {
     private String email;
     private String provider;
     private String userIdOfProvider;
-    private List<String> roles;
+    @Basic(fetch = FetchType.EAGER) private List<String> roles;
     private String password;
     private AccountStatus accountStatus;
     
@@ -123,6 +130,5 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-    
+    }    
 }

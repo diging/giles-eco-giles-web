@@ -32,7 +32,7 @@
 		<mitreid.show.login>true</mitreid.show.login>
 		<jwt.signing.secret></jwt.signing.secret>
 		<jwt.signing.secret.apps></jwt.signing.secret.apps>
-		<db_files></db_files>
+		<geco.giles.db_files></geco.giles.db_files>
 		<db.driver>com.mysql.jdbc.Driver</db.driver>
 		<db.database.url></db.database.url>
 		<db.user></db.user>
@@ -76,6 +76,11 @@
 			<artifactId>requests</artifactId>
 			<version>0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>edu.asu.diging.giles-eco</groupId>
+			<artifactId>util</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<!-- Spring -->
 		<dependency>
@@ -107,11 +112,21 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
-		<!-- DB4O -->
+		<!-- ObjectDB/JPA -->
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>db4o-full-java5</artifactId>
-			<version>8.0</version>
+			<groupId>com.objectdb</groupId>
+			<artifactId>objectdb</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>javax.persistence</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -411,6 +426,11 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>objectdb</id>
+			<name>ObjectDB Repository</name>
+			<url>http://m2.objectdb.com</url>
 		</repository>
 	</repositories>
 

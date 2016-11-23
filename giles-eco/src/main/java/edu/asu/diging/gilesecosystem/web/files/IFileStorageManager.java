@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.files;
 
-import java.io.File;
-
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 
 public interface IFileStorageManager {

@@ -1,6 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core;
 
-import edu.asu.diging.gilesecosystem.web.db4o.IStorableObject;
+import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 
 public interface IUpload extends IStorableObject {

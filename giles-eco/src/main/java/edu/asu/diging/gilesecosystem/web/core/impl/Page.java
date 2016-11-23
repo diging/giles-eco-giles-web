@@ -1,7 +1,10 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
+import javax.persistence.Embeddable;
+
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 
+@Embeddable
 public class Page implements IPage {
     
     private int pageNr;

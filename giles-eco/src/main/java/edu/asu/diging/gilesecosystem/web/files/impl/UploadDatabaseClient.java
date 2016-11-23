@@ -1,44 +1,32 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
-import java.lang.reflect.Field;
-import java.time.ZonedDateTime;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.db4o.ObjectContainer;
-import com.db4o.query.Query;
-
+import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
-import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 
+@Transactional("txmanager_uploads")
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ObjectContainer client;
-
-    @Autowired
-    @Qualifier("uploadDatabaseManager")
-    private DatabaseManager userDatabase;
-
-    @PostConstruct
-    public void init() {
-        client = userDatabase.getClient();
-    }
-
+    @PersistenceContext(unitName="UploadsPU")
+    private EntityManager em;
+    
     /*
      * (non-Javadoc)
      * 
@@ -48,8 +36,7 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
      */
     @Override
     public IUpload getUpload(String id) {
-        IUpload upload = new Upload(id);
-        return queryByExampleGetFirst(upload);
+        return em.find(Upload.class, id);
     }
 
     /*
@@ -61,62 +48,25 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
      */
     @Override
     public List<IUpload> getUploadsForUser(String username) {
-        IUpload upload = new Upload();
-        upload.setUsername(username);
-        return getFilesByExample(upload);
+        List<IUpload> uploads = new ArrayList<IUpload>();
+        searchByProperty("username", username, Upload.class).forEach(x -> uploads.add(x));
+        
+        return uploads;
     }
     
     @Override
     public List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection) {
-        Query query = client.query();
-        query.constrain(Upload.class);
-        query.descend("username").constrain(username);
-
-        try {
-            Field sortField = Upload.class.getDeclaredField(sortBy);
-            sortField.setAccessible(true);
-
-            query.sortBy(new Comparator() {
-
-                @Override
-                public int compare(Object o1, Object o2) {
-                    Object o1FieldContent;
-                    Object o2FieldContent;
-                    try {
-                        if (sortDirection == IUploadDatabaseClient.ASCENDING) {
-                            o1FieldContent = sortField.get(o1);
-                            o2FieldContent = sortField.get(o2);
-                        } else {
-                            o2FieldContent = sortField.get(o1);
-                            o1FieldContent = sortField.get(o2);
-                        }
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        logger.error("Error accessing field.", e);
-                        return 0;
-                    }
-
-                    if (sortBy.endsWith("Date")) {
-                        ZonedDateTime date1 = ZonedDateTime
-                                .parse(o1FieldContent.toString());
-                        ZonedDateTime date2 = ZonedDateTime
-                                .parse(o2FieldContent.toString());
-                        return date1.compareTo(date2);
-                    }
-                    if (o1FieldContent instanceof Integer) {
-                        return ((Integer) o1FieldContent)
-                                .compareTo((Integer) o2FieldContent);
-                    }
-                    return o1FieldContent.toString().compareTo(
-                            o2FieldContent.toString());
-                }
-            });
-        } catch (NoSuchFieldException | SecurityException e) {
-            logger.error("Couldn't sort list.", e);
-            return null;
+        
+        String order = "DESC";
+        if (sortDirection == IUploadDatabaseClient.ASCENDING) {
+            order = "ASC";
         }
+        
+        TypedQuery<IUpload> query = em.createQuery("SELECT u FROM Upload u WHERE u.username=:username ORDER BY u." + sortBy + " " + order, IUpload.class);
+        query.setParameter("username", username).setFirstResult(page*pageSize).setMaxResults(pageSize);
 
-        List<IUpload> allResults = query.execute(); // getUploadsForUser(username);
+        List<IUpload> allResults = query.getResultList(); 
         int startIndex = (page - 1) * pageSize;
         int endIndex = startIndex + pageSize;
         if (endIndex > allResults.size()) {
@@ -125,9 +75,6 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         return allResults.subList(startIndex, endIndex);
     }
 
-   private List<IUpload> getFilesByExample(IUpload upload) {
-        return client.queryByExample(upload);
-    }
 
     @Override
     protected String getIdPrefix() {
@@ -140,8 +87,8 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
 
     @Override
-    protected ObjectContainer getClient() {
-       return client;
+    protected EntityManager getClient() {
+       return em;
     }
 
 }

@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -23,7 +25,6 @@ import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -35,6 +36,7 @@ import edu.asu.diging.gilesecosystem.web.service.processing.impl.StorageRequestP
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
+@Transactional
 @PropertySource("classpath:/config.properties")
 @Service
 public class FilesManager implements IFilesManager {
@@ -199,7 +201,7 @@ public class FilesManager implements IFilesManager {
         IFile file = new edu.asu.diging.gilesecosystem.web.core.impl.File();
         file.setFilepath(path);
 
-        List<IFile> files = databaseClient.getFilesByExample(file);
+        List<IFile> files = databaseClient.getFilesByPath(path);
         if (files == null || files.isEmpty()) {
             return null;
         }

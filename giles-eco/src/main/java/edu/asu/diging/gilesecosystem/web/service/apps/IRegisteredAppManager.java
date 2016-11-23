@@ -1,11 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.service.apps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.exceptions.TokenGenerationErrorException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 
 public interface IRegisteredAppManager {

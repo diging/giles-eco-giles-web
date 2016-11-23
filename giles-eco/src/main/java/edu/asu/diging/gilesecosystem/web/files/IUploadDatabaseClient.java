@@ -2,8 +2,8 @@ package edu.asu.diging.gilesecosystem.web.files;
 
 import java.util.List;
 
+import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.db4o.IDatabaseClient;
 
 public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
     
