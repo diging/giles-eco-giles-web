@@ -1,36 +1,33 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.db4o.ObjectContainer;
-
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
-import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
+@Transactional("txmanager_data")
 @Component
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
 
-    private ObjectContainer client;
-
+    @PersistenceContext(unitName="DataPU")
+    private EntityManager em;
+    
     @Autowired
-    @Qualifier("documentDatabaseManager")
-    private DatabaseManager userDatabase;
+    private IPropertiesCopier copier;
 
-    @PostConstruct
-    public void init() {
-        client = userDatabase.getClient();
-    }
 
     /*
      * (non-Javadoc)
@@ -41,7 +38,14 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public IDocument saveDocument(IDocument document) throws UnstorableObjectException {
-        return store(document);
+        IDocument existing = getById(document.getId());
+        
+        if (existing == null) {
+            return store(document);
+        }
+        
+        copier.copyObject(document, existing);
+        return document;
     }
 
     /*
@@ -53,9 +57,7 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public IDocument getDocumentById(String id) {
-        IDocument doc = new Document();
-        doc.setId(id);
-        return queryByExampleGetFirst(doc);
+        return em.find(Document.class, id);
     }
 
     /*
@@ -67,32 +69,18 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public List<IDocument> getDocumentByUploadId(String uploadId) {
-        IDocument doc = new Document();
-        doc.setUploadId(uploadId);
-        return getDocumentByExample(doc);
+        return getDocumentList("uploadId", uploadId);
     }
     
     @Override
     public List<IDocument> getDocumentsByUsername(String username) {
-        IDocument doc = new Document();
-        doc.setUsername(username);
-        return getDocumentByExample(doc);
+        return getDocumentList("username", username);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * edu.asu.giles.files.impl.IDocumentDatabaeClient#getFilesByExample(edu
-     * .asu.giles.core.IDocument)
-     */
-    @Override
-    public List<IDocument> getDocumentByExample(IDocument doc) {
-        return client.queryByExample(doc);
-    }
-
-    protected ObjectContainer getClient() {
-        return client;
+    
+    protected List<IDocument> getDocumentList(String propName, String propValue) {
+        List<IDocument> docs = new ArrayList<IDocument>();
+        searchByProperty(propName, propValue, Document.class).forEach(x -> docs.add(x));
+        return docs;
     }
 
     @Override
@@ -103,5 +91,10 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
     @Override
     protected IDocument getById(String id) {
         return getDocumentById(id);
+    }
+
+    @Override
+    protected EntityManager getClient() {
+        return em;
     }
 }

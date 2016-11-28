@@ -1,9 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.apps;
 
-import com.db4o.ObjectSet;
-
-import edu.asu.diging.gilesecosystem.web.db4o.IDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 
 public interface IRegisteredAppDatabaseClient extends IDatabaseClient<IRegisteredApp> {
 

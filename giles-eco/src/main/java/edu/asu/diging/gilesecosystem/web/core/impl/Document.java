@@ -3,6 +3,13 @@ package edu.asu.diging.gilesecosystem.web.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
@@ -10,24 +17,27 @@ import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 
+@Entity
 public class Document implements IDocument {
 
-    private String id;
+    @Id private String id;
     private String documentId;
     private String uploadId;
     private String username;
     private String createdDate;
     private String uploadedFile;
     private String extractedText;
-    private List<String> fileIds;
+    @Basic(fetch = FetchType.EAGER) private List<String> fileIds;
     private DocumentAccess access;
     private transient List<IFile> files;
     private DocumentType documentType;
     private int pageCount;
-    private List<String> textFileIds;
-    private List<IPage> pages;
+    @Basic(fetch = FetchType.EAGER) private List<String> textFileIds;
+    @Basic(fetch = FetchType.EAGER) private List<IPage> pages;
 
-    private IRequest request;
+    // forget possible entity not an entity warning/error 
+    // this only happens because Eclipse can't read both annotations and ORM file
+    @OneToOne(cascade=CascadeType.ALL) private IRequest request;
 
     /*
      * (non-Javadoc)

@@ -8,15 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.exceptions.TokenGenerationErrorException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
 
+@Transactional("txmanager_apps")
 @Service
 public class RegisteredAppsManager implements IRegisteredAppManager {
 

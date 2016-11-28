@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 
 /**
  * Managing class for user management.
@@ -50,10 +50,7 @@ public class UsersManager implements IUserManager {
 
     @Override
     public User findUserByEmail(String email) {
-        User user = new User();
-        user.setEmail(email);
-
-        List<User> users = client.findUsers(user);
+        List<User> users = client.findUsersByEmail(email);
         if (users.size() > 0)
             return users.get(0);
         return null;

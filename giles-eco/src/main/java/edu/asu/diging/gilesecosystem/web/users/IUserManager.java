@@ -1,6 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.users;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 
 
 

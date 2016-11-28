@@ -13,18 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
@@ -37,6 +38,7 @@ import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
+@Transactional
 @Service
 public class DistributedStorageManager extends ProcessingPhase<StorageRequestProcessingInfo> implements IDistributedStorageManager {
     

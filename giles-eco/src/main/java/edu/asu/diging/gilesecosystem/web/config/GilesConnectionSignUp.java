@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionSignUp;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 

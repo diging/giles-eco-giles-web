@@ -2,7 +2,6 @@ package edu.asu.diging.gilesecosystem.web.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,12 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;

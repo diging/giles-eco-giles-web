@@ -3,43 +3,37 @@ package edu.asu.diging.gilesecosystem.web.users;
 import java.util.List;
 import java.util.Random;
 
-import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
-import com.db4o.query.Predicate;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 
-import edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnstorableObjectException;
-
+@Transactional("txmanager_user")
 @Component
 public class UserDatabaseClient {
 
-    private ObjectContainer client;
+    @PersistenceContext(unitName="UserPU")
+    private EntityManager em;
 
-    @Autowired
-    @Qualifier("userDatabaseManager")
-    private DatabaseManager userDatabase;
-
-    @PostConstruct
-    public void init() {
-        client = userDatabase.getClient();
-    }
 
     public User getUser(String name, String pw) {
         User user = new User();
         user.setUsername(name);
         user.setPassword(pw);
 
-        ObjectSet<User> results = client.queryByExample(user);
-
+        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password = :password", User.class);
+        query.setParameter("username", name);
+        query.setParameter("password", pw);
+        List<User> users = query.getResultList();
+        
         // there should only be exactly one object with this id
-        if (results.size() == 1)
-            return results.get(0);
+        if (users.size() == 1) {
+            return users.get(0);
+        }
 
         return null;
     }
@@ -52,16 +46,8 @@ public class UserDatabaseClient {
      * @return found user or null
      */
     public User findUser(String name) {
-        ObjectSet<User> results = client.query(new Predicate<User>() {
-
-            @Override
-            public boolean match(User arg0) {
-                if (arg0.getUsername().equals(name)) {
-                    return true;
-                }
-                return false;
-            };
-        });
+        
+        List<User> results = searchByProperty("username", name);
 
         // there should only be exactly one object with this id
         if (results.size() >= 1) {
@@ -72,10 +58,10 @@ public class UserDatabaseClient {
     }
     
     public User findUserByProviderUserId(String userId, String provider) {
-        User user = new User();
-        user.setUserIdOfProvider(userId);
-        user.setProvider(provider);
-        ObjectSet<User> results = client.queryByExample(user);
+        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.userIdOfProvider=:userId AND u.provider=:provider", User.class);
+        query.setParameter("provider", provider);
+        query.setParameter("userId", userId);
+        List<User> results = query.getResultList();
         
         if (results.size() >= 1) {
             return results.get(0);
@@ -84,13 +70,15 @@ public class UserDatabaseClient {
         return null;
     }
 
-    public List<User> findUsers(User exampleUser) {
-        ObjectSet<User> results = client.queryByExample(exampleUser);
-        return results;
+    public List<User> findUsersByEmail(String email) {
+        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.email=:email", User.class);
+        query.setParameter("email", email);
+        return query.getResultList();
     }
 
     public User[] getAllUser() {
-        ObjectSet<User> results = client.query(User.class);
+        TypedQuery<User> query = em.createQuery("SELECT u FROM User u", User.class);
+        List<User> results = query.getResultList();
         return results.toArray(new User[results.size()]);
     }
 
@@ -98,20 +86,14 @@ public class UserDatabaseClient {
         if (user.getUsername() == null || user.getUsername().isEmpty() || user.getUserIdOfProvider() == null || user.getUserIdOfProvider().isEmpty()) {
             throw new UnstorableObjectException("User has not username or provider user name.");
         }
-        client.store(user);
-        client.commit();
+        em.persist(user);
+        em.flush();
         return user;
     }
 
     public void deleteUser(String name) {
-        User user = new User();
-        user.setUsername(name);
-
-        ObjectSet<User> results = client.queryByExample(user);
-        for (User res : results) {
-            client.delete(res);
-            client.commit();
-        }
+        User toBeDeleted = findUser(name);
+        em.remove(toBeDeleted);
     }
 
     public void update(User user) {
@@ -128,8 +110,11 @@ public class UserDatabaseClient {
         storedUser.setUserIdOfProvider(user.getUserIdOfProvider());
         storedUser.setUsername(user.getUsername());
         
-        client.store(storedUser);
-        client.commit();
+    }
+    
+    protected List<User> searchByProperty(String propName, String propValue) {
+        TypedQuery<User> docs = em.createQuery("SELECT t FROM User t WHERE t." + propName + " = '" + propValue + "'", User.class);
+        return docs.getResultList();
     }
     
     /**
