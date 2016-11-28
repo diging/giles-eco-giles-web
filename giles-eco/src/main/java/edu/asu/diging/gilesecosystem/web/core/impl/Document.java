@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
@@ -33,7 +35,9 @@ public class Document implements IDocument {
     @Basic(fetch = FetchType.EAGER) private List<String> textFileIds;
     @Basic(fetch = FetchType.EAGER) private List<IPage> pages;
 
-    private IRequest request;
+    // forget possible entity not an entity warning/error 
+    // this only happens because Eclipse can't read both annotations and ORM file
+    @OneToOne(cascade=CascadeType.ALL) private IRequest request;
 
     /*
      * (non-Javadoc)

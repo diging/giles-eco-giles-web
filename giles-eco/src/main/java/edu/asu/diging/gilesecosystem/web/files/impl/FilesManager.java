@@ -134,7 +134,7 @@ public class FilesManager implements IFilesManager {
                 status -> status.getStatus() != RequestStatus.FAILED);
         if (atLeastOneSuccess) {
             try {
-                uploadDatabaseClient.store(upload);
+                uploadDatabaseClient.saveUpload(upload);
             } catch (UnstorableObjectException e) {
                 // let's silently fail because this should never happen
                 // we set the id

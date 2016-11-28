@@ -16,7 +16,7 @@ public class StatusHelper {
     private MessageSource messageSource;
 
     public String getLabelText(RequestStatus status, Locale locale) {
-        String label = "upload_status_text_" + status.name().toLowerCase();
+        String label = "upload_status_text_" + (status != null ? status.name().toLowerCase() : "default");
         return messageSource.getMessage(label, new String[]{}, locale);
     }
     

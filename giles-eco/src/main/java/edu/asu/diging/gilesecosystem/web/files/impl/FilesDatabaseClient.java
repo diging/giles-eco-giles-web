@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +14,18 @@ import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
-@Transactional("txmanager_files")
+@Transactional("txmanager_data")
 @Component
 public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFilesDatabaseClient {
 
-    @PersistenceContext(unitName="emf_files")
+    @PersistenceContext(unitName = "DataPU")
     private EntityManager em;
+
+    @Autowired
+    private IPropertiesCopier copier;
 
     /*
      * (non-Javadoc)
@@ -31,7 +36,13 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
      */
     @Override
     public IFile saveFile(IFile file) throws UnstorableObjectException {
-       return store(file);
+        IFile existingFile = getById(file.getId());
+        if (existingFile == null) {
+            return store(file);
+        }
+        
+        copier.copyObject(file, existingFile);
+        return file;
     }
 
     @Override
@@ -43,12 +54,12 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     public List<IFile> getFilesByUploadId(String uploadId) {
         return searchByProperty("uploadId", uploadId, File.class);
     }
-    
+
     @Override
     public List<IFile> getFilesByUsername(String username) {
         return searchByProperty("username", username, File.class);
     }
-    
+
     @Override
     public List<IFile> getFilesByPath(String path) {
         return searchByProperty("filepath", path, File.class);
@@ -67,7 +78,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         }
         return null;
     }
-    
+
     @Override
     public IFile getFileByRequestId(String requestId) {
         List<IFile> files = searchByProperty("requestId", requestId, File.class);

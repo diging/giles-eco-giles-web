@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.files;
 
 import java.util.List;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 
@@ -16,5 +17,7 @@ public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
 
     public abstract List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection);
+
+    public abstract IUpload saveUpload(IUpload upload) throws UnstorableObjectException;
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +15,19 @@ import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
-@Transactional("txmanager_documents")
+@Transactional("txmanager_data")
 @Component
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
 
-    @PersistenceContext(unitName="DocumentsPU")
+    @PersistenceContext(unitName="DataPU")
     private EntityManager em;
+    
+    @Autowired
+    private IPropertiesCopier copier;
+
 
     /*
      * (non-Javadoc)
@@ -32,23 +38,13 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public IDocument saveDocument(IDocument document) throws UnstorableObjectException {
-        if (getById(document.getId()) == null) {
+        IDocument existing = getById(document.getId());
+        
+        if (existing == null) {
             return store(document);
         }
-        IDocument existing = getById(document.getId());
-        existing.setAccess(document.getAccess());
-        existing.setCreatedDate(document.getCreatedDate());
-        existing.setDocumentType(document.getDocumentType());
-        existing.setExtractedTextFileId(document.getExtractedTextFileId());
-        existing.setFileIds(document.getFileIds());
-        existing.setDocumentId(document.getDocumentId());
-        existing.setPageCount(document.getPageCount());
-        existing.setPages(document.getPages());
-        existing.setRequest(document.getRequest());
-        existing.setTextFileIds(document.getTextFileIds());
-        existing.setUploadedFileId(document.getUploadedFileId());
-        existing.setUploadId(document.getUploadId());
-        existing.setUsername(document.getUsername());
+        
+        copier.copyObject(document, existing);
         return document;
     }
 

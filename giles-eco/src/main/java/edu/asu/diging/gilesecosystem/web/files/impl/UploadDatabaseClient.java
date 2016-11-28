@@ -9,23 +9,42 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
-@Transactional("txmanager_uploads")
+@Transactional("txmanager_data")
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PersistenceContext(unitName="UploadsPU")
+    @PersistenceContext(unitName="DataPU")
     private EntityManager em;
+    
+    @Autowired
+    private IPropertiesCopier copier;
+
+    @Override
+    public IUpload saveUpload(IUpload upload) throws UnstorableObjectException {
+        IUpload existing = getById(upload.getId());
+        
+        if (existing == null) {
+            return store(upload);
+        }
+        
+        copier.copyObject(upload, existing);
+        return upload;
+    }
     
     /*
      * (non-Javadoc)
@@ -64,15 +83,9 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         }
         
         TypedQuery<IUpload> query = em.createQuery("SELECT u FROM Upload u WHERE u.username=:username ORDER BY u." + sortBy + " " + order, IUpload.class);
-        query.setParameter("username", username).setFirstResult(page*pageSize).setMaxResults(pageSize);
+        query.setParameter("username", username).setFirstResult((page-1)*pageSize).setMaxResults(pageSize);
 
-        List<IUpload> allResults = query.getResultList(); 
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = startIndex + pageSize;
-        if (endIndex > allResults.size()) {
-            endIndex = allResults.size();
-        }
-        return allResults.subList(startIndex, endIndex);
+        return query.getResultList(); 
     }
 
 

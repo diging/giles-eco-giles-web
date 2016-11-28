@@ -4,30 +4,30 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
     <description>The minimal mappings for a persistent entity in XML.</description>
-    <entity name="Request" class="edu.asu.diging.gilesecosystem.requests.impl.Request" access="FIELD">
-        <attributes>
-            <id name="requestId"/>
-        </attributes>
-    </entity>
-    <entity name="CompletedImageExtractionRequest" class="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" access="FIELD">
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.Request" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" access="FIELD">
     	<attributes>
 	        <basic name="pages" fetch="EAGER"/>
 	    </attributes>
-    </entity>
-    <entity name="CompletedOCRRequest" class="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest" access="FIELD">
-    </entity>
-    <entity name="CompletedStorageRequest" class="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest" access="FIELD">
-    </entity>
-    <entity name="CompletedTextExtractionRequest" class="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest" access="FIELD">
-    </entity>
-    <entity name="ImageExtractionRequest" class="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest" access="FIELD">
-    </entity>
-    <entity name="OCRRequest" class="edu.asu.diging.gilesecosystem.requests.impl.OCRRequest" access="FIELD">
-    </entity>
-    <entity name="StorageRequest" class="edu.asu.diging.gilesecosystem.requests.impl.StorageRequest" access="FIELD">
-    </entity>
-    <entity name="TextExtractionRequest" class="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest" access="FIELD">
-    </entity>
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest" access="FIELD">
+    	<attributes>
+	        <basic name="pages" fetch="EAGER"/>
+	    </attributes>
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.OCRRequest" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.StorageRequest" access="FIELD">
+    </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest" access="FIELD">
+    </embeddable>
     
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.Page" access="FIELD">
 	</embeddable>
