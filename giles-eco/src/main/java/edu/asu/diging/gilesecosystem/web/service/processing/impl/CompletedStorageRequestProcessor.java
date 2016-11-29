@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
@@ -15,9 +16,11 @@ import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedStorageRequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
+import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
+import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
-public class CompletedStorageRequestProcessor implements ICompletedStorageRequestProcessor {
+public class CompletedStorageRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -31,11 +34,15 @@ public class CompletedStorageRequestProcessor implements ICompletedStorageReques
     @Autowired
     private IProcessingCoordinator processCoordinator;
     
+    @Autowired
+    private IPropertiesManager propertiesManager;
+   
+    
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedStorageRequestProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest)
      */
     @Override
-    public void processCompletedRequest(ICompletedStorageRequest request) {
+    public void processRequest(ICompletedStorageRequest request) {
         IFile file = filesDbClient.getFileByRequestId(request.getRequestId());
         
         file.setStorageId(request.getFileId());
@@ -57,5 +64,15 @@ public class CompletedStorageRequestProcessor implements ICompletedStorageReques
             //FIXME: this should go in a monitoring app
             logger.error("Exception occured in next processing phase.", e);
         }
+    }
+
+    @Override
+    public String getProcessedTopic() {
+        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_COMPLETE_REQUEST);
+    }
+
+    @Override
+    public Class<? extends ICompletedStorageRequest> getRequestClass() {
+        return CompletedStorageRequest.class;
     }
 }

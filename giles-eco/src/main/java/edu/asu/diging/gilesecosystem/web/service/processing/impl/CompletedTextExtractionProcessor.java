@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
@@ -17,9 +18,11 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedTextExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
+import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
+import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
-public class CompletedTextExtractionProcessor extends ACompletedExtractionProcessor implements ICompletedTextExtractionProcessor {
+public class CompletedTextExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedTextExtractionRequest>, ICompletedTextExtractionProcessor {
     
     public final static String REQUEST_PREFIX = "TXTREQ";
       
@@ -32,11 +35,15 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
     @Autowired
     private IProcessingCoordinator processCoordinator;
     
+    @Autowired
+    private IPropertiesManager propertiesManager;
+   
+    
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
      */
     @Override
-    public void processCompletedRequest(ICompletedTextExtractionRequest request) {
+    public void processRequest(ICompletedTextExtractionRequest request) {
         IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
         IFile file = filesDbClient.getFileById(document.getUploadedFileId());
         
@@ -102,6 +109,16 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             // FIXME: send to monitoring app
             logger.error("Processing failed.", e);
         }
+    }
+
+    @Override
+    public String getProcessedTopic() {
+        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST);
+    }
+
+    @Override
+    public Class<? extends CompletedTextExtractionRequest> getRequestClass() {
+        return CompletedTextExtractionRequest.class;
     }
 
 }

@@ -15,10 +15,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.kafka.KafkaConfig;
-import edu.asu.diging.gilesecosystem.web.kafka.ImageExtractionProcessingListener;
-import edu.asu.diging.gilesecosystem.web.kafka.OCRProcessingListener;
-import edu.asu.diging.gilesecosystem.web.kafka.StorageProcessingListener;
-import edu.asu.diging.gilesecosystem.web.kafka.TextExtractionProcessingListener;
+import edu.asu.diging.gilesecosystem.web.kafka.KafkaProcessingListener;
 import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Configuration
@@ -57,28 +54,12 @@ public class GilesKafkaConfig implements KafkaConfig {
     public ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-
         return factory;
     }
 
     @Bean
-    public StorageProcessingListener receiver() {
-        return new StorageProcessingListener();
-    }
-    
-    @Bean
-    public TextExtractionProcessingListener textExtractionReceiver() {
-        return new TextExtractionProcessingListener();
-    }
-    
-    @Bean
-    public ImageExtractionProcessingListener imageExtractionReceiver() {
-        return new ImageExtractionProcessingListener();
-    }
-    
-    @Bean
-    public OCRProcessingListener ocrReceiver() {
-        return new OCRProcessingListener();
+    public KafkaProcessingListener receiver() {
+        return new KafkaProcessingListener();
     }
 
     @Override

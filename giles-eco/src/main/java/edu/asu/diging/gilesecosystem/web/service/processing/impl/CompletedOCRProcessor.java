@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
@@ -20,9 +21,11 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedOCRProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
+import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
+import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
-public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements ICompletedOCRProcessor {
+public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedOCRRequest>, ICompletedOCRProcessor {
 
     public final static String REQUEST_PREFIX = "STOCRREQ";
     
@@ -35,14 +38,15 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
     @Autowired
     private IProcessingCoordinator processCoordinator;
     
+    @Autowired
+    private IPropertiesManager propertiesManager;
+   
+    
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
      */
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedOCRProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest)
-     */
     @Override
-    public void processCompletedRequest(ICompletedOCRRequest request) {
+    public void processRequest(ICompletedOCRRequest request) {
         IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
         IFile file = filesDbClient.getFileById(document.getUploadedFileId());
         
@@ -92,5 +96,15 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // FIXME: send to monitoring app
             logger.error("Processing failed.", e);
         }
+    }
+
+    @Override
+    public String getProcessedTopic() {
+        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_OCR_COMPLETE_REQUEST);
+    }
+
+    @Override
+    public Class<? extends ICompletedOCRRequest> getRequestClass() {
+        return CompletedOCRRequest.class;
     }
 }

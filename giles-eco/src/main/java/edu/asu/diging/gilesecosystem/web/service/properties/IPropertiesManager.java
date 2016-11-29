@@ -46,8 +46,11 @@ public interface IPropertiesManager {
     public final static String KAFKA_TOPIC_OCR_REQUEST = "request_ocr_topic";
     public final static String KAFKA_TOPIC_OCR_COMPLETE_REQUEST = "topic_orc_request_complete";
     public final static String KAFKA_TOPIC_STORAGE_REQUEST = "request_storage_topic";
+    public final static String KAFKA_TOPIC_STORAGE_COMPLETE_REQUEST = "topic_storage_request_complete";
     public final static String KAFKA_TOPIC_TEXT_EXTRACTION_REQUEST = "request_text_extraction_topic";
+    public final static String KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST = "topic_text_extraction_request_complete";
     public final static String KAFKA_TOPIC_IMAGE_EXTRACTION_REQUEST = "topic_image_extraction_request";
+    public final static String KAFKA_TOPIC_IMAGE_EXTRACTION_COMPLETE_REQUEST = "topic_image_extraction_request_complete";
     
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
 

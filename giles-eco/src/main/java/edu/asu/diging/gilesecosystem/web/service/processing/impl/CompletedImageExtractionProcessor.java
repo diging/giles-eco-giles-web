@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
@@ -19,9 +20,11 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedImageExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
+import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
+import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @Service
-public class CompletedImageExtractionProcessor extends ACompletedExtractionProcessor implements ICompletedImageExtractionProcessor {
+public class CompletedImageExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedImageExtractionRequest>, ICompletedImageExtractionProcessor {
 
     public final static String REQUEST_PREFIX = "IMGREQ";
     
@@ -34,14 +37,15 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
     @Autowired
     private IProcessingCoordinator processCoordinator;
     
+    @Autowired
+    private IPropertiesManager propertiesManager;
+    
+    
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
      */
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedImageExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest)
-     */
     @Override
-    public void processCompletedRequest(ICompletedImageExtractionRequest request) {
+    public void processRequest(ICompletedImageExtractionRequest request) {
         IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
         IFile file = filesDbClient.getFileById(document.getUploadedFileId());
         
@@ -95,5 +99,15 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
             // FIXME: send to monitoring app
             logger.error("Processing failed.", e);
         }
+    }
+
+    @Override
+    public String getProcessedTopic() {
+        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_IMAGE_EXTRACTION_COMPLETE_REQUEST);
+    }
+
+    @Override
+    public Class<? extends ICompletedImageExtractionRequest> getRequestClass() {
+        return CompletedImageExtractionRequest.class;
     }
 }
