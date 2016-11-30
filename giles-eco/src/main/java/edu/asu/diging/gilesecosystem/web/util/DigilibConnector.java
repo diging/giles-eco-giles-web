@@ -16,7 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class DigilibConnector {
@@ -28,7 +29,7 @@ public class DigilibConnector {
 
     public Map<String, List<String>> getDigilibImage(String parameters,
             HttpServletResponse response) throws IOException {
-        String digilibUrl = propertyManager.getProperty(IPropertiesManager.DIGILIB_SCALER_URL);
+        String digilibUrl = propertyManager.getProperty(Properties.DIGILIB_SCALER_URL);
         
         URL url = new URL(digilibUrl + "?" + parameters);
         logger.debug("Getting: " + url.toString());

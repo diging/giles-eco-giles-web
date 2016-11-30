@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core.impl;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;

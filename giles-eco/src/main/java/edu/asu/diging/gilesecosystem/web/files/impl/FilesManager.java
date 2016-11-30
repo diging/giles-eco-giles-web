@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -33,7 +34,7 @@ import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.impl.StorageRequestProcessingInfo;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Transactional
@@ -82,20 +83,21 @@ public class FilesManager implements IFilesManager {
             document = createDocument(uploadId, uploadDate, access, docType, username);
         }
         for (IFile file : files.keySet()) {
-            byte[] content = files.get(file);
+            if (docType == DocumentType.SINGLE_PAGE) {
+                document = createDocument(uploadId, uploadDate,
+                        file.getAccess(), docType, username);
+            }
 
+            byte[] content = files.get(file);
             if (content == null) {
-                statuses.add(new StorageStatus(file, null,
+                statuses.add(new StorageStatus(document, file, null,
                         RequestStatus.FAILED));
                 continue;
             }
 
             String id = databaseClient.generateId();
 
-            if (docType == DocumentType.SINGLE_PAGE) {
-                document = createDocument(uploadId, uploadDate,
-                        file.getAccess(), docType, username);
-            }
+            
 
             file.setId(id);
             file.setDocumentId(document.getId());
@@ -120,13 +122,13 @@ public class FilesManager implements IFilesManager {
                 info.setProviderUsername(user.getUserIdOfProvider());
                 info.setUpload(upload);
                 RequestStatus requestStatus = processCoordinator.processFile(file, info);
-                statuses.add(new StorageStatus(file, null, requestStatus));
+                statuses.add(new StorageStatus(document, file, null, requestStatus));
             } catch (GilesProcessingException e) {
                 logger.error("Could not store uploaded files.", e);
-                statuses.add(new StorageStatus(file, e, RequestStatus.FAILED));
+                statuses.add(new StorageStatus(document, file, e, RequestStatus.FAILED));
             } catch (UnstorableObjectException e) {
                 logger.error("Object is not storable. Please review your code.", e);
-                statuses.add(new StorageStatus(file, new GilesProcessingException(e), RequestStatus.FAILED));
+                statuses.add(new StorageStatus(document, file, new GilesProcessingException(e), RequestStatus.FAILED));
             } 
         }
 
@@ -228,7 +230,7 @@ public class FilesManager implements IFilesManager {
 
     @Override
     public List<IUpload> getUploadsOfUser(String username, int page, int pageSize, String sortBy, int sortDirection) {
-        int defaultPageSize = new Integer(propertyManager.getProperty(IPropertiesManager.DEFAULT_PAGE_SIZE));
+        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
         if (pageSize == -1) {
             pageSize = defaultPageSize;
         }
@@ -269,7 +271,7 @@ public class FilesManager implements IFilesManager {
     
     @Override
     public int getUploadsOfUserPageCount(String username) {
-        int defaultPageSize = new Integer(propertyManager.getProperty(IPropertiesManager.DEFAULT_PAGE_SIZE));
+        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
         int totalUploads = getUploadsOfUserCount(username);
         return (int) Math.ceil(new Double(totalUploads) / new Double(defaultPageSize));
     }

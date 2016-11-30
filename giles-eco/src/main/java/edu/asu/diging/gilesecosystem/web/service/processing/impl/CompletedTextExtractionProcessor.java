@@ -8,6 +8,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
@@ -19,7 +20,7 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedTextExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class CompletedTextExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedTextExtractionRequest>, ICompletedTextExtractionProcessor {
@@ -86,6 +87,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         }
         
         file.setProcessingStatus(ProcessingStatus.TEXT_EXTRACTION_COMPLETE);
+        markRequestComplete(request);
         
         try {
             filesDbClient.saveFile(file);
@@ -113,7 +115,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
 
     @Override
     public String getProcessedTopic() {
-        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST);
+        return propertiesManager.getProperty(Properties.KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST);
     }
 
     @Override

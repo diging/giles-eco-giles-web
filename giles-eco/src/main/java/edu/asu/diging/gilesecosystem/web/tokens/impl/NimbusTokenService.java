@@ -24,12 +24,13 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.IdentityProviderMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.INimbusTokenService;
 
@@ -48,7 +49,7 @@ public class NimbusTokenService implements INimbusTokenService {
     
     @PostConstruct
     public void init() {
-        issuerUrl = propertyManager.getProperty(IPropertiesManager.MITREID_SERVER_URL);
+        issuerUrl = propertyManager.getProperty(Properties.MITREID_SERVER_URL);
         if (!issuerUrl.endsWith("/")) {
             issuerUrl = issuerUrl + "/";
         }

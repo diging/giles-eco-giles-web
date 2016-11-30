@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 /**
  * Class that generate callback urls to Jars (or potentially any other
@@ -32,7 +33,7 @@ public class MetadataUrlService implements IMetadataUrlService {
      */
     @Override
     public String getUploadCallback() {
-        return propertyManager.getProperty(IPropertiesManager.JARS_URL);
+        return propertyManager.getProperty(Properties.JARS_URL);
     }
     
     /* (non-Javadoc)
@@ -40,18 +41,18 @@ public class MetadataUrlService implements IMetadataUrlService {
      */
     @Override
     public String getFileLink(IFile file) {
-        String jarsUrl = propertyManager.getProperty(IPropertiesManager.JARS_URL);
-        String jarsFileUrl = propertyManager.getProperty(IPropertiesManager.JARS_FILE_URL);
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL);
+        String jarsUrl = propertyManager.getProperty(Properties.JARS_URL);
+        String jarsFileUrl = propertyManager.getProperty(Properties.JARS_FILE_URL);
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL);
         
         return jarsUrl + jarsFileUrl.replace("{giles}", gilesUrl).replace("{fileId}", file.getId());
     }
     
     @Override
     public String getDocumentLink(IDocument doc) {
-        String jarsUrl = propertyManager.getProperty(IPropertiesManager.JARS_URL);
-        String metadataUrl = propertyManager.getProperty(IPropertiesManager.METADATA_SERVICE_DOC_ENDPOINT);
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL);
+        String jarsUrl = propertyManager.getProperty(Properties.JARS_URL);
+        String metadataUrl = propertyManager.getProperty(Properties.METADATA_SERVICE_DOC_ENDPOINT);
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL);
         
         return jarsUrl + metadataUrl.replace("{giles}", gilesUrl).replace("{docId}", doc.getId());
     }

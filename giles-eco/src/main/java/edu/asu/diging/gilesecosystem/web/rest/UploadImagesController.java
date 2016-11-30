@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +31,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
@@ -40,7 +40,7 @@ import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
@@ -114,7 +114,7 @@ public class UploadImagesController {
        
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", id);
-        msgs.put("checkUrl", propertyManager.getProperty(IPropertiesManager.GILES_URL) + uploadEndpoint + id);
+        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
         
         return generateResponse(msgs, HttpStatus.OK);
     }
@@ -127,59 +127,55 @@ public class UploadImagesController {
             @PathVariable String id, 
             User user) {
         
-        List<StorageStatus> futureResult = uploadService.getUpload(id);
-        if (futureResult == null) {
+        List<StorageStatus> statusList = uploadService.getUpload(id);
+        if (statusList == null) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Upload does not exist.");
             msgs.put("errorCode", "404");
             
             return generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
-        //FIXME
-//        if (!futureResult.isDone()) {
-//            Map<String, String> msgs = new HashMap<String, String>();
-//            msgs.put("msg", "Upload in progress. Please check back later.");
-//            msgs.put("msgCode", "010");
-//            
-//            return generateResponse(msgs, HttpStatus.ACCEPTED);
-//        }
         
-//        List<StorageStatus> statuses;
-//        try {
-//            statuses = futureResult.get();
-//        } catch (InterruptedException | ExecutionException e1) {
-//            logger.error("Could not get result.", e1);
-//            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
+        boolean complete = true;
+        for (StorageStatus status : statusList) {
+            complete = complete && status.getStatus() == RequestStatus.COMPLETE;
+        }
         
-//        Set<String> docIds = new HashSet<String>();
-//        statuses.forEach(status -> docIds.add(status.getFile().getDocumentId()));
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-//        ArrayNode root = mapper.createArrayNode();
-//
-//        
-//        for (String docId : docIds) {
-//            IDocument doc = filesManager.getDocument(docId);
-//            ObjectNode docNode = mapper.createObjectNode();
-//            root.add(docNode);
-//
-//            jsonHelper.createDocumentJson(doc, mapper, docNode);  
-//        }
-//        
-//        StringWriter sw = new StringWriter();
-//        try {
-//            mapper.writeValue(sw, root);
-//        } catch (IOException e) {
-//            logger.error("Could not write json.", e);
-//            return new ResponseEntity<String>(
-//                    "{\"error\": \"Could not write json result.\" }",
-//                    HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
+        if (!complete) {
+            Map<String, String> msgs = new HashMap<String, String>();
+            msgs.put("msg", "Upload in progress. Please check back later.");
+            msgs.put("msgCode", "010");
+            
+            return generateResponse(msgs, HttpStatus.ACCEPTED);
+        }
+        
+        Set<String> docIds = new HashSet<String>();
+        statusList.forEach(status -> docIds.add(status.getDocument().getDocumentId()));
 
-//        return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        ArrayNode root = mapper.createArrayNode();
+
+        
+        for (String docId : docIds) {
+            IDocument doc = filesManager.getDocument(docId);
+            ObjectNode docNode = mapper.createObjectNode();
+            root.add(docNode);
+
+            jsonHelper.createDocumentJson(doc, mapper, docNode);  
+        }
+        
+        StringWriter sw = new StringWriter();
+        try {
+            mapper.writeValue(sw, root);
+        } catch (IOException e) {
+            logger.error("Could not write json.", e);
+            return new ResponseEntity<String>(
+                    "{\"error\": \"Could not write json result.\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
     
     private ResponseEntity<String> generateResponse(Map<String, String> msgs, HttpStatus status) {

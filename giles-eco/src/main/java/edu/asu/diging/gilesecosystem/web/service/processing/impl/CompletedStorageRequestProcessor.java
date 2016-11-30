@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -17,10 +18,10 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedStorageRequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-public class CompletedStorageRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
+public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,6 +51,8 @@ public class CompletedStorageRequestProcessor implements RequestProcessor<ICompl
         file.setProcessingStatus(ProcessingStatus.STORED);
         file.setFilepath(request.getDownloadPath());
         
+        markRequestComplete(request);
+        
         try {
             filesDbClient.saveFile(file);
         } catch (UnstorableObjectException e) {
@@ -68,7 +71,7 @@ public class CompletedStorageRequestProcessor implements RequestProcessor<ICompl
 
     @Override
     public String getProcessedTopic() {
-        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_COMPLETE_REQUEST);
+        return propertiesManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_COMPLETE_REQUEST);
     }
 
     @Override

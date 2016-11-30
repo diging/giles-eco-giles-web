@@ -11,6 +11,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
@@ -22,7 +23,7 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedOCRProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedOCRRequest>, ICompletedOCRProcessor {
@@ -71,6 +72,8 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         documentPage.setOcrFileId(pageText.getId());
         
         sendRequest(pageText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+        
+        markRequestComplete(request);
     
         file.setProcessingStatus(ProcessingStatus.OCR_COMPLETE);
         
@@ -100,7 +103,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
 
     @Override
     public String getProcessedTopic() {
-        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_OCR_COMPLETE_REQUEST);
+        return propertiesManager.getProperty(Properties.KAFKA_TOPIC_OCR_COMPLETE_REQUEST);
     }
 
     @Override

@@ -3,7 +3,6 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
@@ -12,10 +11,13 @@ import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.core.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
@@ -29,6 +31,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     
     @Autowired
     private IFilesDatabaseClient filesDbClient;
+    
+    @Autowired
+    private IProcessingRequestsDatabaseClient pReqDbClient;
     
     @Autowired
     private IRequestProducer requestProducer;  
@@ -57,7 +62,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
             }
             try {
                 RequestStatus status = processCoordinator.processFile(file, null);
-                cleanup(file);
+                postProcessing(file);
                 return status;
             } catch (GilesProcessingException e) {
                 //FIXME: this should go in a monitoring app
@@ -67,6 +72,12 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         
         IDocument document = documentsDbClient.getDocumentById(file.getDocumentId());
         document.setRequest(request);
+        
+        IProcessingRequest procReq = new ProcessingRequest();
+        procReq.setDocumentId(document.getId());
+        procReq.setFileId(file.getId());
+        procReq.setSentRequest(request);
+        pReqDbClient.saveNewRequest(procReq);
         
         try {
             documentsDbClient.saveDocument(document);
@@ -102,5 +113,5 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     
     protected abstract ProcessingStatus getCompletedStatus();
     
-    protected abstract void cleanup(IFile file);
+    protected abstract void postProcessing(IFile file);
 }

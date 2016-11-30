@@ -11,12 +11,13 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo> {
@@ -63,7 +64,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
 
     @Override
     protected String getTopic() {
-        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_IMAGE_EXTRACTION_REQUEST);
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_IMAGE_EXTRACTION_REQUEST);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
     }
 
     @Override
-    protected void cleanup(IFile file) {
+    protected void postProcessing(IFile file) {
         // nothing to do here
     }
 }

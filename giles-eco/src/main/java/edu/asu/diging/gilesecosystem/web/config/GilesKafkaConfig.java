@@ -15,8 +15,9 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.kafka.KafkaConfig;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.kafka.KafkaProcessingListener;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Configuration
 @EnableKafka
@@ -64,7 +65,7 @@ public class GilesKafkaConfig implements KafkaConfig {
 
     @Override
     public String getHosts() {
-        return propertiesManager.getProperty(IPropertiesManager.KAFKA_HOSTS);
+        return propertiesManager.getProperty(Properties.KAFKA_HOSTS);
     }
 
 }

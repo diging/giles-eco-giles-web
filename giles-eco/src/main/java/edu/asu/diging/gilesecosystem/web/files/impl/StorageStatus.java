@@ -1,30 +1,32 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 
 public class StorageStatus {
 
+    private IDocument document;
     private IFile file;
     private GilesProcessingException exception;
     private RequestStatus status;
 
-    public StorageStatus(IFile file, GilesProcessingException exception,
+    public StorageStatus(IDocument document, IFile file, GilesProcessingException exception,
             RequestStatus status) {
         super();
+        this.document = document;
         this.file = file;
         this.exception = exception;
         this.status = status;
     }
 
-    public IFile getFile() {
-        return file;
+    public IDocument getDocument() {
+        return document;
     }
 
-    public void setFile(IFile file) {
-        this.file = file;
+    public void setDocument(IDocument doc) {
+        this.document = doc;
     }
 
     public GilesProcessingException getException() {
@@ -41,6 +43,14 @@ public class StorageStatus {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public IFile getFile() {
+        return file;
+    }
+
+    public void setFile(IFile file) {
+        this.file = file;
     }
 
 }

@@ -1,10 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.service.properties;
 
-import java.util.Map;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.GilesPropertiesStorageException;
-
-public interface IPropertiesManager {
+public interface Properties {
     
     public final static String GITHUB_SHOW_LOGIN = "github_show_login";
     public final static String GITHUB_CLIENT_ID = "github_client_id";
@@ -53,12 +50,5 @@ public interface IPropertiesManager {
     public final static String KAFKA_TOPIC_IMAGE_EXTRACTION_COMPLETE_REQUEST = "topic_image_extraction_request_complete";
     
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
-
-    public abstract void setProperty(String key, String value) throws GilesPropertiesStorageException;
-
-    public abstract String getProperty(String key);
-
-    public abstract void updateProperties(Map<String, String> props)
-            throws GilesPropertiesStorageException;
 
 }

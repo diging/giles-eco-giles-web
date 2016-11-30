@@ -21,11 +21,12 @@ import org.springframework.social.google.connect.GoogleConnectionFactory;
 import org.springframework.social.mitreidconnect.connect.MitreidConnectConnectionFactory;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GoogleChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidChecker;
 import edu.asu.diging.gilesecosystem.web.service.IIdentityProviderRegistry;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 
 @Configuration
@@ -51,8 +52,8 @@ public class SocialContext implements SocialConfigurer {
     @Override
     public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig,
             Environment env) {
-        String googleClientId = propertyManager.getProperty(IPropertiesManager.GOOGLE_CLIENT_ID);
-        String googleSecret = propertyManager.getProperty(IPropertiesManager.GOOGLE_SECRET);
+        String googleClientId = propertyManager.getProperty(Properties.GOOGLE_CLIENT_ID);
+        String googleSecret = propertyManager.getProperty(Properties.GOOGLE_SECRET);
         GoogleConnectionFactory factory = new GoogleConnectionFactory(
                 googleClientId, googleSecret);
         factory.setScope("email");
@@ -60,17 +61,17 @@ public class SocialContext implements SocialConfigurer {
         identityProviderRegistry.addProvider(factory.getProviderId());
         identityProviderRegistry.addProviderTokenChecker(factory.getProviderId(), GoogleChecker.ID);
         
-        String githubClientId = propertyManager.getProperty(IPropertiesManager.GITHUB_CLIENT_ID);
-        String githubSecret = propertyManager.getProperty(IPropertiesManager.GITHUB_SECRET);
+        String githubClientId = propertyManager.getProperty(Properties.GITHUB_CLIENT_ID);
+        String githubSecret = propertyManager.getProperty(Properties.GITHUB_SECRET);
         GitHubConnectionFactory githubFactory = new GitHubConnectionFactory(
                 githubClientId, githubSecret);
         cfConfig.addConnectionFactory(githubFactory);
         identityProviderRegistry.addProvider(githubFactory.getProviderId());
         identityProviderRegistry.addProviderTokenChecker(githubFactory.getProviderId(), GitHubChecker.ID);
         
-        String mitreidClientId = propertyManager.getProperty(IPropertiesManager.MITREID_CLIENT_ID);
-        String mitreidSecret = propertyManager.getProperty(IPropertiesManager.MITREID_SECRET);
-        String mitreidServer = propertyManager.getProperty(IPropertiesManager.MITREID_SERVER_URL);
+        String mitreidClientId = propertyManager.getProperty(Properties.MITREID_CLIENT_ID);
+        String mitreidSecret = propertyManager.getProperty(Properties.MITREID_SECRET);
+        String mitreidServer = propertyManager.getProperty(Properties.MITREID_SERVER_URL);
         MitreidConnectConnectionFactory mitreidFactory = new MitreidConnectConnectionFactory(mitreidClientId, mitreidSecret, mitreidServer);
         cfConfig.addConnectionFactory(mitreidFactory);
         identityProviderRegistry.addProvider(mitreidFactory.getProviderId());

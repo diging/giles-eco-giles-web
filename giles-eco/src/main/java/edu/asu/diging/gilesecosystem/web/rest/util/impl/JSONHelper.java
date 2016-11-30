@@ -36,12 +36,14 @@ public class JSONHelper implements IJSONHelper {
      */
     @Override
     public void createDocumentJson(IDocument doc, ObjectMapper mapper, ObjectNode docNode) {
+        
+        IFile uploadedFile = filesManager.getFile(doc.getUploadedFileId());
         docNode.put("documentId", doc.getDocumentId());
+        docNode.put("documentStatus", uploadedFile.getProcessingStatus().toString());
         docNode.put("uploadId", doc.getUploadId());
         docNode.put("uploadedDate", doc.getCreatedDate());
         docNode.put("access", (doc.getAccess() != null ? doc.getAccess()
                 .toString() : DocumentAccess.PRIVATE.toString()));
-        IFile uploadedFile = filesManager.getFile(doc.getUploadedFileId());
         
         if (uploadedFile != null) {
             ObjectNode uploadedFileNode = createFileJsonObject(mapper, uploadedFile);
@@ -65,6 +67,10 @@ public class JSONHelper implements IJSONHelper {
                 if (page.getTextFileId() != null) {
                     IFile textFile = filesManager.getFile(page.getTextFileId());
                     pageNode.set("text", createFileJsonObject(mapper, textFile));
+                }
+                if (page.getOcrFileId() != null) {
+                    IFile ocrFile = filesManager.getFile(page.getOcrFileId());
+                    pageNode.set("ocr", createFileJsonObject(mapper, ocrFile));
                 }
             }
         }

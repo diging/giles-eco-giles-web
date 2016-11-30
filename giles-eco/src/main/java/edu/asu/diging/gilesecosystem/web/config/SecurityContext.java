@@ -21,7 +21,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
 
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
 
@@ -61,7 +62,7 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
             }
         }).and().headers().frameOptions().sameOrigin();
         
-        String iframeing = propertiesManager.getProperty(IPropertiesManager.ALLOW_IFRAMING_FROM);
+        String iframeing = propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM);
         if (iframeing == null) {
             config.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.DENY));
         } else {

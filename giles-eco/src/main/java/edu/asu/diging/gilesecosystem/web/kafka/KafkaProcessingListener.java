@@ -21,15 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 
 @PropertySource("classpath:/config.properties")
 public class KafkaProcessingListener {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
-    @Autowired
-    private IPropertiesManager propertiesManager;
     
     @Autowired
     private ApplicationContext ctx;

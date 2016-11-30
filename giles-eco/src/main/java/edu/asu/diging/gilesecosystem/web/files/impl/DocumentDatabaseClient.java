@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +14,6 @@ import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
 @Transactional("txmanager_data")
 @Component
@@ -25,10 +23,6 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
     @PersistenceContext(unitName="DataPU")
     private EntityManager em;
     
-    @Autowired
-    private IPropertiesCopier copier;
-
-
     /*
      * (non-Javadoc)
      * 
@@ -44,8 +38,7 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
             return store(document);
         }
         
-        copier.copyObject(document, existing);
-        return document;
+        return update(document);
     }
 
     /*

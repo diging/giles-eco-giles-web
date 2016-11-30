@@ -25,6 +25,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
+import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.users.User;
@@ -79,8 +80,10 @@ public class UploadController {
 
         for (StorageStatus status : statuses) {
             ObjectNode fileNode = mapper.createObjectNode();
-            fileNode.put("name", status.getFile().getFilename());
-            fileNode.put("uploadId", status.getFile().getUploadId());
+            if (status.getFile() != null) {
+                fileNode.put("name", status.getFile().getFilename());
+                fileNode.put("uploadId", status.getFile().getUploadId());
+            }
             fileNode.put("status", statusHelper.getLabelText(status.getStatus(), locale));
             filesNode.add(fileNode);
         }
