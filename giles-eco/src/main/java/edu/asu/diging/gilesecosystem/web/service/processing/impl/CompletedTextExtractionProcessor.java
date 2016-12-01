@@ -3,11 +3,14 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
@@ -19,9 +22,10 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedTextExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
+@Transactional
 public class CompletedTextExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedTextExtractionRequest>, ICompletedTextExtractionProcessor {
     
     public final static String REQUEST_PREFIX = "TXTREQ";
@@ -50,6 +54,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         String completeTextDownload = request.getDownloadUrl();
         // text was extracted
         if (completeTextDownload != null && !completeTextDownload.isEmpty()) {
+            request.setStatus(RequestStatus.COMPLETE);
             IFile completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
             
             try {
@@ -62,6 +67,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             document.setExtractedTextFileId(completeText.getId());
             
             sendRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+        } else {
+            request.setStatus(RequestStatus.FAILED);
         }
         
         if (request.getPages() != null ) {
@@ -86,6 +93,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         }
         
         file.setProcessingStatus(ProcessingStatus.TEXT_EXTRACTION_COMPLETE);
+        markRequestComplete(request);
         
         try {
             filesDbClient.saveFile(file);
@@ -113,7 +121,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
 
     @Override
     public String getProcessedTopic() {
-        return propertiesManager.getProperty(IPropertiesManager.KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST);
+        return propertiesManager.getProperty(Properties.KAFKA_TOPIC_TEXT_EXTRACTION_COMPLETE_REQUEST);
     }
 
     @Override

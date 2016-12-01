@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
 @Transactional("txmanager_data")
 @Component
@@ -23,9 +21,6 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
 
     @PersistenceContext(unitName = "DataPU")
     private EntityManager em;
-
-    @Autowired
-    private IPropertiesCopier copier;
 
     /*
      * (non-Javadoc)
@@ -41,8 +36,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
             return store(file);
         }
         
-        copier.copyObject(file, existingFile);
-        return file;
+        return update(file);
     }
 
     @Override

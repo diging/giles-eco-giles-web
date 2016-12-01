@@ -10,21 +10,28 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.OCRRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
+
+    public final static String REQUEST_PREFIX = "OCRREQ";
 
     @Autowired
     private IRequestFactory<IOCRRequest, OCRRequest> requestFactory;
     
     @Autowired
     private IPropertiesManager propertyManager;
+    
+    @Autowired
+    private IFilesDatabaseClient filesDbClient;
     
     @PostConstruct
     public void init() {
@@ -45,7 +52,7 @@ public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
         
         IOCRRequest request;
         try {
-            request = requestFactory.createRequest(file.getUploadId());
+            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
@@ -53,17 +60,16 @@ public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
         request.setDocumentId(file.getDocumentId());
         request.setDownloadUrl(file.getDownloadUrl());
         request.setDownloadPath(file.getFilepath());
-        request.setRequestId(file.getRequestId());
         request.setStatus(RequestStatus.SUBMITTED);
         request.setFilename(file.getFilename());
-        request.setFileid(file.getId());
+        request.setFileId(file.getId());
         
         return request;
     }
 
     @Override
     protected String getTopic() {
-        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_OCR_REQUEST);
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_OCR_REQUEST);
     }
 
     @Override
@@ -72,7 +78,7 @@ public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
     }
 
     @Override
-    protected void cleanup(IFile file) {
+    protected void postProcessing(IFile file) {
         // nothing to do here
     }
 }

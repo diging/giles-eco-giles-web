@@ -9,17 +9,14 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.service.IPropertiesCopier;
 
 @Transactional("txmanager_data")
 @Service
@@ -31,9 +28,6 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     @PersistenceContext(unitName="DataPU")
     private EntityManager em;
     
-    @Autowired
-    private IPropertiesCopier copier;
-
     @Override
     public IUpload saveUpload(IUpload upload) throws UnstorableObjectException {
         IUpload existing = getById(upload.getId());
@@ -42,8 +36,7 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
             return store(upload);
         }
         
-        copier.copyObject(upload, existing);
-        return upload;
+        return update(upload);
     }
     
     /*

@@ -15,7 +15,7 @@
 
 	<mvc:annotation-driven />
 	<context:component-scan
-		base-package="edu.asu.diging.gilesecosystem.web, edu.asu.diging.gilesecosystem.requests" />
+		base-package="edu.asu.diging.gilesecosystem.web, edu.asu.diging.gilesecosystem.requests, edu.asu.diging.gilesecosystem.util" />
 
 	<import resource="spring-security.xml" />
 
@@ -88,6 +88,6 @@
 	</bean>
 	
 	<!-- Use @Transaction annotations for managing transactions -->
-	<tx:annotation-driven transaction-manager="txmanager_data" />
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="txmanager_data" />
 
 </beans>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -16,10 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
@@ -30,6 +33,7 @@ public class UploadService implements IUploadService {
     private final static long DEFAULT_EXPIRATION = 24 * 60 * 60 * 1000L;
 
     private Map<String, List<StorageStatus>> currentUploads;
+    private Map<String, String> documentMap;
     private Map<Long, List<String>> expirationList;
 
     @Autowired
@@ -43,10 +47,11 @@ public class UploadService implements IUploadService {
     @PostConstruct
     public void init() {
         currentUploads = Collections.synchronizedMap(new HashMap<>());
+        documentMap = Collections.synchronizedMap(new HashMap<>());
         expirationList = Collections.synchronizedSortedMap(new TreeMap<>());
 
         String expirationProp = propertiesManager
-                .getProperty(IPropertiesManager.EXPIRATION_TIME_UPLOADS_MS);
+                .getProperty(Properties.EXPIRATION_TIME_UPLOADS_MS);
         expirationMiliseconds = expirationProp != null && !expirationProp.trim().isEmpty() ? new Long(expirationProp) : new Long(DEFAULT_EXPIRATION);
     }
 
@@ -65,8 +70,13 @@ public class UploadService implements IUploadService {
         cleanUp();
 
         String uploadProgressId = generateId();
-        currentUploads.put(uploadProgressId,
-                uploadHelper.processUpload(access, type, files, fileBytes, user));
+        List<StorageStatus> statuses = uploadHelper.processUpload(access, type, files, fileBytes, user);
+        for (StorageStatus status : statuses) {
+            if (status.getDocument() != null) {
+                documentMap.put(status.getDocument().getId(), uploadProgressId);
+            }
+        }
+        currentUploads.put(uploadProgressId, statuses);
 
         Long time = new Date().getTime();
         // make sure only one thread creates array list and adds to it
@@ -97,8 +107,32 @@ public class UploadService implements IUploadService {
             }
 
             for (Long expTime : remove) {
-                expirationList.get(expTime).forEach(id -> currentUploads.remove(id));
+                expirationList.get(expTime).forEach(id -> cleanUpMaps(id));
                 expirationList.remove(expTime);
+            }
+        }
+    }
+    
+    private void cleanUpMaps(String id) {
+        currentUploads.remove(id);
+        Iterator<Map.Entry<String, String>> iterator = documentMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            if (entry.getValue().equals(id)) {
+                documentMap.remove(entry.getKey());
+            }
+        }
+    }
+    
+    @Override
+    public void updateStatus(String documentId, RequestStatus reqStatus) {
+        String progressId = documentMap.get(documentId);
+        List<StorageStatus> statuses = currentUploads.get(progressId);
+        if (statuses != null) {
+            for (StorageStatus status : statuses) {
+                if (status.getDocument() != null && status.getDocument().getDocumentId().equals(documentId)) {
+                    status.setStatus(reqStatus);
+                }
             }
         }
     }

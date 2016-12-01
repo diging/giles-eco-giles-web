@@ -11,18 +11,25 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo> {
+    
+    public final static String REQUEST_PREFIX = "IMEXREQ";
 
     @Autowired
     private IRequestFactory<IImageExtractionRequest, ImageExtractionRequest> requestFactory;
+    
+    @Autowired
+    private IFilesDatabaseClient filesDbClient;
     
     @Autowired
     private IPropertiesManager propertyManager;
@@ -46,7 +53,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
         
         IImageExtractionRequest request;
         try {
-            request = requestFactory.createRequest(file.getUploadId());
+            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
@@ -54,7 +61,6 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
           
         request.setDocumentId(file.getDocumentId());
         request.setDownloadUrl(file.getDownloadUrl());
-        request.setRequestId(file.getRequestId());
         request.setStatus(RequestStatus.SUBMITTED);
         request.setFilename(file.getFilename());
         
@@ -63,7 +69,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
 
     @Override
     protected String getTopic() {
-        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_IMAGE_EXTRACTION_REQUEST);
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_IMAGE_EXTRACTION_REQUEST);
     }
 
     @Override
@@ -72,7 +78,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
     }
 
     @Override
-    protected void cleanup(IFile file) {
+    protected void postProcessing(IFile file) {
         // nothing to do here
     }
 }

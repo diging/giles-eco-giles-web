@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
@@ -22,7 +23,6 @@ import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
@@ -39,13 +39,6 @@ public class SecurityAspect {
     @Autowired
     private IFilesManager filesManager;
     
-    @Autowired
-    private IPropertiesManager propertiesManager;
-    
-//    @Autowired
-//    private GitHubTemplateFactory templateFactory;
-    
-
     @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(noCheck)")
     public Object doNotCheckUserAccess(ProceedingJoinPoint joinPoint,
             NoAccessCheck noCheck) throws Throwable {

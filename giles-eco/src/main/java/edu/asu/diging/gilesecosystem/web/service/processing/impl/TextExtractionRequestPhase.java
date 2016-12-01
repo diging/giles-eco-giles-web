@@ -11,6 +11,7 @@ import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.ITextExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -18,10 +19,12 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo> {
+    
+    public final static String REQUEST_PREFIX = "TEEXREQ";
     
     @Autowired
     private IFilesDatabaseClient filesDbClient;
@@ -48,7 +51,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         
         ITextExtractionRequest request;
         try {
-            request = requestFactory.createRequest(file.getUploadId());
+            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
@@ -56,7 +59,6 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
           
         request.setDocumentId(file.getDocumentId());
         request.setDownloadUrl(file.getDownloadUrl());
-        request.setRequestId(file.getRequestId());
         request.setStatus(RequestStatus.SUBMITTED);
         request.setFilename(file.getFilename());
         
@@ -70,7 +72,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
 
     @Override
     protected String getTopic() {
-        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_TEXT_EXTRACTION_REQUEST);
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_TEXT_EXTRACTION_REQUEST);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
     }
 
     @Override
-    protected void cleanup(IFile file) {
+    protected void postProcessing(IFile file) {
         // nothing to do here
     }
 }

@@ -2,7 +2,6 @@ package edu.asu.diging.gilesecosystem.web.service.handlers;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -12,11 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 public abstract class AbstractFileHandler implements IFileTypeHandler {
     
@@ -63,9 +63,9 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     }
     
     public String getFileUrl(IFile file) {
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL).trim();
-        String pdfEndpoint = propertyManager.getProperty(IPropertiesManager.GILES_FILE_ENDPOINT).trim();
-        String contentSuffix = propertyManager.getProperty(IPropertiesManager.GILES_FILE_CONTENT_SUFFIX).trim();
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL).trim();
+        String pdfEndpoint = propertyManager.getProperty(Properties.GILES_FILE_ENDPOINT).trim();
+        String contentSuffix = propertyManager.getProperty(Properties.GILES_FILE_CONTENT_SUFFIX).trim();
         
         return gilesUrl + pdfEndpoint + file.getId() + contentSuffix;
     }

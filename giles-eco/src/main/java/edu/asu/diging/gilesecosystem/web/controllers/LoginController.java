@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.UploadPageBean;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
@@ -18,7 +19,7 @@ import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
@@ -65,9 +66,9 @@ public class LoginController {
             model.addAttribute("user", userManager.findUser(username));
         }
         
-        model.addAttribute("githubShowLogin", propertiesManager.getProperty(IPropertiesManager.GITHUB_SHOW_LOGIN).equals("true"));
-        model.addAttribute("googleShowLogin", propertiesManager.getProperty(IPropertiesManager.GOOGLE_SHOW_LOGIN).equals("true"));
-        model.addAttribute("mitreidShowLogin", propertiesManager.getProperty(IPropertiesManager.MITREID_SHOW_LOGIN).equals("true"));
+        model.addAttribute("githubShowLogin", propertiesManager.getProperty(Properties.GITHUB_SHOW_LOGIN).equals("true"));
+        model.addAttribute("googleShowLogin", propertiesManager.getProperty(Properties.GOOGLE_SHOW_LOGIN).equals("true"));
+        model.addAttribute("mitreidShowLogin", propertiesManager.getProperty(Properties.MITREID_SHOW_LOGIN).equals("true"));
         
         return "login";
     }

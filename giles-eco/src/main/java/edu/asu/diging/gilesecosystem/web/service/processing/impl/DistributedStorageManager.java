@@ -20,6 +20,7 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
@@ -36,7 +37,7 @@ import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageM
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Transactional
 @Service
@@ -44,7 +45,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     
     final Logger logger = LoggerFactory.getLogger(getClass());
     
-    public final static String REQUEST_PREFIX = "REQ";
+    public final static String REQUEST_PREFIX = "STREQ";
 
     @Autowired
     @Qualifier("tmpStorageManager") 
@@ -95,7 +96,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
      */
     @Override
     public String getFileUrl(IFile file) {
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL).trim();
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL).trim();
         String endpoint = TemporaryFilesController.GET_CONTENT_URL;
         
         return gilesUrl + endpoint.replace(TemporaryFilesController.FILE_ID_PLACEHOLDER, file.getId());
@@ -137,14 +138,14 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         
         IStorageRequest request = requestHelper.createStorageRequest(file,
                 storageManager.getFileFolderPath(username, upload.getId(), document.getId()), 
-                getFileUrl(file), fileTypes.get(file.getContentType()));
+                getFileUrl(file), fileTypes.get(file.getContentType()), file.getRequestId());
         
         return request;
     }
 
     @Override
     protected String getTopic() {
-        return propertyManager.getProperty(IPropertiesManager.KAFKA_TOPIC_STORAGE_REQUEST);
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST);
     }
 
     @Override
@@ -153,7 +154,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     }
 
     @Override
-    protected void cleanup(IFile file) {
+    protected void postProcessing(IFile file) {
         // nothing to do here
     }
     

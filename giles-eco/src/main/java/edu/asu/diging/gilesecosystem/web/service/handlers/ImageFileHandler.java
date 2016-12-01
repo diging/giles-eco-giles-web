@@ -18,7 +18,7 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHandler {
@@ -61,8 +61,8 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
     @Override
     public String getFileUrl(IFile file) {
         String relativePath = getRelativePathOfFile(file);
-        String gilesUrl = propertyManager.getProperty(IPropertiesManager.GILES_URL);
-        String gilesDigilibEndpoint = propertyManager.getProperty(IPropertiesManager.GILES_DIGILIB_ENDPOINT);
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL);
+        String gilesDigilibEndpoint = propertyManager.getProperty(Properties.GILES_DIGILIB_ENDPOINT);
         
         try {
             return gilesUrl + gilesDigilibEndpoint + "?fn=" + URLEncoder.encode(relativePath, "UTF-8");

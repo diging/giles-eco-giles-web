@@ -25,16 +25,16 @@ public class RequestHelper {
     }
 
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
-            FileType filetype) throws GilesProcessingException {
+            FileType filetype, String requestId) throws GilesProcessingException {
         IStorageRequest request = null;
         try {
-            request = requestFactory.createRequest(file.getUploadId());
+            request = requestFactory.createRequest(requestId, file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
         
-        request.setRequestId(file.getRequestId());
         request.setDocumentId(file.getDocumentId());
+        request.setFileId(file.getId());
         request.setDownloadPath(pathToFile);
         request.setDownloadUrl(downloadUrl);
         request.setFileType(filetype);

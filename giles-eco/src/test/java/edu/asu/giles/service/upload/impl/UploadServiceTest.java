@@ -1,21 +1,13 @@
 package edu.asu.giles.service.upload.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.http.concurrent.BasicFuture;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.DocumentType;
-import edu.asu.diging.gilesecosystem.web.service.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.impl.UploadService;
 
 public class UploadServiceTest {
@@ -29,7 +21,7 @@ public class UploadServiceTest {
         serviceToTest = new UploadService();
         MockitoAnnotations.initMocks(this);
         
-        Mockito.when(propManager.getProperty(IPropertiesManager.EXPIRATION_TIME_UPLOADS_MS)).thenReturn("1");
+        Mockito.when(propManager.getProperty(Properties.EXPIRATION_TIME_UPLOADS_MS)).thenReturn("1");
         serviceToTest.init();
         
     }

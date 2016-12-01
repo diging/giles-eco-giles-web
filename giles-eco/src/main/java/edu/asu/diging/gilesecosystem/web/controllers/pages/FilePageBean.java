@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
@@ -21,6 +22,11 @@ public class FilePageBean implements IFile {
     private String metadataLink;
     private String derivedFrom;
     private ProcessingStatus processingStatus;
+    
+    private RequestStatus textExtractionStatus;
+    private RequestStatus imageExtractionStatus;
+    private RequestStatus storedStatus;
+    private RequestStatus ocrStatus;
     
     public String getUploadId() {
         return uploadId;
@@ -124,5 +130,31 @@ public class FilePageBean implements IFile {
     public ProcessingStatus getProcessingStatus() {
         return processingStatus;
     }
-    
+    public RequestStatus getTextExtractionStatus() {
+        return textExtractionStatus;
+    }
+
+    public void setTextExtractionStatus(RequestStatus processedStatus) {
+        this.textExtractionStatus = processedStatus;
+    }
+
+    public RequestStatus getStoredStatus() {
+        return storedStatus;
+    }
+
+    public void setStoredStatus(RequestStatus storedStatus) {
+        this.storedStatus = storedStatus;
+    }
+    public RequestStatus getImageExtractionStatus() {
+        return imageExtractionStatus;
+    }
+    public void setImageExtractionStatus(RequestStatus imageExtractionStatus) {
+        this.imageExtractionStatus = imageExtractionStatus;
+    }
+    public RequestStatus getOcrStatus() {
+        return ocrStatus;
+    }
+    public void setOcrStatus(RequestStatus ocrStatus) {
+        this.ocrStatus = ocrStatus;
+    }
 }
