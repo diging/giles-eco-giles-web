@@ -45,7 +45,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     
     final Logger logger = LoggerFactory.getLogger(getClass());
     
-    public final static String REQUEST_PREFIX = "REQ";
+    public final static String REQUEST_PREFIX = "STREQ";
 
     @Autowired
     @Qualifier("tmpStorageManager") 
@@ -138,7 +138,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         
         IStorageRequest request = requestHelper.createStorageRequest(file,
                 storageManager.getFileFolderPath(username, upload.getId(), document.getId()), 
-                getFileUrl(file), fileTypes.get(file.getContentType()));
+                getFileUrl(file), fileTypes.get(file.getContentType()), file.getRequestId());
         
         return request;
     }

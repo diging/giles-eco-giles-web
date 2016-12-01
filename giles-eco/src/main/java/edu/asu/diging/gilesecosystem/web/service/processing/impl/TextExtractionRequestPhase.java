@@ -24,6 +24,8 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 @Service
 public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo> {
     
+    public final static String REQUEST_PREFIX = "TEEXREQ";
+    
     @Autowired
     private IFilesDatabaseClient filesDbClient;
     
@@ -49,7 +51,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         
         ITextExtractionRequest request;
         try {
-            request = requestFactory.createRequest(file.getUploadId());
+            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
@@ -57,7 +59,6 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
           
         request.setDocumentId(file.getDocumentId());
         request.setDownloadUrl(file.getDownloadUrl());
-        request.setRequestId(file.getRequestId());
         request.setStatus(RequestStatus.SUBMITTED);
         request.setFilename(file.getFilename());
         

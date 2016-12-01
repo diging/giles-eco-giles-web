@@ -74,6 +74,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         document.setRequest(request);
         
         IProcessingRequest procReq = new ProcessingRequest();
+        procReq.setRequestId(request.getRequestId());
         procReq.setDocumentId(document.getId());
         procReq.setFileId(file.getId());
         procReq.setSentRequest(request);

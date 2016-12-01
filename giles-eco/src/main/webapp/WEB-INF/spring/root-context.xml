@@ -88,6 +88,6 @@
 	</bean>
 	
 	<!-- Use @Transaction annotations for managing transactions -->
-	<tx:annotation-driven transaction-manager="txmanager_data" />
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="txmanager_data" />
 
 </beans>

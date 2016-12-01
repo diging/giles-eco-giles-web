@@ -25,6 +25,8 @@ import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 
 public abstract class ACompletedExtractionProcessor extends ACompletedRequestProcessor {
 
+    public final static String REQUEST_PREFIX = "STDERREQ";
+
     @Autowired
     protected IPropertiesManager propertyManager;
    
@@ -47,7 +49,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     protected void sendRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
         try {
-            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type);
+            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId));
         } catch (GilesProcessingException e) {
             // should not happen
             // FIXME: send to monitor app
@@ -59,6 +61,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         procReq.setDocumentId(file.getDocumentId());
         procReq.setFileId(file.getId());
         procReq.setSentRequest(storageRequest);
+        procReq.setRequestId(storageRequest.getRequestId());
         pReqDbClient.saveNewRequest(procReq);
         
         try {

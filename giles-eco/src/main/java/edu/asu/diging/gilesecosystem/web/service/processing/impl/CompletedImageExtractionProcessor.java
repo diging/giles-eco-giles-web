@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
@@ -25,6 +27,7 @@ import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
+@Transactional
 public class CompletedImageExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedImageExtractionRequest>, ICompletedImageExtractionProcessor {
 
     public final static String REQUEST_PREFIX = "IMGREQ";
@@ -54,6 +57,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         document.getPages().forEach(page -> pages.put(page.getPageNr(), page));
         
         if (request.getPages() != null ) {
+            request.setStatus(RequestStatus.COMPLETE);
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
                
@@ -74,6 +78,8 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                 
                 sendRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
             }
+        } else {
+            request.setStatus(RequestStatus.FAILED);
         }
         
         markRequestComplete(request);

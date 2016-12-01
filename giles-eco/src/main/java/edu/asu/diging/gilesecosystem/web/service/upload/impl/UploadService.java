@@ -128,9 +128,11 @@ public class UploadService implements IUploadService {
     public void updateStatus(String documentId, RequestStatus reqStatus) {
         String progressId = documentMap.get(documentId);
         List<StorageStatus> statuses = currentUploads.get(progressId);
-        for (StorageStatus status : statuses) {
-            if (status.getDocument() != null && status.getDocument().getDocumentId().equals(documentId)) {
-                status.setStatus(reqStatus);
+        if (statuses != null) {
+            for (StorageStatus status : statuses) {
+                if (status.getDocument() != null && status.getDocument().getDocumentId().equals(documentId)) {
+                    status.setStatus(reqStatus);
+                }
             }
         }
     }

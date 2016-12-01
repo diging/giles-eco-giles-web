@@ -4,15 +4,15 @@
 
 
 <tilesx:useAttribute name="fileBean" id="fileBean"/>
-<c:if test="${fileBean.storedStatus == COMPLETE}">
+<c:if test="${fileBean.storedStatus == 'COMPLETE'}">
 <i class="fa fa-hdd-o" aria-hidden="true" title="File has been stored."></i>
 </c:if>
-<c:if test="${fileBean.textExtractionStatus == COMPLETE}">
+<c:if test="${fileBean.textExtractionStatus == 'COMPLETE'}">
 <i class="fa fa-file-text-o" aria-hidden="true" title="Text has been extracted."></i>
 </c:if>
-<c:if test="${fileBean.imageExtractionStatus == COMPLETE}">
+<c:if test="${fileBean.imageExtractionStatus == 'COMPLETE'}">
 <i class="fa fa-file-image-o" aria-hidden="true" title="Images have been extracted."></i>
 </c:if>
-<c:if test="${fileBean.ocrStatus == COMPLETE}">
+<c:if test="${fileBean.ocrStatus == 'COMPLETE'}">
 <i class="fa fa-file-text" aria-hidden="true" title="OCR has finished."></i>
 </c:if>

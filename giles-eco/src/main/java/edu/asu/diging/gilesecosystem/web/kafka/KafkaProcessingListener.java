@@ -16,6 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,6 +45,7 @@ public class KafkaProcessingListener {
         }
     }
    
+    @Transactional
     @KafkaListener(id="giles.storage.complete", topics = {"${topic_storage_request_complete}", "${topic_image_extraction_request_complete}", "${topic_orc_request_complete}", "${topic_text_extraction_request_complete}"})
     public void receiveMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         
@@ -60,7 +62,7 @@ public class KafkaProcessingListener {
             request = mapper.readValue(message, processor.getRequestClass());
         } catch (IOException e) {
             logger.error("Could not unmarshall request.", e);
-            // FIXME: handel this case
+            // FIXME: handle this case
             return;
         }
         

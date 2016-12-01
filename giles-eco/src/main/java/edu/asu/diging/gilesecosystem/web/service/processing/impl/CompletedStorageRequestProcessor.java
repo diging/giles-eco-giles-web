@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
@@ -21,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
+@Transactional
 public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -44,10 +47,15 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
      */
     @Override
     public void processRequest(ICompletedStorageRequest request) {
-        IFile file = filesDbClient.getFileByRequestId(request.getRequestId());
+        IFile file = filesDbClient.getFileById(request.getFileId());
         
-        file.setStorageId(request.getFileId());
+        file.setStorageId(request.getStoredFileId());
         file.setDownloadUrl(request.getDownloadUrl());
+        if (request.getDownloadUrl() != null && !request.getDownloadUrl().isEmpty()) {
+            request.setStatus(RequestStatus.COMPLETE);
+        } else {
+            request.setStatus(RequestStatus.FAILED);
+        }
         file.setProcessingStatus(ProcessingStatus.STORED);
         file.setFilepath(request.getDownloadPath());
         
