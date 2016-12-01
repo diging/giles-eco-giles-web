@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.OCRRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
@@ -29,6 +29,7 @@ import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
@@ -76,16 +77,36 @@ public class ViewDocumentController {
             }
         });
         
+        if (procRequests.stream().allMatch(preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
+            docBean.setStatusLabel(statusHelper.getLabelText(RequestStatus.COMPLETE, locale));
+        } else if (procRequests.stream().anyMatch(preq -> preq.getRequestStatus() == RequestStatus.SUBMITTED || preq.getRequestStatus() == RequestStatus.NEW)) {
+            docBean.setStatusLabel(statusHelper.getLabelText(RequestStatus.SUBMITTED, locale));
+        }
+        
+        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest).count() > 0 
+                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest).allMatch( 
+                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
+            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.TEXT_EXTRACTION_COMPLETE, locale));
+        }
+        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest ).count() > 0  
+                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest ).allMatch(
+               preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
+            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.IMAGE_EXTRACTION_COMPLETE, locale));
+        }
+        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof OCRRequest).count() > 0 
+                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof OCRRequest).allMatch( 
+                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
+            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.OCR_COMPLETE, locale));
+        }
+        
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());
         docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
         docBean.setPages(new ArrayList<>());
         docBean.setRequest(doc.getRequest());
-        docBean.setStatusLabel(statusHelper.getLabelText(doc.getRequest().getStatus(), locale));
         
         IFile origFile = fileManager.getFile(doc.getUploadedFileId());  
         if (origFile != null) {
-            docBean.setProcessingLabel(statusHelper.getProcessText(origFile.getProcessingStatus(), locale));
             
             FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
             bean.setMetadataLink(metadataService.getFileLink(origFile));
