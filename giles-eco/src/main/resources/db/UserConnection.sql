@@ -1,4 +1,8 @@
-create table UserConnection (userId varchar(255) not null,
+CREATE DATABASE giles;
+
+USE giles;
+
+CREATE TABLE UserConnection (userId varchar(255) not null,
     providerId varchar(255) not null,
     providerUserId varchar(255),
     rank int not null,
@@ -12,3 +16,6 @@ create table UserConnection (userId varchar(255) not null,
     primary key (userId, providerId, providerUserId));
  
 create unique index UserConnectionRank on UserConnection(userId, providerId, rank);
+
+CREATE USER 'giles'@'localhost' IDENTIFIED BY 'GilesPassword';
+GRANT ALL ON giles.* TO 'giles'@'localhost';
