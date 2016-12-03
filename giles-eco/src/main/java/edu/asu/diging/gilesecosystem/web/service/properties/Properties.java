@@ -25,9 +25,6 @@ public interface Properties {
     public final static String PDF_TO_IMAGE_FORMAT = "pdf_to_image_format";
     public final static String JARS_URL = "jars_url";
     public final static String JARS_FILE_URL = "jars_file_url";
-    public final static String TESSERACT_BIN_FOLDER = "tesseract_bin_folder";
-    public final static String TESSERACT_DATA_FOLDER = "tesseract_data_folder";
-    public final static String TESSERACT_CREATE_HOCR = "tesseract_create_hocr";
     
     public final static String DEFAULT_PAGE_SIZE = "default_page_size";
     public final static String OCR_IMAGES_FROM_PDFS = "ocr_images_from_pdfs";

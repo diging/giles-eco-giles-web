@@ -48,27 +48,6 @@ public class EditPropertiesController {
         page.setJarsUrl(propertyManager.getProperty(Properties.JARS_URL));
         page.setMetadataServiceDocUrl(propertyManager.getProperty(Properties.METADATA_SERVICE_DOC_ENDPOINT));
         
-        String ocrImagesFromPdf = propertyManager.getProperty(Properties.OCR_IMAGES_FROM_PDFS);
-        if (ocrImagesFromPdf != null) {
-            page.setOcrImagesFromPdfs(ocrImagesFromPdf.equals("true"));
-        } else {
-            page.setOcrImagesFromPdfs(false);
-        }
-        String extractText = propertyManager.getProperty(Properties.PDF_EXTRACT_TEXT);
-        if (extractText != null) {
-            page.setPdfExtractText(extractText.equals("true"));
-        } else {
-            page.setPdfExtractText(false);
-        }
-        
-        page.setPdfToImageDpi(propertyManager.getProperty(Properties.PDF_TO_IMAGE_DPI));
-        page.setPdfToImageType(propertyManager.getProperty(Properties.PDF_TO_IMAGE_TYPE));
-        page.setTesseractBinFolder(propertyManager.getProperty(Properties.TESSERACT_BIN_FOLDER));
-        page.setTesseractDataFolder(propertyManager.getProperty(Properties.TESSERACT_DATA_FOLDER));
-        page.setTesseractCreateHOCR(propertyManager.getProperty(Properties.TESSERACT_CREATE_HOCR).equalsIgnoreCase("true"));
-        
-        page.setPdfToImageFormat(propertyManager.getProperty(Properties.PDF_TO_IMAGE_FORMAT));
-        
         page.setIframingAllowedHosts(propertyManager.getProperty(Properties.ALLOW_IFRAMING_FROM));
         
         page.setShowGithubLogin(propertyManager.getProperty(Properties.GITHUB_SHOW_LOGIN).equalsIgnoreCase("true"));
@@ -99,17 +78,9 @@ public class EditPropertiesController {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         propertiesMap.put(Properties.DIGILIB_SCALER_URL, systemConfigPage.getDigilibScalerUrl());
         propertiesMap.put(Properties.GILES_URL, systemConfigPage.getGilesUrl());
-        propertiesMap.put(Properties.PDF_TO_IMAGE_DPI, systemConfigPage.getPdfToImageDpi());
-        propertiesMap.put(Properties.PDF_TO_IMAGE_TYPE, systemConfigPage.getPdfToImageType());
-        propertiesMap.put(Properties.PDF_EXTRACT_TEXT, new Boolean(systemConfigPage.isPdfExtractText()).toString()); 
-        propertiesMap.put(Properties.TESSERACT_BIN_FOLDER, systemConfigPage.getTesseractBinFolder());
-        propertiesMap.put(Properties.TESSERACT_DATA_FOLDER, systemConfigPage.getTesseractDataFolder());
-        propertiesMap.put(Properties.TESSERACT_CREATE_HOCR, new Boolean(systemConfigPage.isTesseractCreateHOCR()).toString());
-        propertiesMap.put(Properties.OCR_IMAGES_FROM_PDFS, new Boolean(systemConfigPage.isOcrImagesFromPdfs()).toString());
         propertiesMap.put(Properties.JARS_URL, systemConfigPage.getJarsUrl());
         propertiesMap.put(Properties.JARS_FILE_URL, systemConfigPage.getJarsFileUrl());
         propertiesMap.put(Properties.METADATA_SERVICE_DOC_ENDPOINT, systemConfigPage.getMetadataServiceDocUrl());
-        propertiesMap.put(Properties.PDF_TO_IMAGE_FORMAT, systemConfigPage.getPdfToImageFormat());
         propertiesMap.put(Properties.ALLOW_IFRAMING_FROM, systemConfigPage.getIframingAllowedHosts());
         propertiesMap.put(Properties.GITHUB_SHOW_LOGIN, new Boolean(systemConfigPage.isShowGithubLogin()).toString());
         propertiesMap.put(Properties.GOOGLE_SHOW_LOGIN, new Boolean(systemConfigPage.isShowGoogleLogin()).toString());
