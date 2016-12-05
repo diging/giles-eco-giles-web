@@ -70,6 +70,12 @@
 	<definition name="admin/system/config" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/system_config.jsp" />
 	</definition>
+	<definition name="admin/system/auth" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secret.jsp" />
+	</definition>
+	<definition name="admin/system/auth/done" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secrets_done.jsp" />
+	</definition>
 	
 	<!--  apps -->
 	<definition name="admin/apps" extends="base.definition">
