@@ -39,8 +39,10 @@ public class ReloadService implements IReloadService {
      */
     @Override
     public void reloadApplicationContext() {
+        logger.info("Starting context refresh.");
         refreshComplete.set(false);
         kafkaRegistry.destroy();
+        logger.info("Kafka listeners destroyed.");
         ((ConfigurableApplicationContext)applicationContext).refresh();
     }
     
