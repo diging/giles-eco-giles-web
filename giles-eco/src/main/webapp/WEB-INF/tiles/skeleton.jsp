@@ -100,6 +100,7 @@
           		<ul class="dropdown-menu">
                 <li><a href="<c:url value="/admin/system/config" />" >Configuration</a></li>
                 <li><a href="<c:url value="/admin/system/auth" />">Authentication</a></li>
+                <li><a href="<c:url value="/admin/system/social" />">Social SignIn</a></li>
               </ul>
           	</li>
           	

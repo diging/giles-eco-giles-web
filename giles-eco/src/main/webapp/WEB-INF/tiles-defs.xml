@@ -76,6 +76,9 @@
 	<definition name="admin/system/auth/done" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secrets_done.jsp" />
 	</definition>
+	<definition name="admin/system/social" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/update_social_signin.jsp" />
+	</definition>
 	
 	<!--  apps -->
 	<definition name="admin/apps" extends="base.definition">
