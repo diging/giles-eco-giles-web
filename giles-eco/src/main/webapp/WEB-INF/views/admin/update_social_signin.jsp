@@ -140,7 +140,7 @@ $(function() {
 function submitForm(form) {
     var postData = $(form).serializeArray();
     var formURL = $(form).attr("action");
-    $("#progressDlg").modal('show');
+    //$("#progressDlg").modal('show');
     $.ajax(
     {
         url : formURL,
@@ -152,7 +152,7 @@ function submitForm(form) {
         },
         error: function(jqXHR, textStatus, errorThrown) 
         {
-            checkStatus();   
+            setTimeout(checkStatus(), 3000); 
         }
     });
 }
@@ -163,7 +163,7 @@ function checkStatus() {
         window.location.href = "${pageContext.request.contextPath}/admin/system/social";
       })
       .fail(function() {
-     	 checkStatus();
+     	 setTimeout(checkStatus(), 3000);
       });
 }
 </script>

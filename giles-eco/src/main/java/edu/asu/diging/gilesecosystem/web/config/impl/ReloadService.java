@@ -1,54 +1,42 @@
 package edu.asu.diging.gilesecosystem.web.config.impl;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.web.config.IAdjustableConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
+import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGoogleConnectionFactory;
+import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
 
 @Service
 public class ReloadService implements IReloadService {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private Map<String, IAdjustableConnectionFactory> connectionFactories;
     
-    @Autowired
-    private KafkaListenerEndpointRegistry kafkaRegistry;
-    
-    private AtomicBoolean refreshComplete;
-
     @PostConstruct
     public void init() {
-        refreshComplete = new AtomicBoolean(true);
+        connectionFactories = new HashMap<String, IAdjustableConnectionFactory>();
     }
     
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.config.impl.IConnectionFactoryService#loadConnectionFactories()
-     */
     @Override
-    public void reloadApplicationContext() {
-        logger.info("Starting context refresh.");
-        refreshComplete.set(false);
-        kafkaRegistry.destroy();
-        logger.info("Kafka listeners destroyed.");
-        ((ConfigurableApplicationContext)applicationContext).refresh();
+    public void addFactory(String factoryName, IAdjustableConnectionFactory factory) {
+        connectionFactories.put(factoryName, factory);
     }
     
-    @EventListener
-    public void handleContextRefresh(ContextRefreshedEvent event) {
-        refreshComplete.set(true);
-        logger.info("Context has been refreshed.");
+    @Override
+    public void updateFactory(String factoryName, String clientId, String secret) throws FactoryDoesNotExistException {
+        IAdjustableConnectionFactory factory = connectionFactories.get(factoryName);
+        if (factory == null) {
+            throw new FactoryDoesNotExistException("Factory " + factoryName + " does not exist.");
+        }
+        factory.update(clientId, secret);
     }
 }

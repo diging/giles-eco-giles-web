@@ -16,6 +16,7 @@ import edu.asu.diging.gilesecosystem.util.exceptions.PropertiesStorageException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.SignInProviderConfig;
+import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Controller
@@ -74,7 +75,11 @@ public class SocialSigninUpdateController {
             logger.error("Could not store properties.", e);
         }
         
-        connFactoryService.reloadApplicationContext();
+        try {
+            connFactoryService.updateFactory(IReloadService.GITHUB, config.getClientId(), config.getSecret());
+        } catch (FactoryDoesNotExistException e) {
+            logger.error("Could not update factory.", e);
+        }
         
         return "redirect:/admin/system/social";
     }
@@ -91,7 +96,11 @@ public class SocialSigninUpdateController {
             logger.error("Could not store properties.", e);
         }
         
-        connFactoryService.reloadApplicationContext();
+        try {
+            connFactoryService.updateFactory(IReloadService.GOOGLE, config.getClientId(), config.getSecret());
+        } catch (FactoryDoesNotExistException e) {
+            logger.error("Could not update factory.", e);
+        }
         
         return "redirect:/admin/system/social";
     }
@@ -108,7 +117,11 @@ public class SocialSigninUpdateController {
             logger.error("Could not store properties.", e);
         }
         
-        connFactoryService.reloadApplicationContext();
+        try {
+            connFactoryService.updateFactory(IReloadService.MITREID, config.getClientId(), config.getSecret());
+        } catch (FactoryDoesNotExistException e) {
+            logger.error("Could not update factory.", e);
+        }
         
         return "redirect:/admin/system/social";
     }
