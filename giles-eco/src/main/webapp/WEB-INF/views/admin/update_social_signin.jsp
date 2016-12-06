@@ -22,13 +22,13 @@ Below you can update the configuration of the social signin providers you are us
         	action="${pageContext.request.contextPath}/admin/system/social/github"
 			method="POST">
 			<div class="form-group">
-				<label for="gilesUrl">GitHub Client ID</label>
+				<label for="githubSecret">GitHub Client ID</label>
 				<form:input type="text" class="form-control" id="clientId"
 					placeholder="GitHub Client ID" path="clientId" value=""></form:input>
 				<small><form:errors class="error" path="clientId"></form:errors></small>
 			</div>
 			<div class="form-group">
-				<label for="gilesUrl">GitHub Secret</label>
+				<label for="githubSecret">GitHub Secret</label>
 				<form:input type="text" class="form-control" id="secret"
 					placeholder="GitHub Secret" path="secret" value=""></form:input>
 				<small><form:errors class="error" path="secret"></form:errors></small>
@@ -49,7 +49,24 @@ Below you can update the configuration of the social signin providers you are us
     </div>
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
-        
+        <form:form modelAttribute="googleConfig" id="googleUpdateForm"
+        	action="${pageContext.request.contextPath}/admin/system/social/google"
+			method="POST">
+			<div class="form-group">
+				<label for="googleClientid">Google Client ID</label>
+				<form:input type="text" class="form-control" id="clientId"
+					placeholder="Google Client ID" path="clientId" value=""></form:input>
+				<small><form:errors class="error" path="clientId"></form:errors></small>
+			</div>
+			<div class="form-group">
+				<label for="googleSecret">Google Secret</label>
+				<form:input type="text" class="form-control" id="secret"
+					placeholder="Google Secret" path="secret" value=""></form:input>
+				<small><form:errors class="error" path="secret"></form:errors></small>
+			</div>
+			
+			<button id="googleFormSubmit" class="btn btn-primary btn-md">Save</button>
+		</form:form>
       </div>
     </div>
   </div>
@@ -63,7 +80,24 @@ Below you can update the configuration of the social signin providers you are us
     </div>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
-        
+        <form:form modelAttribute="mitreidConfig" id="mitreidUpdateForm"
+        	action="${pageContext.request.contextPath}/admin/system/social/mitreid"
+			method="POST">
+			<div class="form-group">
+				<label for="clientId">MITREid Client ID</label>
+				<form:input type="text" class="form-control" id="clientId"
+					placeholder="MITREid Client ID" path="clientId" value=""></form:input>
+				<small><form:errors class="error" path="clientId"></form:errors></small>
+			</div>
+			<div class="form-group">
+				<label for="secret">MITREid Secret</label>
+				<form:input type="text" class="form-control" id="secret"
+					placeholder="MITREid Secret" path="secret" value=""></form:input>
+				<small><form:errors class="error" path="secret"></form:errors></small>
+			</div>
+			
+			<button id="mitreidFormSubmit" class="btn btn-primary btn-md">Save</button>
+		</form:form>
       </div>
     </div>
   </div>
@@ -90,31 +124,43 @@ Below you can update the configuration of the social signin providers you are us
 //# sourceURL=ajax.js
 $(function() {
 	$("#githubUpdateForm").submit(function(e) {
-	    var postData = $(this).serializeArray();
-	    var formURL = $(this).attr("action");
-	    $("#progressDlg").modal('show');
-	    $.ajax(
-	    {
-	        url : formURL,
-	        type: "POST",
-	        data : postData,
-	        success:function(data, textStatus, jqXHR) 
-	        {
-	            window.location.href = "${pageContext.request.contextPath}";
-	        },
-	        error: function(jqXHR, textStatus, errorThrown) 
-	        {
-	            checkStatus();   
-	        }
-	    });
+	    submitForm(this);
+	    e.preventDefault(); //STOP default action
+	});
+	$("#googleUpdateForm").submit(function(e) {
+	    submitForm(this);
+	    e.preventDefault(); //STOP default action
+	});
+	$("#mitreidUpdateForm").submit(function(e) {
+	    submitForm(this);
 	    e.preventDefault(); //STOP default action
 	});
 });
 
+function submitForm(form) {
+    var postData = $(form).serializeArray();
+    var formURL = $(form).attr("action");
+    $("#progressDlg").modal('show');
+    $.ajax(
+    {
+        url : formURL,
+        type: "POST",
+        data : postData,
+        success:function(data, textStatus, jqXHR) 
+        {
+            window.location.href = "${pageContext.request.contextPath}/admin/system/social";
+        },
+        error: function(jqXHR, textStatus, errorThrown) 
+        {
+            checkStatus();   
+        }
+    });
+}
+
 function checkStatus() {
     $.ajax("${pageContext.request.contextPath}")
       .done(function() {
-        window.location.href = "${pageContext.request.contextPath}";
+        window.location.href = "${pageContext.request.contextPath}/admin/system/social";
       })
       .fail(function() {
      	 checkStatus();

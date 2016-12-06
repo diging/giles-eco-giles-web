@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
@@ -22,6 +23,9 @@ public class ReloadService implements IReloadService {
 
     @Autowired
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    private KafkaListenerEndpointRegistry kafkaRegistry;
     
     private AtomicBoolean refreshComplete;
 
@@ -36,6 +40,7 @@ public class ReloadService implements IReloadService {
     @Override
     public void reloadApplicationContext() {
         refreshComplete.set(false);
+        kafkaRegistry.destroy();
         ((ConfigurableApplicationContext)applicationContext).refresh();
     }
     
