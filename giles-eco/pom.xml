@@ -61,7 +61,7 @@
 		<deploy.path.prod>giles</deploy.path.prod>
 		<pullrequest></pullrequest>
 		<buildNumber></buildNumber>
-		<log.level>debug</log.level>
+		<log.level>info</log.level>
 		<iframing.hostname></iframing.hostname>
 
 		<!-- Kafka -->
