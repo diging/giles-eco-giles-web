@@ -14,6 +14,7 @@
 		<spring-social-github.version>1.0.0.BUILD-SNAPSHOT</spring-social-github.version>
 		<org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
 		<org.slf4j-version>1.7.5</org.slf4j-version>
+		<com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
 
 		<!-- application properties -->
 		<giles.base.url>http://localhost:8080/giles</giles.base.url>
@@ -31,7 +32,7 @@
 		<mitreid.show.login>true</mitreid.show.login>
 		<jwt.signing.secret></jwt.signing.secret>
 		<jwt.signing.secret.apps></jwt.signing.secret.apps>
-		<db_files></db_files>
+		<geco.giles.db_files></geco.giles.db_files>
 		<db.driver>com.mysql.jdbc.Driver</db.driver>
 		<db.database.url></db.database.url>
 		<db.user></db.user>
@@ -60,7 +61,7 @@
 		<deploy.path.prod>giles</deploy.path.prod>
 		<pullrequest></pullrequest>
 		<buildNumber></buildNumber>
-		<log.level>debug</log.level>
+		<log.level>info</log.level>
 		<iframing.hostname></iframing.hostname>
 
 		<!-- Kafka -->
@@ -68,6 +69,19 @@
 	</properties>
 
 	<dependencies>
+
+		<!-- Giles Ecosystem -->
+		<dependency>
+			<groupId>edu.asu.diging.giles-eco</groupId>
+			<artifactId>requests</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.asu.diging.giles-eco</groupId>
+			<artifactId>util</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -98,11 +112,21 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
-		<!-- DB4O -->
+		<!-- ObjectDB/JPA -->
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>db4o-full-java5</artifactId>
-			<version>8.0</version>
+			<groupId>com.objectdb</groupId>
+			<artifactId>objectdb</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>javax.persistence</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -322,21 +346,6 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.8.0</version>
-		</dependency>
 
 		<!-- Apache Commons FileUpload -->
 		<dependency>
@@ -404,7 +413,7 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
-			<version>1.0.1.RELEASE</version>
+			<version>1.1.1.RELEASE</version>
 		</dependency>
 
 	</dependencies>
@@ -417,6 +426,11 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>objectdb</id>
+			<name>ObjectDB Repository</name>
+			<url>http://m2.objectdb.com</url>
 		</repository>
 	</repositories>
 

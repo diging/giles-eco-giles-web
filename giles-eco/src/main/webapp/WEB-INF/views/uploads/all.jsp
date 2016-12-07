@@ -12,6 +12,7 @@ You have ${totalUploads} uploads.
 		<th width="20%">Uploaded on &nbsp;&nbsp;<a href="<c:url value="/uploads?page=${page}&sortDir=${oppSortDir}" />"><i class="fa fa-sort" aria-hidden="true"></i></a></th>
 		<th width="15%">Upload Id</th>
 		<th># of Documents</th>
+		<th>Status</th>
 		<th>Uploaded Files</th>
 	</tr>
 	</thead>
@@ -22,6 +23,9 @@ You have ${totalUploads} uploads.
 		<td><span class="date">${upload.createdDate}</span></td>
 		<td><a href="<c:url value="/uploads/${upload.id}" />">${upload.id}</a></td>
 		<td>${upload.nrOfDocuments} uploaded document<c:if test="${upload.nrOfDocuments>1}">s</c:if></td>
+		<td>
+			
+		</td>
 		<td>
 		<c:forEach items="${upload.uploadedFiles}" var="file" varStatus="loop">
 			${file.filename}<c:if test="${!loop.last}">,</c:if>

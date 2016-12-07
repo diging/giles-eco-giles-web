@@ -5,23 +5,23 @@
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	
-	<bean id="userDatabaseManager" class="edu.asu.giles.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
+	<bean id="userDatabaseManager" class="edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
 		<property name="databasePath" value="${db_files}/users.db" />
 	</bean>
 	
-	<bean id="filesDatabaseManager" class="edu.asu.giles.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
+	<bean id="filesDatabaseManager" class="edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
 		<property name="databasePath" value="${db_files}/files.db" />
 	</bean>
 	
-	<bean id="uploadDatabaseManager" class="edu.asu.giles.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
+	<bean id="uploadDatabaseManager" class="edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
 		<property name="databasePath" value="${db_files}/uploads.db" />
 	</bean>
 	
-	<bean id="documentDatabaseManager" class="edu.asu.giles.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
+	<bean id="documentDatabaseManager" class="edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
 		<property name="databasePath" value="${db_files}/documents.db" />
 	</bean>
 	
-	<bean id="appDatabaseManager" class="edu.asu.giles.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
+	<bean id="appDatabaseManager" class="edu.asu.diging.gilesecosystem.web.db4o.impl.DatabaseManager" init-method="init" destroy-method="close">
 		<property name="databasePath" value="${db_files}/apps.db" />
 	</bean>
 	

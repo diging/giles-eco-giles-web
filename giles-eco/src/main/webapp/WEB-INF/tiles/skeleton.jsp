@@ -95,9 +95,15 @@
           	<li role="presentation">
           		<a href="<c:url value="/users" />" >Users</a>
           	</li>
-          	<li role="presentation">
-          		<a href="<c:url value="/admin/system/config" />" >System Config</a>
+          	<li role="dropdown">
+          	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">System<span class="caret"></span></a>
+          		<ul class="dropdown-menu">
+                <li><a href="<c:url value="/admin/system/config" />" >Configuration</a></li>
+                <li><a href="<c:url value="/admin/system/auth" />">Authentication</a></li>
+                <li><a href="<c:url value="/admin/system/social" />">Social SignIn</a></li>
+              </ul>
           	</li>
+          	
           	<li role="presentation">
           		<a href="<c:url value="/admin/apps" />" >Apps</a>
           	</li>

@@ -57,6 +57,10 @@
 		<put-attribute name="content" value="/WEB-INF/views/forbidden.jsp" />	
 	</definition>
 	
+	<definition name="signin" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/error/signin.jsp" />	
+	</definition>
+	
 	<definition name="403" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/error/403.jsp" />	
 	</definition>
@@ -69,6 +73,15 @@
 	<!--  admin -->
 	<definition name="admin/system/config" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/system_config.jsp" />
+	</definition>
+	<definition name="admin/system/auth" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secret.jsp" />
+	</definition>
+	<definition name="admin/system/auth/done" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secrets_done.jsp" />
+	</definition>
+	<definition name="admin/system/social" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/update_social_signin.jsp" />
 	</definition>
 	
 	<!--  apps -->
