@@ -7,7 +7,7 @@
    <persistence-unit name="UserPU" transaction-type="RESOURCE_LOCAL">
     <provider>com.objectdb.jpa.Provider</provider>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="${db_files}/users.odb"/>
+      <property name="javax.persistence.jdbc.url" value="${geco.giles.db_files}/users.odb"/>
       <property name="javax.persistence.jdbc.user" value="admin"/>
       <property name="javax.persistence.jdbc.password" value="admin"/>
     </properties>
