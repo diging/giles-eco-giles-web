@@ -52,6 +52,7 @@ public class SocialSigninUpdateController {
         model.addAttribute("googleConfig", googleConfig);
         
         SignInProviderConfig mitreidConfig = new SignInProviderConfig();
+        mitreidConfig.setUrl(propertiesManager.getProperty(Properties.MITREID_SERVER_URL));
         mitreidConfig.setClientId(propertiesManager.getProperty(Properties.MITREID_CLIENT_ID));
         String mitreidSecret = propertiesManager.getProperty(Properties.MITREID_SECRET);
         if (mitreidSecret != null && mitreidSecret.length() > 2) {
@@ -68,7 +69,10 @@ public class SocialSigninUpdateController {
         
         Map<String, String> githubConfig = new HashMap<String, String>();
         githubConfig.put(Properties.GITHUB_CLIENT_ID, config.getClientId());
-        githubConfig.put(Properties.GITHUB_SECRET, config.getSecret());
+        // only store secret if it has been changed
+        if (!config.getSecret().endsWith("*****")) {
+            githubConfig.put(Properties.GITHUB_SECRET, config.getSecret());
+        }
         try {
             propertiesManager.updateProperties(githubConfig);
         } catch (PropertiesStorageException e) {
@@ -89,7 +93,10 @@ public class SocialSigninUpdateController {
         
         Map<String, String> googleConfig = new HashMap<String, String>();
         googleConfig.put(Properties.GOOGLE_CLIENT_ID, config.getClientId());
-        googleConfig.put(Properties.GOOGLE_SECRET, config.getSecret());
+        // only store secret if it has been changed
+        if (!config.getSecret().endsWith("*****")) {
+            googleConfig.put(Properties.GOOGLE_SECRET, config.getSecret());
+        }
         try {
             propertiesManager.updateProperties(googleConfig);
         } catch (PropertiesStorageException e) {
@@ -110,7 +117,11 @@ public class SocialSigninUpdateController {
         
         Map<String, String> mitreidConfig = new HashMap<String, String>();
         mitreidConfig.put(Properties.MITREID_CLIENT_ID, config.getClientId());
-        mitreidConfig.put(Properties.MITREID_SECRET, config.getSecret());
+        // only store secret if it has been changed
+        if (!config.getSecret().endsWith("*****")) {
+            mitreidConfig.put(Properties.MITREID_SECRET, config.getSecret());
+        }
+        mitreidConfig.put(Properties.MITREID_SERVER_URL, config.getUrl());
         try {
             propertiesManager.updateProperties(mitreidConfig);
         } catch (PropertiesStorageException e) {
@@ -118,7 +129,8 @@ public class SocialSigninUpdateController {
         }
         
         try {
-            connFactoryService.updateFactory(IReloadService.MITREID, config.getClientId(), config.getSecret());
+            
+            connFactoryService.updateFactory(IReloadService.MITREID, config.getClientId(), config.getSecret(), config.getUrl());
         } catch (FactoryDoesNotExistException e) {
             logger.error("Could not update factory.", e);
         }

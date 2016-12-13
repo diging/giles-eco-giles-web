@@ -13,4 +13,7 @@ public interface IReloadService {
     public abstract void updateFactory(String factoryName, String clientId, String secret)
             throws FactoryDoesNotExistException;
 
+    public abstract void updateFactory(String factoryName, String clientId, String secret,
+            String serverUrl) throws FactoryDoesNotExistException;
+
 }

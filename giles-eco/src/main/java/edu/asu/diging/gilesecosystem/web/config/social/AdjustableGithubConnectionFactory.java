@@ -90,5 +90,8 @@ public class AdjustableGithubConnectionFactory extends OAuth2ConnectionFactory<G
     public String getProviderId() {
         return getDelegate().getProviderId();
     }
+
+    public void setProviderUrl(String providerUrl) {
+    }
     
 }
