@@ -103,7 +103,7 @@ public class JSONHelper implements IJSONHelper {
         fileNode.put("filename", file.getFilename());
         fileNode.put("id", file.getId());
         fileNode.put("url", filesManager.getFileUrl(file));
-        fileNode.put("path", filesManager.getRelativePathOfFile(file));
+        fileNode.put("path", file.getFilepath());
         fileNode.put("content-type", file.getContentType());
         fileNode.put("size", file.getSize());
         return fileNode;
