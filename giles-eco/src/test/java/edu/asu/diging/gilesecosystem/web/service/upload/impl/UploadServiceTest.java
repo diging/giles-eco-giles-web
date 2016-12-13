@@ -1,4 +1,4 @@
-package edu.asu.giles.service.upload.impl;
+package edu.asu.diging.gilesecosystem.web.service.upload.impl;
 
 import org.junit.Before;
 import org.mockito.InjectMocks;
