@@ -18,6 +18,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAc
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 
 @Controller
@@ -71,24 +72,39 @@ public class ChangeAccessController {
         }
 
         boolean errorWhenSavingFiles = false;
-        List<IFile> files = filesManager.getFilesOfDocument(document);
-        for (IFile file : files) {
-            file.setAccess(docAccess);
-            try {
-                filesManager.saveFile(file);
-            } catch (UnstorableObjectException e) {
-                logger.error("Could not store file.", e);
-                errorWhenSavingFiles = true;
+        
+        for (IPage page : document.getPages()) {
+            IFile imgFile = filesManager.getFile(page.getImageFileId());
+            if (imgFile != null) {
+                imgFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(imgFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
             }
-        }
-        files = filesManager.getTextFilesOfDocument(document);
-        for (IFile file : files) {
-            file.setAccess(docAccess);
-            try {
-                filesManager.saveFile(file);
-            } catch (UnstorableObjectException e) {
-                logger.error("Could not store file.", e);
-                errorWhenSavingFiles = true;
+            
+            IFile txtFile = filesManager.getFile(page.getTextFileId());
+            if (txtFile != null) {
+                txtFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(txtFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+            
+            IFile ocrFile = filesManager.getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                ocrFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(ocrFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
             }
         }
 
