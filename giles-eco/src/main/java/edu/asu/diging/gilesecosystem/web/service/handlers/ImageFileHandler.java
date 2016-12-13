@@ -54,7 +54,7 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
 
     @Override
     public String getRelativePathOfFile(IFile file) {
-        String directory = storageManager.getFileFolderPath(file.getUsername(), file.getUploadId(), file.getDocumentId());
+        String directory = storageManager.getFileFolderPath(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
     }
 

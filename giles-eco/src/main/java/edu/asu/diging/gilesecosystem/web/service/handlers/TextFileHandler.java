@@ -36,7 +36,7 @@ public class TextFileHandler extends AbstractFileHandler {
 
     @Override
     public String getRelativePathOfFile(IFile file) {
-        String directory = textStorageManager.getFileFolderPath(file.getUsername(), file.getUploadId(), file.getDocumentId());
+        String directory = textStorageManager.getFileFolderPath(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
     }
 
