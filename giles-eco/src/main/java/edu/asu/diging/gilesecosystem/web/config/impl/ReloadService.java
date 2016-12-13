@@ -39,4 +39,14 @@ public class ReloadService implements IReloadService {
         }
         factory.update(clientId, secret);
     }
+    
+    @Override
+    public void updateFactory(String factoryName, String clientId, String secret, String serverUrl) throws FactoryDoesNotExistException {
+        IAdjustableConnectionFactory factory = connectionFactories.get(factoryName);
+        if (factory == null) {
+            throw new FactoryDoesNotExistException("Factory " + factoryName + " does not exist.");
+        }
+        factory.setProviderUrl(serverUrl);
+        factory.update(clientId, secret);
+    }
 }

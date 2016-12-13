@@ -4,6 +4,7 @@ public class SignInProviderConfig {
 
     private String clientId;
     private String secret;
+    private String url;
     
     public String getClientId() {
         return clientId;
@@ -16,6 +17,12 @@ public class SignInProviderConfig {
     }
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
     } 
     
 }

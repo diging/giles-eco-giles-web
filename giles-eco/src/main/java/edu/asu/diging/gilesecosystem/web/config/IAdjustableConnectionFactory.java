@@ -8,4 +8,6 @@ public interface IAdjustableConnectionFactory<A> {
 
     public abstract void update(String clientId, String clientSecret);
 
+    public abstract void setProviderUrl(String providerUrl);
+
 }

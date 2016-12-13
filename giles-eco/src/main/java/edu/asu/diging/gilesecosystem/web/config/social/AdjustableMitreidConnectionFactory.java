@@ -9,7 +9,6 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.github.api.GitHub;
-import org.springframework.social.google.api.Google;
 import org.springframework.social.mitreidconnect.api.MitreidConnect;
 import org.springframework.social.mitreidconnect.connect.MitreidConnectAdapter;
 import org.springframework.social.mitreidconnect.connect.MitreidConnectConnectionFactory;
@@ -52,6 +51,11 @@ public class AdjustableMitreidConnectionFactory extends OAuth2ConnectionFactory<
     @Override
     public void update(String clientId, String clientSecret) {
         delegate = new MitreidConnectConnectionFactory(clientId, clientSecret, providerUrl);
+    }
+    
+    @Override
+    public void setProviderUrl(String providerUrl) {
+        this.providerUrl = providerUrl;
     }
     
     /*

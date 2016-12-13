@@ -84,6 +84,12 @@ Below you can update the configuration of the social signin providers you are us
         	action="${pageContext.request.contextPath}/admin/system/social/mitreid"
 			method="POST">
 			<div class="form-group">
+				<label for="url">MITREid Server URL</label>
+				<form:input type="text" class="form-control" id="url"
+					placeholder="MITREid Server URL" path="url" value=""></form:input>
+				<small><form:errors class="error" path="url"></form:errors></small>
+			</div>
+			<div class="form-group">
 				<label for="clientId">MITREid Client ID</label>
 				<form:input type="text" class="form-control" id="clientId"
 					placeholder="MITREid Client ID" path="clientId" value=""></form:input>
