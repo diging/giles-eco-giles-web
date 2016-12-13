@@ -56,7 +56,7 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
     @Override
     public String getRelativePathOfFile(IFile file) {
         String directory = storageManager.getFileFolderPath(
-                file.getUsername(), file.getUploadId(), file.getDocumentId());
+                file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId());
         return directory + File.separator + file.getFilename();
     }
 
