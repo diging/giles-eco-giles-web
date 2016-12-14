@@ -34,7 +34,6 @@ public class UserHelper implements IUserHelper {
             user.setUsername(userManager.getUniqueUsername(connection.getKey().getProviderId()));
         }
         
-        user.setUsername(username);
         user.setFirstname(profile.getFirstName());
         user.setLastname(profile.getLastName());
         user.setName(profile.getName());
