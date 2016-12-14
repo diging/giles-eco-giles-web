@@ -15,7 +15,6 @@
 		<org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
 		<org.slf4j-version>1.7.5</org.slf4j-version>
 		<com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
-		<powermock.version>1.6.6</powermock.version>
 
 		<!-- application properties -->
 		<giles.base.url>http://localhost:8080/giles</giles.base.url>

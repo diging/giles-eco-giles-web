@@ -38,7 +38,7 @@ public class JSONHelper implements IJSONHelper {
     public void createDocumentJson(IDocument doc, ObjectMapper mapper, ObjectNode docNode) {
         
         IFile uploadedFile = filesManager.getFile(doc.getUploadedFileId());
-        docNode.put("documentId", doc.getDocumentId());
+        docNode.put("documentId", doc.getId());
         docNode.put("documentStatus", uploadedFile.getProcessingStatus().toString());
         docNode.put("uploadId", doc.getUploadId());
         docNode.put("uploadedDate", doc.getCreatedDate());
