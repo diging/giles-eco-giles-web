@@ -36,6 +36,9 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
     
     @Override
     public void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException {
+        if (app.getId() == null) {
+            throw new UnstorableObjectException("App does not have an id.");
+        }
         IRegisteredApp storedApp = getAppById(app.getId());
         storedApp.setName(app.getName());
         storedApp.setTokenIds(app.getTokenIds());
