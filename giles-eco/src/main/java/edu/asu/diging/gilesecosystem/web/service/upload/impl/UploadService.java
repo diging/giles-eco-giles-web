@@ -29,7 +29,7 @@ import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 
 @Service
 public class UploadService implements IUploadService {
-    
+     
     private final static long DEFAULT_EXPIRATION = 24 * 60 * 60 * 1000L;
 
     private Map<String, List<StorageStatus>> currentUploads;
@@ -130,7 +130,7 @@ public class UploadService implements IUploadService {
         List<StorageStatus> statuses = currentUploads.get(progressId);
         if (statuses != null) {
             for (StorageStatus status : statuses) {
-                if (status.getDocument() != null && status.getDocument().getDocumentId().equals(documentId)) {
+                if (status.getDocument() != null && status.getDocument().getId().equals(documentId)) {
                     status.setStatus(reqStatus);
                 }
             }

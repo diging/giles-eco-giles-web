@@ -21,7 +21,6 @@ import edu.asu.diging.gilesecosystem.web.core.IPage;
 public class Document implements IDocument {
 
     @Id private String id;
-    private String documentId;
     private String uploadId;
     private String username;
     private String createdDate;
@@ -138,16 +137,6 @@ public class Document implements IDocument {
     @Override
     public void setAccess(DocumentAccess access) {
         this.access = access;
-    }
-
-    @Override
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    @Override
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
     }
 
     @Override

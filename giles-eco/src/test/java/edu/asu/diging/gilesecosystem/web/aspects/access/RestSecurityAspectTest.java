@@ -1,4 +1,4 @@
-package edu.asu.giles.aspects.access;
+package edu.asu.diging.gilesecosystem.web.aspects.access;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -18,13 +18,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import com.google.common.net.HttpHeaders;
@@ -38,7 +36,6 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.AppTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GilesChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GoogleChecker;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.IIdentityProviderRegistry;

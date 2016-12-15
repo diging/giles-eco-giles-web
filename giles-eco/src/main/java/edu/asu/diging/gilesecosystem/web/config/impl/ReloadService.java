@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.web.config.IAdjustableConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
-import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGoogleConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
 
 @Service
