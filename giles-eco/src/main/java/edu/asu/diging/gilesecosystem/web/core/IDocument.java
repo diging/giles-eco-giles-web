@@ -27,10 +27,6 @@ public interface IDocument extends IStorableObject {
 
     public abstract void setAccess(DocumentAccess access);
 
-    public abstract void setDocumentId(String documentId);
-
-    public abstract String getDocumentId();
-
     public abstract void setFiles(List<IFile> files);
 
     public abstract List<IFile> getFiles();
