@@ -11,7 +11,6 @@ import edu.asu.diging.gilesecosystem.web.core.IPage;
 
 public class DocumentPageBean implements IDocument {
     private String id;
-    private String documentId;
     private String uploadId;
     private String username;
     private String createdDate;
@@ -40,12 +39,6 @@ public class DocumentPageBean implements IDocument {
     }
     public void setId(String id) {
         this.id = id;
-    }
-    public String getDocumentId() {
-        return documentId;
-    }
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
     }
     public String getUploadId() {
         return uploadId;

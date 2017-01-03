@@ -10,7 +10,7 @@
   <div class="list-group-item clearfix">
   <div class="pull-left">
     <h4 class="list-group-item-heading">
-    	<a href="<c:url value="/documents/${doc.documentId}" />">Document #${doc.documentId}</a> 
+    	<a href="<c:url value="/documents/${doc.id}" />">Document #${doc.id}</a> 
    	</h4>
    	<p>
    	<c:if test="${ doc.request.status == 'SUBMITTED' }">
