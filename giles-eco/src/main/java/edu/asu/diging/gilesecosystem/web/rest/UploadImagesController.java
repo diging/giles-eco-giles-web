@@ -150,7 +150,7 @@ public class UploadImagesController {
         }
         
         Set<String> docIds = new HashSet<String>();
-        statusList.forEach(status -> docIds.add(status.getDocument().getDocumentId()));
+        statusList.forEach(status -> docIds.add(status.getDocument().getId()));
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);

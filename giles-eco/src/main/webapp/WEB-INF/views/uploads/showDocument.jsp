@@ -6,7 +6,7 @@
   <li><a href="<c:url value="/uploads/${document.uploadId}" />">${document.uploadId}</a></li>
 </ol>
 
-<h1>${document.documentId}</h1>
+<h1>${document.id}</h1>
 
 <p>
    	<c:if test="${ document.request.status == 'SUBMITTED' }">

@@ -65,7 +65,7 @@ public class ViewDocumentController {
         DocumentPageBean docBean = docMappingService.convertToT2(doc, new DocumentPageBean());
         model.addAttribute("document", docBean);
         
-        List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getDocumentId());
+        List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getId());
         Map<String, List<IProcessingRequest>> requestsByFileId = new HashMap<String, List<IProcessingRequest>>();
         procRequests.forEach(new Consumer<IProcessingRequest>() {
             @Override

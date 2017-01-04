@@ -159,7 +159,6 @@ public class FilesManager implements IFilesManager {
             DocumentAccess access, DocumentType docType, String username) {
         IDocument document = new Document();
         String docId = documentDatabaseClient.generateId();
-        document.setDocumentId(docId);
         document.setUsername(username);
         document.setId(docId);
         document.setCreatedDate(uploadDate);
