@@ -23,5 +23,10 @@ The above applications have dependencies to libraries located in the following r
 * https://github.com/diging/giles-eco-requests
 * https://github.com/diging/giles-eco-util
 
+Additionally, Giles depends on:
+
+* https://github.com/jdamerow/spring-social-github
+* https://github.com/jdamerow/spring-social-mitreid-connect
+
 There is a docker compose file for testing and evaluation purposes that sets up the Giles Ecosystem in Docker. You can find that file here: https://github.com/diging/giles-eco-docker
 
