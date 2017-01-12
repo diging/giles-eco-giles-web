@@ -1,4 +1,4 @@
-package edu.asu.diging.gilesecosystem.web.users;
+package edu.asu.diging.gilesecosystem.web.users.impl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -24,8 +24,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
 
+import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
+import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
+
+/**
+ * User service for admin users. Currently this class reads/stores admin users from/in
+ * a properties file (user.properties).
+ * @author jdamerow
+ *
+ */
 @Service("adminUserService")
-public class AdminUserDetailsService implements UserDetailsService {
+public class AdminUserDetailsService implements UserDetailsService, IAdminUserDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
   
@@ -44,6 +53,9 @@ public class AdminUserDetailsService implements UserDetailsService {
         persister.load(users, customPropsResource.getInputStream());      
     }
     
+    /* (non-Javadoc)
+     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService#loadUserByUsername(java.lang.String)
+     */
     @Override
     public UserDetails loadUserByUsername(String arg0) throws UsernameNotFoundException {
         String userData = users.getProperty(arg0);
@@ -63,6 +75,10 @@ public class AdminUserDetailsService implements UserDetailsService {
         return details;
     }
 
+    /* (non-Javadoc)
+     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService#getAllAdmins()
+     */
+    @Override
     public List<UserDetails> getAllAdmins() {
         List<UserDetails> userList = new ArrayList<>();
         Set<Entry<Object, Object>> entries = users.entrySet();
@@ -80,6 +96,10 @@ public class AdminUserDetailsService implements UserDetailsService {
         return userList;
     }
     
+    /* (non-Javadoc)
+     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService#changePassword(java.lang.String, java.lang.String)
+     */
+    @Override
     public boolean changePassword(String username, String password) {
         String hashedPW = BCrypt.hashpw(password, BCrypt.gensalt());
         users.put(username, hashedPW + "," + GilesGrantedAuthority.ROLE_ADMIN + ",enabled");
@@ -90,5 +110,19 @@ public class AdminUserDetailsService implements UserDetailsService {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Checks if the provided password is valid. This method expects a plaintext 
+     * password and will hash it using the BCrypt algorithm to check it against the
+     * stored data.
+     * @param username Username of user whose password should be checked.
+     * @param password Plaintext password.
+     * @return
+     */
+    @Override
+    public boolean isPasswordValid(String username, String password) {
+        UserDetails details = loadUserByUsername(username);
+        return BCrypt.checkpw(password, details.getPassword());
     }
 }

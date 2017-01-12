@@ -20,7 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.AdminUser;
 import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
-import edu.asu.diging.gilesecosystem.web.users.AdminUserManager;
+import edu.asu.diging.gilesecosystem.web.exceptions.UnauthorizedException;
+import edu.asu.diging.gilesecosystem.web.users.IAdminUserManager;
 import edu.asu.diging.gilesecosystem.web.validators.AdminPasswordValidator;
 
 @Controller
@@ -35,7 +36,7 @@ public class AdministratorPasswordController {
     private AdminPasswordValidator validator;
     
     @Autowired
-    private AdminUserManager adminManager;
+    private IAdminUserManager adminManager;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -71,8 +72,8 @@ public class AdministratorPasswordController {
         
         boolean success = false;
         try {
-            success = adminManager.updatePassword(adminUser.getUsername(), adminUser.getNewPassword());
-        } catch (BadPasswordException e) {
+            success = adminManager.updatePassword(adminUser.getUsername(), adminUser.getOldPassword(), adminUser.getNewPassword());
+        } catch (BadPasswordException | UnauthorizedException e) {
             // this should never happen because it should be caught by the validator
             logger.error("Could not update password.", e);
         }

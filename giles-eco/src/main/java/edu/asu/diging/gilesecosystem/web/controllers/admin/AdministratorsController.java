@@ -7,13 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import edu.asu.diging.gilesecosystem.web.users.AdminUserManager;
+import edu.asu.diging.gilesecosystem.web.users.IAdminUserManager;
 
 @Controller
 public class AdministratorsController {
 
     @Autowired
-    private AdminUserManager adminManager;
+    private IAdminUserManager adminManager;
     
     @RequestMapping("/admin/system/admins")
     public String show(Model model, Principal principal) {

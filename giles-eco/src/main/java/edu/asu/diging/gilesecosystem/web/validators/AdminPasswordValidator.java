@@ -7,13 +7,13 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.AdminUser;
-import edu.asu.diging.gilesecosystem.web.users.AdminUserManager;
+import edu.asu.diging.gilesecosystem.web.users.IAdminUserManager;
 
 @Component
 public class AdminPasswordValidator implements Validator {
     
     @Autowired
-    private AdminUserManager adminManager;
+    private IAdminUserManager adminManager;
 
     @Override
     public boolean supports(Class<?> arg0) {

@@ -23,9 +23,9 @@ import org.springframework.social.security.SpringSocialConfigurer;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.users.AdminUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.users.impl.AdminUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
