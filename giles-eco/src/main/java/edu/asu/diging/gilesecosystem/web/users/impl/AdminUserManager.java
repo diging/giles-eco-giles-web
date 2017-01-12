@@ -5,9 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
@@ -29,6 +26,22 @@ public class AdminUserManager implements IAdminUserManager {
     private IAdminUserDetailsService adminDetailsService;
     
     /* (non-Javadoc)
+     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserManager#getAdministrators()
+     */
+    @Override
+    public List<UserDetails> getAdministrators() {
+        return adminDetailsService.getAllAdmins();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserManager#isPasswordValid(java.lang.String, java.lang.String)
+     */
+    @Override
+    public boolean isPasswordValid(String username, String password) {
+        return adminDetailsService.isPasswordValid(username, password);
+    }
+    
+    /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserManager#updatePassword(java.lang.String, java.lang.String)
      */
     @Override
@@ -41,22 +54,7 @@ public class AdminUserManager implements IAdminUserManager {
         if (newPassword == null || newPassword.trim().isEmpty()) {
             throw new BadPasswordException("Password cannot be empty.");
         }
-        return ((IAdminUserDetailsService)adminDetailsService).changePassword(username, newPassword);
+        return adminDetailsService.changePassword(username, newPassword);
     }
     
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserManager#getAdministrators()
-     */
-    @Override
-    public List<UserDetails> getAdministrators() {
-        return ((IAdminUserDetailsService)adminDetailsService).getAllAdmins();
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.users.IAdminUserManager#isPasswordValid(java.lang.String, java.lang.String)
-     */
-    @Override
-    public boolean isPasswordValid(String username, String password) {
-        return adminDetailsService.isPasswordValid(username, password);
-    }
 }
