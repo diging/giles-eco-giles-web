@@ -23,6 +23,7 @@ import org.springframework.social.security.SpringSocialConfigurer;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.users.AdminUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
 
@@ -111,6 +112,8 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
+        auth.userDetailsService(adminDetailsService()).passwordEncoder(
+                passwordEncoder());
         auth.userDetailsService(userDetailsService()).passwordEncoder(
                 passwordEncoder());
     }
@@ -125,6 +128,11 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
         return new SimpleSocialUserDetailsService(userDetailsService());
     }
 
+    @Bean(name = "adminDetailsService")
+    public UserDetailsService adminDetailsService() {
+        return new AdminUserDetailsService();
+    }
+    
     @Bean
     public UserDetailsService userDetailsService() {
         return new LocalUserDetailsService();
