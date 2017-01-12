@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
+
 @Service
 public class AdminUserManager {
 
@@ -17,8 +19,11 @@ public class AdminUserManager {
     @Qualifier("adminDetailsService")
     private UserDetailsService adminDetailsService;
     
-    public void updatePassword(String username, String password) {
-        System.out.println("password");
+    public boolean updatePassword(String username, String password) throws BadPasswordException {
+        if (password == null || password.trim().isEmpty()) {
+            throw new BadPasswordException("Password cannot be empty.");
+        }
+        return ((AdminUserDetailsService)adminDetailsService).changePassword(username, password);
     }
     
     public List<UserDetails> getAdministrators() {

@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
@@ -77,5 +78,17 @@ public class AdminUserDetailsService implements UserDetailsService {
             }
         }
         return userList;
+    }
+    
+    public boolean changePassword(String username, String password) {
+        String hashedPW = BCrypt.hashpw(password, BCrypt.gensalt());
+        users.put(username, hashedPW + "," + GilesGrantedAuthority.ROLE_ADMIN + ",enabled");
+        try {
+            persister.store(users, customPropsResource.getOutputStream(), "");
+        } catch (IOException e) {
+            logger.error("Could not store properties.", e);
+            return false;
+        }
+        return true;
     }
 }

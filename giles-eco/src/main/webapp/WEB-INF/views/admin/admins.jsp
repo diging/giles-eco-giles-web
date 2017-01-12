@@ -9,11 +9,11 @@
   	<th width="5%"></th>
   </tr>
   	
-  <c:forEach items="${admins}" var="admin">
+  <c:forEach items="${admins}" var="adminuser" >
   <tr>
-      <td>${admin.username}</td>
+      <td>${adminuser.username}</td>
       <td align="right">
-        <c:if test="${currentUser == admin.username}">
+        <c:if test="${currentUser == adminuser.username}">
          <a href="<c:url value="/admin/system/admins/password/change" />">Change Password</a>
         </c:if> 
       </td>

@@ -26,13 +26,16 @@ public class AdminPasswordValidator implements Validator {
         boolean passwordValid = adminManager.isPasswordValid(user.getUsername(), user.getOldPassword());
         
         if (!passwordValid) {
-            arg1.reject("oldPassword", "admin_user_old_password_incorrect");
+            arg1.rejectValue("oldPassword", "admin_user_old_password_incorrect");
         }
         ValidationUtils.rejectIfEmpty(arg1, "username", "admin_user_username_missing");
         ValidationUtils.rejectIfEmpty(arg1, "oldPassword", "admin_user_old_password_missing");
         ValidationUtils.rejectIfEmpty(arg1, "newPassword", "admin_user_new_password_missing");
         ValidationUtils.rejectIfEmpty(arg1, "retypedPassword", "admin_user_retyped_password_missing");
-   
+        
+        if (!user.getNewPassword().equals(user.getRetypedPassword())) {
+            arg1.rejectValue("retypedPassword", "admin_user_new_password_mismatch");
+        }
     }
 
 }

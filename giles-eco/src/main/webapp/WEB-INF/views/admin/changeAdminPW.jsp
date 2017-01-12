@@ -10,7 +10,7 @@
 <c:url value="/admin/system/admins/password/change" var="actionUrl" />
 
 <form:form modelAttribute="adminUser" action="${actionUrl}" method="POST">
-  <input type="hidden" name="username" value="${username}" />
+  <form:input type="hidden" path="username" value="${username}" />
   <div class="form-group">
     <label for="password">Old Password</label>
     <form:input path="oldPassword" type="password" class="form-control" id="oldPassword" placeholder="Old password" />
