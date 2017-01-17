@@ -3,6 +3,8 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
@@ -41,7 +44,7 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Transactional
 @Service
-public class DistributedStorageManager extends ProcessingPhase<StorageRequestProcessingInfo> implements IDistributedStorageManager {
+public class DistributedStorageManager extends ProcessingPhase<StorageRequestProcessingInfo> implements IDistributedStorageManager, Observer {
     
     final Logger logger = LoggerFactory.getLogger(getClass());
     
@@ -89,6 +92,9 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
                 fileTypes.put(type, handler.getHandledFileType());
             }
         }
+        
+        propertyManager.addObserver(this);
+        storageManager.setBaseDirectory(propertyManager.getProperty(Properties.GILES_TMP_FOLDER));
     }
     
     /* (non-Javadoc)
@@ -156,6 +162,30 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     @Override
     protected void postProcessing(IFile file) {
         // nothing to do here
+    }
+
+    @Override
+    public RequestStatus process(IFile file, StorageRequestProcessingInfo info)
+            throws GilesProcessingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        String newDir = null;
+        if (arg instanceof String) {
+            if (arg.equals(Properties.GILES_TMP_FOLDER)) {
+                newDir = propertyManager.getProperty(Properties.GILES_TMP_FOLDER);
+            }
+        } else if (arg instanceof Map) {
+            if (((Map)arg).keySet().contains(Properties.GILES_TMP_FOLDER)) {
+                newDir = ((Map)arg).get(Properties.GILES_TMP_FOLDER).toString();
+            }
+        }
+        if (newDir != null) {
+            storageManager.setBaseDirectory(newDir);
+        }
     }
     
 }
