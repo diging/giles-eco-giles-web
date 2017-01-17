@@ -25,7 +25,6 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.users.User;

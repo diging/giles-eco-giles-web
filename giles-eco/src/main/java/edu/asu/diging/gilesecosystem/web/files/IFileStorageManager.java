@@ -46,4 +46,8 @@ public interface IFileStorageManager {
     public abstract boolean deleteFile(String username, String uploadId, String documentId,
             String filename, boolean deleteEmptyFolders);
 
+    public abstract void setBaseDirectory(String baseDirectory);
+
+    public abstract String getBaseDirectory();
+
 }

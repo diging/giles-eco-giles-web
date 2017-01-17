@@ -102,6 +102,22 @@
 		</p>
 		<small><form:errors class="error" path="iframingAllowedHosts"></form:errors></small>
 	</div>
+	
+	<div class="page-header">
+        <h3>Storage</h3>
+    </div>
+    
+    <div class="form-group">
+        <label for="jarsFileUrl">Folder to store temporary files</label>
+        <form:input type="text" class="form-control" id="gilesFilesTmpDir"
+            placeholder="Jars Callback URL" path="gilesFilesTmpDir"
+            value="${gilesFilesTmpDir}"></form:input>
+        <p>
+            <small>Make sure Tomcat has write and read permissions to this folder.
+            </small>
+        </p>
+        <small><form:errors class="error" path="gilesFilesTmpDir"></form:errors></small>
+    </div>
 
 	<button class="btn btn-primary btn-md pull-right" type="submit">Save
 		Changes!</button>
