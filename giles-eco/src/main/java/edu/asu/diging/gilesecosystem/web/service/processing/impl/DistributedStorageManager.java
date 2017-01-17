@@ -165,13 +165,6 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
     }
 
     @Override
-    public RequestStatus process(IFile file, StorageRequestProcessingInfo info)
-            throws GilesProcessingException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public void update(Observable o, Object arg) {
         String newDir = null;
         if (arg instanceof String) {
