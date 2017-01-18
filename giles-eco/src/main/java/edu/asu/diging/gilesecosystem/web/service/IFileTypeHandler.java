@@ -18,8 +18,6 @@ public interface IFileTypeHandler {
     
     FileType getHandledFileType();
     
-    String getRelativePathOfFile(IFile file);
-    
     String getFileUrl(IFile file);
     
     byte[] getFileContent(IFile file);

@@ -62,19 +62,13 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
         }
     }
     
+    @Override
     public String getFileUrl(IFile file) {
         String gilesUrl = propertyManager.getProperty(Properties.GILES_URL).trim();
         String pdfEndpoint = propertyManager.getProperty(Properties.GILES_FILE_ENDPOINT).trim();
         String contentSuffix = propertyManager.getProperty(Properties.GILES_FILE_CONTENT_SUFFIX).trim();
         
         return gilesUrl + pdfEndpoint + file.getId() + contentSuffix;
-    }
-    
-    protected abstract IFileStorageManager getStorageManager();
-    
-    protected void sendStorageRequest(String uploadId) {
-        
-        
     }
 }
 

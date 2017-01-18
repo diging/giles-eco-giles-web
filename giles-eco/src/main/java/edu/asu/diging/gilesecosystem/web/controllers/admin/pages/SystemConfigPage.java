@@ -5,22 +5,15 @@ public class SystemConfigPage {
     private String registeredApps;
     private String digilibScalerUrl;
     private String gilesUrl;
-    private String pdfToImageDpi;
-    private String pdfToImageType;
-    private String pdfToImageFormat;
-    private boolean pdfExtractText;
     private String jarsUrl;
     private String jarsFileUrl;
     private String metadataServiceDocUrl;
-    private String tesseractBinFolder;
-    private String tesseractDataFolder;
-    private boolean tesseractCreateHOCR;
-    private boolean ocrImagesFromPdfs;
     private int defaultPageSize;
     private String iframingAllowedHosts;
     private boolean showGithubLogin;
     private boolean showGoogleLogin;
     private boolean showMitreidLogin;
+    private String gilesFilesTmpDir;
     
     public String getRegisteredApps() {
         return registeredApps;
@@ -40,24 +33,6 @@ public class SystemConfigPage {
     public void setGilesUrl(String gilesUrl) {
         this.gilesUrl = gilesUrl;
     }
-    public String getPdfToImageDpi() {
-        return pdfToImageDpi;
-    }
-    public void setPdfToImageDpi(String pdfToImageDpi) {
-        this.pdfToImageDpi = pdfToImageDpi;
-    }
-    public String getPdfToImageType() {
-        return pdfToImageType;
-    }
-    public void setPdfToImageType(String pdfToImageType) {
-        this.pdfToImageType = pdfToImageType;
-    }
-    public boolean isPdfExtractText() {
-        return pdfExtractText;
-    }
-    public void setPdfExtractText(boolean pdfExtractText) {
-        this.pdfExtractText = pdfExtractText;
-    }
     public String getJarsUrl() {
         return jarsUrl;
     }
@@ -70,41 +45,11 @@ public class SystemConfigPage {
     public void setJarsFileUrl(String jarsFileUrl) {
         this.jarsFileUrl = jarsFileUrl;
     }
-    public String getTesseractBinFolder() {
-        return tesseractBinFolder;
-    }
-    public void setTesseractBinFolder(String tesseractBinFolder) {
-        this.tesseractBinFolder = tesseractBinFolder;
-    }
-    public String getTesseractDataFolder() {
-        return tesseractDataFolder;
-    }
-    public void setTesseractDataFolder(String tesseractDataFolder) {
-        this.tesseractDataFolder = tesseractDataFolder;
-    }
-    public boolean isTesseractCreateHOCR() {
-        return tesseractCreateHOCR;
-    }
-    public void setTesseractCreateHOCR(boolean tesseractCreateHOCR) {
-        this.tesseractCreateHOCR = tesseractCreateHOCR;
-    }
-    public boolean isOcrImagesFromPdfs() {
-        return ocrImagesFromPdfs;
-    }
-    public void setOcrImagesFromPdfs(boolean ocrImagesFromPdfs) {
-        this.ocrImagesFromPdfs = ocrImagesFromPdfs;
-    }
     public int getDefaultPageSize() {
         return defaultPageSize;
     }
     public void setDefaultPageSize(int defaultPageSize) {
         this.defaultPageSize = defaultPageSize;
-    }
-    public String getPdfToImageFormat() {
-        return pdfToImageFormat;
-    }
-    public void setPdfToImageFormat(String pdfToImageFormat) {
-        this.pdfToImageFormat = pdfToImageFormat;
     }
     public String getMetadataServiceDocUrl() {
         return metadataServiceDocUrl;
@@ -135,5 +80,11 @@ public class SystemConfigPage {
     }
     public void setShowMitreidLogin(boolean showMitreidLogin) {
         this.showMitreidLogin = showMitreidLogin;
+    }
+    public String getGilesFilesTmpDir() {
+        return gilesFilesTmpDir;
+    }
+    public void setGilesFilesTmpDir(String gilesFilesTmpDir) {
+        this.gilesFilesTmpDir = gilesFilesTmpDir;
     }
 }

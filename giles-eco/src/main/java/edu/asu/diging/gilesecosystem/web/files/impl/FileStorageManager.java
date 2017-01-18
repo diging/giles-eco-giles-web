@@ -111,10 +111,12 @@ public class FileStorageManager implements IFileStorageManager {
         return true;
     }
 
+    @Override
     public String getBaseDirectory() {
         return baseDirectory;
     }
 
+    @Override
     public void setBaseDirectory(String baseDirectory) {
         this.baseDirectory = baseDirectory;
     }

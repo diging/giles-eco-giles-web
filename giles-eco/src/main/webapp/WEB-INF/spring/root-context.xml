@@ -19,21 +19,6 @@
 
 	<import resource="spring-security.xml" />
 
-	<bean id="fileStorageManager"
-		class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
-		<property name="baseDirectory" value="${digilibBaseDir}" />
-	</bean>
-
-	<bean id="pdfStorageManager"
-		class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
-		<property name="baseDirectory" value="${pdfBaseDir}" />
-	</bean>
-
-	<bean id="textStorageManager"
-		class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
-		<property name="baseDirectory" value="${textBaseDir}" />
-	</bean>
-
 	<bean id="tmpStorageManager"
 		class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
 		<property name="baseDirectory" value="${giles.file.tmp.dir}" />

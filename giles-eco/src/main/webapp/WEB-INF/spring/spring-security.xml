@@ -8,30 +8,6 @@
 	http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
 
-	<beans:bean id="encoder"
-		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" >
-		<beans:constructor-arg name="strength" value="4"></beans:constructor-arg>
-	</beans:bean>
-
-
-	<beans:bean id="authProvider"
-		class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-		<beans:property name="userDetailsService" ref="userService" />
-		<beans:property name="passwordEncoder" ref="encoder" />
-	</beans:bean>
-
-	<authentication-manager alias="authenticationManager"
-		erase-credentials="false">
-		<authentication-provider>
-			<user-service id="userDetailsService" properties="classpath:/user.properties" />
-		</authentication-provider>
-		<authentication-provider ref="authProvider"></authentication-provider>
-	</authentication-manager>
-
-	<beans:bean id="textEncryptor"
-		class="org.springframework.security.crypto.encrypt.Encryptors"
-		factory-method="noOpText" />
-
 	<beans:bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<beans:property name="driverClassName" value="${db.driver}" />
