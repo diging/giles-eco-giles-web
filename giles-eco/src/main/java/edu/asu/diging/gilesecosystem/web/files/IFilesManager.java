@@ -57,8 +57,6 @@ public interface IFilesManager {
 
     public abstract String getFileUrl(IFile file);
 
-    public abstract String getRelativePathOfFile(IFile file);
-
     public abstract byte[] getFileContent(IFile file);
 
     public abstract List<IFile> getTextFilesOfDocument(IDocument doc);

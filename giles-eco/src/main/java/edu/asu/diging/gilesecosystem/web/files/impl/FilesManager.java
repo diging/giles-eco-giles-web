@@ -104,7 +104,6 @@ public class FilesManager implements IFilesManager {
             file.setUploadId(uploadId);
             file.setUploadDate(uploadDate);
             file.setUsername(username);
-            file.setFilepath(getRelativePathOfFile(file));
             file.setProcessingStatus(ProcessingStatus.UNPROCESSED);
 
             document.getFileIds().add(id);
@@ -278,13 +277,6 @@ public class FilesManager implements IFilesManager {
     @Override
     public IUpload getUpload(String id) {
         return uploadDatabaseClient.getUpload(id);
-    }
-
-    @Override
-    public String getRelativePathOfFile(IFile file) {
-        IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
-                .getContentType());
-        return handler.getRelativePathOfFile(file);
     }
 
     @Override

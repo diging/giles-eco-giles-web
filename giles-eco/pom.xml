@@ -39,20 +39,7 @@
         <db.database.url></db.database.url>
         <db.user></db.user>
         <db.password></db.password>
-        <digilib.url></digilib.url>
-        <digilibBaseDir></digilibBaseDir>
-        <pdfBaseDir></pdfBaseDir>
-        <textBaseDir></textBaseDir>
         <giles.file.tmp.dir></giles.file.tmp.dir>
-        <pdf.conversion.dpi>600</pdf.conversion.dpi>
-        <pdf.conversion.type>RGB</pdf.conversion.type>
-        <pdf.conversion.format>tiff</pdf.conversion.format>
-        <tesseract.bin></tesseract.bin>
-        <tesseract.data></tesseract.data>
-        <tesseract.create.hocr>false</tesseract.create.hocr>
-        <ocr.worker.count>1</ocr.worker.count>
-        <ocr.images.from.pdfs>true</ocr.images.from.pdfs>
-        <upload.worker.count>2</upload.worker.count>
         <jars.url>http://diging.asu.edu/jars</jars.url>
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
