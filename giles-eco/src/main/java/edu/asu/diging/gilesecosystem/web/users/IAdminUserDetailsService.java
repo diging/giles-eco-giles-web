@@ -3,9 +3,10 @@ package edu.asu.diging.gilesecosystem.web.users;
 import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public interface IAdminUserDetailsService {
+public interface IAdminUserDetailsService extends UserDetailsService {
 
     public abstract UserDetails loadUserByUsername(String arg0)
             throws UsernameNotFoundException;
