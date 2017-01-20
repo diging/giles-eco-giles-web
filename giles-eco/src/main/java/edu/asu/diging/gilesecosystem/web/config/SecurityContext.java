@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.config;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,6 +24,7 @@ import org.springframework.social.security.SpringSocialConfigurer;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.impl.AdminUserDetailsService;
@@ -33,6 +35,10 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
     
     @Autowired
     private IPropertiesManager propertiesManager;
+    
+    @Autowired
+    @Qualifier("adminDetailsService")
+    private IAdminUserDetailsService adminUserDetailsService;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -112,7 +118,7 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-        auth.userDetailsService(adminDetailsService()).passwordEncoder(
+        auth.userDetailsService(adminUserDetailsService).passwordEncoder(
                 passwordEncoder());
         auth.userDetailsService(userDetailsService()).passwordEncoder(
                 passwordEncoder());
@@ -128,10 +134,10 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
         return new SimpleSocialUserDetailsService(userDetailsService());
     }
 
-    @Bean(name = "adminDetailsService")
-    public UserDetailsService adminDetailsService() {
-        return new AdminUserDetailsService();
-    }
+//    @Bean(name = "adminDetailsService")
+//    public UserDetailsService adminDetailsService() {
+//        return new AdminUserDetailsService();
+//    }
     
     @Bean
     public UserDetailsService userDetailsService() {

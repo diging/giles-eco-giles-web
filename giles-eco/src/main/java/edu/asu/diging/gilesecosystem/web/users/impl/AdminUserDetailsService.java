@@ -17,7 +17,6 @@ import org.springframework.core.io.PathResource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,8 @@ import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
  * @author jdamerow
  *
  */
-@Service("adminUserService")
-public class AdminUserDetailsService implements UserDetailsService, IAdminUserDetailsService {
+@Service("adminDetailsService")
+public class AdminUserDetailsService implements IAdminUserDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
   
@@ -109,6 +108,7 @@ public class AdminUserDetailsService implements UserDetailsService, IAdminUserDe
             logger.error("Could not store properties.", e);
             return false;
         }
+
         return true;
     }
     

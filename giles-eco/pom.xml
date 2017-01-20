@@ -40,6 +40,7 @@
         <db.user></db.user>
         <db.password></db.password>
         <giles.file.tmp.dir></giles.file.tmp.dir>
+        <digilib.url></digilib.url>
         <jars.url>http://diging.asu.edu/jars</jars.url>
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
