@@ -45,7 +45,7 @@ public class Checker {
         mVerifier = new GoogleIdTokenVerifier(transport, mJFactory);
     }
 
-    public CheckerResult check(String tokenString) throws GeneralSecurityException,
+    public synchronized CheckerResult check(String tokenString) throws GeneralSecurityException,
             IOException {
         GoogleIdToken token = GoogleIdToken.parse(mJFactory, tokenString);
         if (mVerifier.verify(token)) {
