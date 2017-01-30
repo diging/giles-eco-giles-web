@@ -113,6 +113,7 @@ public class TokenService implements ITokenService {
             appToken.setProviderId(claims.get("providerId", String.class));
         
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            // currently app tokens don't expire, so we'll just return null
             return null;
         } catch (SignatureException e) {
             return null;

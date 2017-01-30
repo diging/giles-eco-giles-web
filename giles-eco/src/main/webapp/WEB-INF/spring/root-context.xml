@@ -15,7 +15,7 @@
 
 	<mvc:annotation-driven />
 	<context:component-scan
-		base-package="edu.asu.diging.gilesecosystem.web, edu.asu.diging.gilesecosystem.requests, edu.asu.diging.gilesecosystem.util" />
+		base-package="edu.asu.diging.gilesecosystem.web, edu.asu.diging.gilesecosystem.requests, edu.asu.diging.gilesecosystem.util.store, edu.asu.diging.gilesecosystem.util.properties,edu.asu.diging.gilesecosystem.util.files" />
 
 	<import resource="spring-security.xml" />
 
