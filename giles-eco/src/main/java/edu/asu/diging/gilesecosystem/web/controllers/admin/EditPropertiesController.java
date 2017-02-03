@@ -54,6 +54,7 @@ public class EditPropertiesController {
         page.setShowGoogleLogin(propertyManager.getProperty(Properties.GOOGLE_SHOW_LOGIN).equalsIgnoreCase("true"));
         page.setShowMitreidLogin(propertyManager.getProperty(Properties.MITREID_SHOW_LOGIN).equalsIgnoreCase("true"));
         page.setGilesFilesTmpDir(propertyManager.getProperty(Properties.GILES_TMP_FOLDER));
+        page.setNepomukAccessToken(propertyManager.getProperty(Properties.NEPOMUK_ACCESS_TOKEN));
         
         List<String> imageTypes = new ArrayList<String>();
         imageTypes.add(ImageType.ARGB.toString());
@@ -87,6 +88,7 @@ public class EditPropertiesController {
         propertiesMap.put(Properties.GOOGLE_SHOW_LOGIN, new Boolean(systemConfigPage.isShowGoogleLogin()).toString());
         propertiesMap.put(Properties.MITREID_SHOW_LOGIN, new Boolean(systemConfigPage.isShowMitreidLogin()).toString());
         propertiesMap.put(Properties.GILES_TMP_FOLDER, systemConfigPage.getGilesFilesTmpDir());
+        propertiesMap.put(Properties.NEPOMUK_ACCESS_TOKEN, systemConfigPage.getNepomukAccessToken());
         
         try {
             propertyManager.updateProperties(propertiesMap);

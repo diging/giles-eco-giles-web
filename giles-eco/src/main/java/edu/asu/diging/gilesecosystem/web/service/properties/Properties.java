@@ -47,5 +47,7 @@ public interface Properties {
     public final static String KAFKA_TOPIC_IMAGE_EXTRACTION_COMPLETE_REQUEST = "topic_image_extraction_request_complete";
     
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
+    
+    public final static String NEPOMUK_ACCESS_TOKEN = "nepomuk_access_token";
 
 }

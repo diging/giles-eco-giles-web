@@ -53,7 +53,7 @@
         <buildNumber></buildNumber>
         <log.level>info</log.level>
         <iframing.hostname></iframing.hostname>
-
+        <giles.nepomuk.accessToken></giles.nepomuk.accessToken>
         <!-- Kafka -->
         <giles.kafka.hosts>localhost:9092</giles.kafka.hosts>
     </properties>
