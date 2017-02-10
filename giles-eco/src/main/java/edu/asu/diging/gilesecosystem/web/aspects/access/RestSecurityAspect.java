@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.GeneralSecurityException;
@@ -11,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -30,6 +32,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenChec
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
@@ -220,6 +223,44 @@ public class RestSecurityAspect {
         if (!doc.getUsername().equals(user.getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
+        
+        return joinPoint.proceed();
+    }
+    
+    @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check) && args(fn,..)")
+    public Object checkImage(ProceedingJoinPoint joinPoint, ImageAccessCheck check, String fn) throws Throwable {
+        
+        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.value(), fn);
+        User user = userTokenObj.user;
+        String token = userTokenObj.token;
+
+        if (fn.startsWith(File.separator)) {
+             fn = fn.substring(1);
+        }
+
+        if (user == null) {
+            throw new AspectMisconfigurationException(
+                    "User object is missing in method.");
+        }
+      
+        IFile file = filesManager.getFileByPath(fn);
+        if (file == null) {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
+        
+        if (file.getAccess() == DocumentAccess.PUBLIC) {
+            return joinPoint.proceed();
+        }
+        
+        TokenHolder holder = new TokenHolder();
+        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
+        if (authResult != null) {
+            return authResult;
+        }
+        
+        // because we asked for the giles checker we know what type
+        // the token contents is
+        extractUser(user, (IApiTokenContents)holder.tokenContents);
         
         return joinPoint.proceed();
     }

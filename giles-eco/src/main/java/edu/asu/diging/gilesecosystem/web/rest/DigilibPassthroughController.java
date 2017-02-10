@@ -22,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
@@ -41,7 +42,7 @@ public class DigilibPassthroughController {
     @Autowired
     private DigilibConnector digilibConnector;
 
-    @TokenCheck
+    @ImageAccessCheck
     @RequestMapping(value = "/rest/digilib")
     public ResponseEntity<String> passthroughToDigilib(
             @RequestParam(defaultValue = "") String accessToken,
