@@ -76,6 +76,13 @@
 		</p>
 		<small><form:errors class="error" path="metadataServiceDocUrl"></form:errors></small>
 	</div>
+    <div class="form-group">
+        <label for="nepomukAccessToken">Nepomuk Access Token</label>
+        <form:input type="text" class="form-control" id="nepomukAccessToken"
+            placeholder="Token for accessing Nepomuk" path="nepomukAccessToken"
+            value="${nepomukAccessToken}"></form:input>
+        <small><form:errors class="error" path="nepomukAccessToken"></form:errors></small>
+    </div>
 
 	<div class="page-header">
 		<h3>Security Settings</h3>

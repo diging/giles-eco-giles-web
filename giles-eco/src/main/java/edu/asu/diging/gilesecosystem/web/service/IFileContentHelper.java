@@ -10,6 +10,6 @@ public interface IFileContentHelper {
 
     public abstract byte[] getFileContent(IFile file, IFileStorageManager storageManager);
 
-    public abstract byte[] getFileContentFromUrl(URL url) throws IOException;
+    public abstract byte[] getFileContentFromUrl(URL url, String tokenName) throws IOException;
 
 }
