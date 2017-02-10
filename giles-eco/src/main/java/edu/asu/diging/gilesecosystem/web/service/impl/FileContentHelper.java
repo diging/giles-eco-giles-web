@@ -56,17 +56,17 @@ public class FileContentHelper implements IFileContentHelper {
      * @see edu.asu.giles.service.impl.IFileSystemHelper#getFileContentFromUrl(java.net.URL)
      */
     @Override
-    public byte[] getFileContentFromUrl(URL url, String accessToken) throws IOException {
+    public byte[] getFileContentFromUrl(URL url, String tokenName) throws IOException {
         
         //check if token is pass 
-        if(accessToken != null || !accessToken.isEmpty()) {
+        if(tokenName != null && !tokenName.isEmpty()) {
             
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());    
             
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
-            headers.set("Authorization", "token " + propertiesManager.getProperty(accessToken));
+            headers.set("Authorization", "token " + propertiesManager.getProperty(tokenName));
             HttpEntity<String> entity = new HttpEntity<String>(headers);
 
             ResponseEntity<byte[]> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, byte[].class);
