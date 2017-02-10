@@ -1,8 +1,12 @@
 package edu.asu.diging.gilesecosystem.web.service.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -41,12 +45,9 @@ public class FileContentHelper implements IFileContentHelper {
         String folderPath = storageManager.getAndCreateStoragePath(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId());
         File fileObject = new File(folderPath + File.separator + file.getFilename());
         try {
-            return getFileContentFromUrl(fileObject.toURI().toURL());
+            return getFileContentFromUrl(fileObject.toURI().toURL(), null);
         } catch (IOException e) {
             logger.error("Could not read file.", e);
-            return null;
-        } catch (RestClientResponseException e) {
-            logger.error("REST Exception", e);
             return null;
         }
     }
@@ -55,22 +56,51 @@ public class FileContentHelper implements IFileContentHelper {
      * @see edu.asu.giles.service.impl.IFileSystemHelper#getFileContentFromUrl(java.net.URL)
      */
     @Override
-    public byte[] getFileContentFromUrl(URL url) throws IOException, RestClientResponseException {
+    public byte[] getFileContentFromUrl(URL url, String accessToken) throws IOException {
         
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());    
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
-        headers.set("Authorization", "token " + propertiesManager.getProperty(Properties.NEPOMUK_ACCESS_TOKEN));
-        HttpEntity<String> entity = new HttpEntity<String>(headers);
+        //check if token is pass 
+        if(accessToken != null || !accessToken.isEmpty()) {
+            
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());    
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+            headers.set("Authorization", "token " + propertiesManager.getProperty(accessToken));
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-        ResponseEntity<byte[]> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, byte[].class);
+            ResponseEntity<byte[]> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, byte[].class);
+            
+            if(response.getStatusCode().equals(HttpStatus.OK)) {    
+                return response.getBody();
+            }
+            
+            return null;
         
-        if(response.getStatusCode().equals(HttpStatus.OK)) {    
-            return response.getBody();
+        } else {
+
+            URLConnection con = url.openConnection();
+            InputStream input = con.getInputStream();
+            
+            byte[] buffer = new byte[4096];
+            ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+            BufferedOutputStream output = new BufferedOutputStream(byteOutput);
+            
+            int n = -1;
+            
+            while ((n = input.read(buffer)) != -1) {
+                output.write(buffer, 0, n);
+            }
+            
+            input.close();
+            output.flush();
+            output.close();
+            
+            byteOutput.flush();
+            byte[] bytes = byteOutput.toByteArray();
+            byteOutput.close();
+            return bytes;
+
         }
-        
-        return null;
     }
 }

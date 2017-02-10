@@ -55,7 +55,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     @Override
     public byte[] getFileContent(IFile file) {
         try {
-            return fileContentHelper.getFileContentFromUrl(new URL(file.getDownloadUrl()));
+            return fileContentHelper.getFileContentFromUrl(new URL(file.getDownloadUrl()), Properties.NEPOMUK_ACCESS_TOKEN);
         } catch (IOException e) {
             logger.error("Could not download file.", e);
             return null;
