@@ -14,7 +14,14 @@ public class SystemConfigPage {
     private boolean showGoogleLogin;
     private boolean showMitreidLogin;
     private String gilesFilesTmpDir;
+    private String nepomukAccessToken;
     
+    public String getNepomukAccessToken() {
+        return nepomukAccessToken;
+    }
+    public void setNepomukAccessToken(String nepomukAccessToken) {
+        this.nepomukAccessToken = nepomukAccessToken;
+    }
     public String getRegisteredApps() {
         return registeredApps;
     }
