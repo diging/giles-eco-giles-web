@@ -44,6 +44,13 @@
 		<small><form:errors class="error" path="digilibScalerUrl"></form:errors></small>
 	</div>
 	<div class="form-group">
+        <label for="jarsUrl">Freddie URL</label>
+        <form:input type="text" class="form-control" id="freddieUrl"
+            placeholder="Freddie URL" path="freddieUrl" value="${jarsUrl}"></form:input>
+        <small><form:errors class="error" path="freddieUrl"></form:errors></small>
+        <small>URL of your Freddie instance (if there is one).</small>
+    </div>
+    <div class="form-group">
 		<label for="jarsUrl">Jars URL</label>
 		<form:input type="text" class="form-control" id="jarsUrl"
 			placeholder="Jars URL" path="jarsUrl" value="${jarsUrl}"></form:input>
