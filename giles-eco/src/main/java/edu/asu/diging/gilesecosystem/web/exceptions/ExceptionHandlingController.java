@@ -32,7 +32,19 @@ public class ExceptionHandlingController {
         return new ResponseEntity<String>(HttpStatus.valueOf(e
                 .getRawStatusCode()));
     }
-
+    
+    @ExceptionHandler(SearchException.class)
+    public ResponseEntity<String> handleSearchException(SearchException e) {
+        logger.error("Could not run query.", e);
+        return new ResponseEntity<String>("{ \"error\" : \"" + e.getMessage() + "\" }", HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(NoFreddieInstanceConfigured.class)
+    public ResponseEntity<String> handleFreddieNotConfigured(NoFreddieInstanceConfigured ex) {
+        logger.error("Freddie is not configured.", ex);
+        return new ResponseEntity<String>("{ \"error\" : \"No Freddie instance has been configured for this Giles instance.\" }", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Internal server error.")
     @ExceptionHandler(Exception.class)
     public void exception(Exception e) {

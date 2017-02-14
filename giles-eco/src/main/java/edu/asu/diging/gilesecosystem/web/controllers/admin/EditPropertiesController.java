@@ -44,6 +44,7 @@ public class EditPropertiesController {
         
         page.setDigilibScalerUrl(propertyManager.getProperty(Properties.DIGILIB_SCALER_URL));
         page.setGilesUrl(propertyManager.getProperty(Properties.GILES_URL));
+        page.setFreddieUrl(propertyManager.getProperty(Properties.FREDDIE_HOST));
         page.setJarsFileUrl(propertyManager.getProperty(Properties.JARS_FILE_URL));
         page.setJarsUrl(propertyManager.getProperty(Properties.JARS_URL));
         page.setMetadataServiceDocUrl(propertyManager.getProperty(Properties.METADATA_SERVICE_DOC_ENDPOINT));
@@ -79,6 +80,7 @@ public class EditPropertiesController {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         propertiesMap.put(Properties.DIGILIB_SCALER_URL, systemConfigPage.getDigilibScalerUrl());
         propertiesMap.put(Properties.GILES_URL, systemConfigPage.getGilesUrl());
+        propertiesMap.put(Properties.FREDDIE_HOST, systemConfigPage.getFreddieUrl());
         propertiesMap.put(Properties.JARS_URL, systemConfigPage.getJarsUrl());
         propertiesMap.put(Properties.JARS_FILE_URL, systemConfigPage.getJarsFileUrl());
         propertiesMap.put(Properties.METADATA_SERVICE_DOC_ENDPOINT, systemConfigPage.getMetadataServiceDocUrl());

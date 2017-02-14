@@ -39,7 +39,13 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 public class FilesController {
     
     private Logger logger = LoggerFactory.getLogger(getClass());
+    
+    public final static String DOCUMENT_ID_PLACEHOLDER = "{docId}";
+    public final static String GET_DOCUMENT_PATH = "/rest/documents/" + DOCUMENT_ID_PLACEHOLDER;
 
+    public final static String FILE_ID_PLACEHOLDER = "{fileId}";
+    public final static String DOWNLOAD_FILE_URL = "/rest/files/" + FILE_ID_PLACEHOLDER + "/content";
+    
     @Autowired
     private IFilesManager filesManager;
     
@@ -125,9 +131,9 @@ public class FilesController {
 
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
-    
+             
     @DocumentAccessCheck
-    @RequestMapping(value = "rest/documents/{docId}", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = GET_DOCUMENT_PATH, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getDocument(
             @RequestParam(defaultValue = "") String accessToken,
             HttpServletRequest request,
@@ -154,9 +160,8 @@ public class FilesController {
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
-    
     @FileTokenAccessCheck
-    @RequestMapping(value = "/rest/files/{fileId}/content", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = DOWNLOAD_FILE_URL, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getFile(
             @PathVariable String fileId,
             @RequestParam(defaultValue="") String accessToken, 
@@ -175,6 +180,10 @@ public class FilesController {
         }
 
         byte[] content = filesManager.getFileContent(file);
+        if (content == null) {
+            logger.error("Could not retrieve file content.");
+            return new ResponseEntity<String>("{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         response.setContentType(file.getContentType());
         response.setContentLength(content.length);
         response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\""); 
