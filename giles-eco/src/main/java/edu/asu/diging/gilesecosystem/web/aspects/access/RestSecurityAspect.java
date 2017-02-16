@@ -3,6 +3,8 @@ package edu.asu.diging.gilesecosystem.web.aspects.access;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -23,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -227,23 +227,21 @@ public class RestSecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check) && args(fn,..)")
-    public Object checkImage(ProceedingJoinPoint joinPoint, ImageAccessCheck check, String fn) throws Throwable {
-        
-        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.value(), fn);
+    @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
+    public Object checkImageAccess(ProceedingJoinPoint joinPoint, ImageAccessCheck check ) throws Throwable {
+
+        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.value(), null);
         User user = userTokenObj.user;
         String token = userTokenObj.token;
-
-        if (fn.startsWith(File.separator)) {
-             fn = fn.substring(1);
-        }
 
         if (user == null) {
             throw new AspectMisconfigurationException(
                     "User object is missing in method.");
         }
-      
-        IFile file = filesManager.getFileByPath(fn);
+        
+        String imagePath = extractImagePath(joinPoint);
+        
+        IFile file = filesManager.getFileByPath(imagePath);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
@@ -251,7 +249,7 @@ public class RestSecurityAspect {
         if (file.getAccess() == DocumentAccess.PUBLIC) {
             return joinPoint.proceed();
         }
-        
+
         TokenHolder holder = new TokenHolder();
         ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
         if (authResult != null) {
@@ -326,6 +324,7 @@ public class RestSecurityAspect {
                 if (tokenHeader != null) {
                     token = tokenHeader.substring(6);
                 }
+                
             }
             if (argTypes[i].equals(User.class)) {
                 user = (User) args[i];
@@ -458,6 +457,42 @@ public class RestSecurityAspect {
         }
         
         return new ResponseEntity<String>(sw.toString(), status);
+    }
+    
+    private String extractImagePath(ProceedingJoinPoint joinPoint) throws UnsupportedEncodingException {
+        Object[] args = joinPoint.getArgs();
+        MethodSignature sig = (MethodSignature) joinPoint.getSignature();
+        String[] argNames = sig.getParameterNames();
+        Class<?>[] argTypes = sig.getParameterTypes();
+        
+        String imagePath = null;
+        for (int i = 0; i < argNames.length; i++) {
+            if (HttpServletRequest.class.isAssignableFrom(argTypes[i])) {
+                Map<String, String[]> parameters = ((HttpServletRequest)args[i]).getParameterMap();
+                
+                StringBuffer parameterBuffer = new StringBuffer();
+                for (String key : parameters.keySet()) {
+                    for (String value : parameters.get(key)) {
+                        parameterBuffer.append(key);
+                        parameterBuffer.append("=");
+
+                        parameterBuffer.append(URLEncoder.encode(value, "UTF-8"));
+                        parameterBuffer.append("&");
+
+                        if (key.equals("fn")) {
+                            imagePath = value;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (imagePath != null && imagePath.startsWith(File.separator)) {
+            imagePath = imagePath.substring(1);
+        }
+        
+        return imagePath;
+        
     }
     
     
