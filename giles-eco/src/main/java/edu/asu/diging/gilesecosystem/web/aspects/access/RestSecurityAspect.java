@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnly
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
@@ -239,15 +242,41 @@ public class RestSecurityAspect {
                     "User object is missing in method.");
         }
         
-        String imagePath = extractImagePath(joinPoint);
+        // Get the Method signature and the arguments passed to the method.
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+        Parameter[] paras = method.getParameters();
         
-        IFile file = filesManager.getFileByPath(imagePath);
-        if (file == null) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-        }
+        int imagePathParamIdx = -1;
         
-        if (file.getAccess() == DocumentAccess.PUBLIC) {
-            return joinPoint.proceed();
+        // Get all arguments that are passed to the calling method.
+        Object[] arguments = joinPoint.getArgs();
+        
+        if (paras != null) {
+
+            for (int i = 0; i < paras.length; i++) {
+                Parameter p = paras[i];
+                if (p.getAnnotation(InjectImagePath.class) != null) {
+                    imagePathParamIdx = i;
+                }
+            }
+
+            if (imagePathParamIdx != -1) {
+
+                String imagePath = extractImagePath(joinPoint);
+                
+                IFile file = filesManager.getFileByPath(imagePath);
+                if (file == null) {
+                    return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+                }
+                // Inject the image path at the index
+                arguments[imagePathParamIdx] = imagePath;
+                
+                if (file.getAccess() == DocumentAccess.PUBLIC) {
+                    return joinPoint.proceed(arguments);
+                }
+            }
+
         }
 
         TokenHolder holder = new TokenHolder();
@@ -260,8 +289,9 @@ public class RestSecurityAspect {
         // the token contents is
         extractUser(user, (IApiTokenContents)holder.tokenContents);
         
-        return joinPoint.proceed();
+        return joinPoint.proceed(arguments);
     }
+    
     
     @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
     public Object checkFileGitHubAccess(ProceedingJoinPoint joinPoint, FileTokenAccessCheck check) throws Throwable {

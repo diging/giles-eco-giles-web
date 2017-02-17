@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -40,20 +41,32 @@ public class DigilibPassthroughController {
 
     @Autowired
     private DigilibConnector digilibConnector;
-
+       
+    
     @ImageAccessCheck
     @RequestMapping(value = "/rest/digilib")
     public ResponseEntity<String> passthroughToDigilib(
             @RequestParam(defaultValue = "") String accessToken,
             HttpServletRequest request, 
             HttpServletResponse response,
-            User user)
+            User user,
+            @InjectImagePath String fn)
             throws UnsupportedEncodingException {
+        
+        IFile file = filesManager.getFileByPath(fn);
+        
+        if (file == null) {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
 
+        if (file.getAccess() != DocumentAccess.PUBLIC
+                && !file.getUsername().equals(user.getUsername())) {
+            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+        }
+
+        MultiValueMap<String, String> headers = new HttpHeaders();        
         Map<String, String[]> parameters = request.getParameterMap();
-        // remove accessToken since Github doesn't care about
 
-        String fn = null;
         StringBuffer parameterBuffer = new StringBuffer();
         for (String key : parameters.keySet()) {
             if (key.equals("accessToken")) {
@@ -65,27 +78,9 @@ public class DigilibPassthroughController {
 
                 parameterBuffer.append(URLEncoder.encode(value, "UTF-8"));
                 parameterBuffer.append("&");
-
-                if (key.equals("fn")) {
-                    fn = value;
-                }
             }
         }
 
-        if (fn.startsWith(File.separator)) {
-            fn = fn.substring(1);
-        }
-        IFile file = filesManager.getFileByPath(fn);
-        if (file == null) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-        }
-
-        if (file.getAccess() != DocumentAccess.PUBLIC
-                && !file.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
-        }
-
-        MultiValueMap<String, String> headers = new HttpHeaders();
         try {
             Map<String, List<String>> digilibHeaders = digilibConnector
                     .getDigilibImage(parameterBuffer.toString(),
