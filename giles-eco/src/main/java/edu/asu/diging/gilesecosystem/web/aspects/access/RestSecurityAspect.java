@@ -1,12 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
@@ -263,14 +260,12 @@ public class RestSecurityAspect {
 
             if (imagePathParamIdx != -1) {
 
-                String imagePath = extractImagePath(joinPoint);
+                String imagePath = (String) arguments[imagePathParamIdx];
                 
                 IFile file = filesManager.getFileByPath(imagePath);
                 if (file == null) {
                     return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
                 }
-                // Inject the image path at the index
-                arguments[imagePathParamIdx] = imagePath;
                 
                 if (file.getAccess() == DocumentAccess.PUBLIC) {
                     return joinPoint.proceed(arguments);
@@ -487,42 +482,6 @@ public class RestSecurityAspect {
         }
         
         return new ResponseEntity<String>(sw.toString(), status);
-    }
-    
-    private String extractImagePath(ProceedingJoinPoint joinPoint) throws UnsupportedEncodingException {
-        Object[] args = joinPoint.getArgs();
-        MethodSignature sig = (MethodSignature) joinPoint.getSignature();
-        String[] argNames = sig.getParameterNames();
-        Class<?>[] argTypes = sig.getParameterTypes();
-        
-        String imagePath = null;
-        for (int i = 0; i < argNames.length; i++) {
-            if (HttpServletRequest.class.isAssignableFrom(argTypes[i])) {
-                Map<String, String[]> parameters = ((HttpServletRequest)args[i]).getParameterMap();
-                
-                StringBuffer parameterBuffer = new StringBuffer();
-                for (String key : parameters.keySet()) {
-                    for (String value : parameters.get(key)) {
-                        parameterBuffer.append(key);
-                        parameterBuffer.append("=");
-
-                        parameterBuffer.append(URLEncoder.encode(value, "UTF-8"));
-                        parameterBuffer.append("&");
-
-                        if (key.equals("fn")) {
-                            imagePath = value;
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (imagePath != null && imagePath.startsWith(File.separator)) {
-            imagePath = imagePath.substring(1);
-        }
-        
-        return imagePath;
-        
     }
     
     
