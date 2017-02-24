@@ -255,6 +255,7 @@ public class RestSecurityAspect {
                 Parameter p = paras[i];
                 if (p.getAnnotation(InjectImagePath.class) != null) {
                     imagePathParamIdx = i;
+                    break;
                 }
             }
 

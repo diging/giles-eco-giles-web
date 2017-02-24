@@ -50,7 +50,7 @@ public class DigilibPassthroughController {
             HttpServletRequest request, 
             HttpServletResponse response,
             User user,
-            @InjectImagePath String fn)
+            @RequestParam(defaultValue = "") @InjectImagePath String fn)
             throws UnsupportedEncodingException {
         
         IFile file = filesManager.getFileByPath(fn);
