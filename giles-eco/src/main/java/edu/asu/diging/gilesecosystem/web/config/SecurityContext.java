@@ -62,7 +62,7 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
                 if (arg0.getRequestURI().indexOf("/signin/mitreid") > -1) {
                     return false;
                 }
-                if (arg0.getMethod() == "GET") {
+                if (arg0.getMethod().equals("GET")) {
                     return false;
                 }
                 return true;
