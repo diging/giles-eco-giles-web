@@ -53,7 +53,6 @@
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
         <metadata.service.doc.url></metadata.service.doc.url>
-        <tomcat.deploy.path></tomcat.deploy.path>
         <deploy.path.test>giles-test</deploy.path.test>
         <deploy.path.dev>giles</deploy.path.dev>
         <deploy.path.prod>giles</deploy.path.prod>
