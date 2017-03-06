@@ -48,4 +48,5 @@ public interface Properties {
     
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
 
+    public final static String FREDDIE_HOST = "freddie_host";
 }

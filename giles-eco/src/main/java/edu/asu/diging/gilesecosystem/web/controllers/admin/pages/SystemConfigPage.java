@@ -5,6 +5,7 @@ public class SystemConfigPage {
     private String registeredApps;
     private String digilibScalerUrl;
     private String gilesUrl;
+    private String freddieUrl;
     private String jarsUrl;
     private String jarsFileUrl;
     private String metadataServiceDocUrl;
@@ -32,6 +33,12 @@ public class SystemConfigPage {
     }
     public void setGilesUrl(String gilesUrl) {
         this.gilesUrl = gilesUrl;
+    }
+    public String getFreddieUrl() {
+        return freddieUrl;
+    }
+    public void setFreddieUrl(String freddieUrl) {
+        this.freddieUrl = freddieUrl;
     }
     public String getJarsUrl() {
         return jarsUrl;
