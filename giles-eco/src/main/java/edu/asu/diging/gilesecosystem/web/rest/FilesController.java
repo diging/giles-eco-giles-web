@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,12 +25,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentOwnerCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
@@ -158,6 +162,88 @@ public class FilesController {
         }
 
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
+    }
+
+    @DocumentOwnerCheck
+    @RequestMapping(value = GET_DOCUMENT_PATH
+            + "/access/change", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
+    public ResponseEntity<String> changeDocumentAccess(@RequestParam(defaultValue = "") String accessToken,
+            HttpServletRequest request, @PathVariable("docId") String docId, @RequestParam("access") String access,
+            User user) {
+
+        if (docId == null || docId.isEmpty() || access == null || access.isEmpty()) {
+            return new ResponseEntity<String>("{'error': 'Missing document id or/and access type.'}",
+                    HttpStatus.BAD_REQUEST);
+        }
+        IDocument doc = filesManager.getDocument(docId);
+
+        if (doc == null) {
+            return new ResponseEntity<String>("{'error': 'Document does not exist.'}", HttpStatus.NOT_FOUND);
+        }
+
+        DocumentAccess docAccess = null;
+        try {
+            docAccess = DocumentAccess.valueOf(access);
+            if (docAccess == null) {
+                throw new IllegalArgumentException("Incorrect document access type");
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        doc.setAccess(docAccess);
+        try {
+            filesManager.saveDocument(doc);
+        } catch (UnstorableObjectException e) {
+            return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        boolean errorWhenSavingFiles = false;
+
+        for (IPage page : doc.getPages()) {
+            IFile imgFile = filesManager.getFile(page.getImageFileId());
+            if (imgFile != null) {
+                imgFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(imgFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+
+            IFile txtFile = filesManager.getFile(page.getTextFileId());
+            if (txtFile != null) {
+                txtFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(txtFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+
+            IFile ocrFile = filesManager.getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                ocrFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(ocrFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+        }
+
+        if (errorWhenSavingFiles) {
+            return new ResponseEntity<String>(
+                    "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
+                    HttpStatus.OK);
+        }
+
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @FileTokenAccessCheck
