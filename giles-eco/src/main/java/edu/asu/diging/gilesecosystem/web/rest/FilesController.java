@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentOwnerCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
@@ -164,7 +163,7 @@ public class FilesController {
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
-    @DocumentOwnerCheck
+    @TokenCheck
     @RequestMapping(value = GET_DOCUMENT_PATH
             + "/access/change", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
     public ResponseEntity<String> changeDocumentAccess(@RequestParam(defaultValue = "") String accessToken,
@@ -172,6 +171,10 @@ public class FilesController {
             User user) {
 
         IDocument doc = filesManager.getDocument(docId);
+
+        if (!doc.getUsername().equals(user.getUsername())) {
+            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+        }
 
         DocumentAccess docAccess = null;
         try {
@@ -184,8 +187,8 @@ public class FilesController {
         }
 
         try {
-            boolean errorWhenSavingFiles = filesManager.changeDocumentAccess(doc, docAccess);
-            if (errorWhenSavingFiles) {
+            boolean isChangeSuccess = filesManager.changeDocumentAccess(doc, docAccess);
+            if (!isChangeSuccess) {
                 return new ResponseEntity<String>(
                         "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
                         HttpStatus.OK);

@@ -59,9 +59,9 @@ public class ChangeAccessController {
         }
         
         try {
-            boolean errorWhenSavingFiles = filesManager.changeDocumentAccess(document, docAccess);
+            boolean isChangeSuccess = filesManager.changeDocumentAccess(document, docAccess);
 
-            if (errorWhenSavingFiles) {
+            if (!isChangeSuccess) {
                 redirectAttrs.addAttribute("show_alert", true);
                 redirectAttrs.addAttribute("alert_type", "warning");
                 redirectAttrs.addAttribute("alert_msg",

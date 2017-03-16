@@ -69,6 +69,14 @@ public interface IFilesManager {
 
     public abstract IFile getFileByRequestId(String requestId);
     
+    /**
+     * This method changes document access type to provided new access type
+     *
+     * @param doc document for which access type is requested to change
+     * @param docAccess new access type for document
+     * @return true if the document access change was successfully; otherwise false.
+     * @throws UnstorableObjectException for exception while saving updated document
+     */
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
 
 }

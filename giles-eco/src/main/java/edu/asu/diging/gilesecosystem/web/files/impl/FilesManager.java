@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -324,7 +322,7 @@ public class FilesManager implements IFilesManager {
         doc.setAccess(docAccess);
         saveDocument(doc);
 
-        boolean errorWhenSavingFiles = false;
+        boolean isChangeSuccess = true;
 
         for (IPage page : doc.getPages()) {
             IFile imgFile = getFile(page.getImageFileId());
@@ -334,7 +332,7 @@ public class FilesManager implements IFilesManager {
                     saveFile(imgFile);
                 } catch (UnstorableObjectException e) {
                     logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
+                    isChangeSuccess = false;
                 }
             }
 
@@ -345,7 +343,7 @@ public class FilesManager implements IFilesManager {
                     saveFile(txtFile);
                 } catch (UnstorableObjectException e) {
                     logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
+                    isChangeSuccess = false;
                 }
             }
 
@@ -356,12 +354,12 @@ public class FilesManager implements IFilesManager {
                     saveFile(ocrFile);
                 } catch (UnstorableObjectException e) {
                     logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
+                    isChangeSuccess = false;
                 }
             }
         }
 
-        return errorWhenSavingFiles;
+        return isChangeSuccess;
     }
 
 }

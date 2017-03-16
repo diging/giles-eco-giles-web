@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentOwnerCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
@@ -287,39 +286,6 @@ public class RestSecurityAspect {
         extractUser(user, (IApiTokenContents)holder.tokenContents);
         
         return joinPoint.proceed(arguments);
-    }
-
-    @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
-    public Object checkDocumentOwner(ProceedingJoinPoint joinPoint, DocumentOwnerCheck check) throws Throwable {
-
-        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.github(), check.value());
-
-        User user = userTokenObj.user;
-        String token = userTokenObj.token;
-        String docId = userTokenObj.parameter;
-
-        if (user == null) {
-            throw new AspectMisconfigurationException("User object is missing in method.");
-        }
-
-        IDocument doc = filesManager.getDocument(docId);
-        if (doc == null) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-        }
-
-        TokenHolder holder = new TokenHolder();
-        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
-        if (authResult != null) {
-            return authResult;
-        }
-
-        extractUser(user, (IApiTokenContents) holder.tokenContents);
-
-        if (!doc.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
-        }
-
-        return joinPoint.proceed();
     }
 
     @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
