@@ -171,76 +171,28 @@ public class FilesController {
             HttpServletRequest request, @PathVariable("docId") String docId, @RequestParam("access") String access,
             User user) {
 
-        if (docId == null || docId.isEmpty() || access == null || access.isEmpty()) {
-            return new ResponseEntity<String>("{'error': 'Missing document id or/and access type.'}",
-                    HttpStatus.BAD_REQUEST);
-        }
         IDocument doc = filesManager.getDocument(docId);
-
-        if (doc == null) {
-            return new ResponseEntity<String>("{'error': 'Document does not exist.'}", HttpStatus.NOT_FOUND);
-        }
 
         DocumentAccess docAccess = null;
         try {
             docAccess = DocumentAccess.valueOf(access);
             if (docAccess == null) {
-                throw new IllegalArgumentException("Incorrect document access type");
+                return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
             }
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
         }
 
-        doc.setAccess(docAccess);
         try {
-            filesManager.saveDocument(doc);
+            boolean errorWhenSavingFiles = filesManager.changeDocumentAccess(doc, docAccess);
+            if (errorWhenSavingFiles) {
+                return new ResponseEntity<String>(
+                        "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
+                        HttpStatus.OK);
+            }
         } catch (UnstorableObjectException e) {
             return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        boolean errorWhenSavingFiles = false;
-
-        for (IPage page : doc.getPages()) {
-            IFile imgFile = filesManager.getFile(page.getImageFileId());
-            if (imgFile != null) {
-                imgFile.setAccess(docAccess);
-                try {
-                    filesManager.saveFile(imgFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
-                }
-            }
-
-            IFile txtFile = filesManager.getFile(page.getTextFileId());
-            if (txtFile != null) {
-                txtFile.setAccess(docAccess);
-                try {
-                    filesManager.saveFile(txtFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
-                }
-            }
-
-            IFile ocrFile = filesManager.getFile(page.getOcrFileId());
-            if (ocrFile != null) {
-                ocrFile.setAccess(docAccess);
-                try {
-                    filesManager.saveFile(ocrFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    errorWhenSavingFiles = true;
-                }
-            }
-        }
-
-        if (errorWhenSavingFiles) {
-            return new ResponseEntity<String>(
-                    "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
-                    HttpStatus.OK);
         }
 
         return new ResponseEntity<String>(HttpStatus.OK);

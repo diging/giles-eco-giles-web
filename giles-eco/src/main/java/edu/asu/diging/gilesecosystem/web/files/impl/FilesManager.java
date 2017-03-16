@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
@@ -313,6 +316,52 @@ public class FilesManager implements IFilesManager {
         List<IFile> files = new ArrayList<>();
         fileIds.forEach(id -> files.add(getFile(id)));
         return files;
+    }
+
+    @Override
+    public boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException {
+
+        doc.setAccess(docAccess);
+        saveDocument(doc);
+
+        boolean errorWhenSavingFiles = false;
+
+        for (IPage page : doc.getPages()) {
+            IFile imgFile = getFile(page.getImageFileId());
+            if (imgFile != null) {
+                imgFile.setAccess(docAccess);
+                try {
+                    saveFile(imgFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+
+            IFile txtFile = getFile(page.getTextFileId());
+            if (txtFile != null) {
+                txtFile.setAccess(docAccess);
+                try {
+                    saveFile(txtFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+
+            IFile ocrFile = getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                ocrFile.setAccess(docAccess);
+                try {
+                    saveFile(ocrFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+        }
+
+        return errorWhenSavingFiles;
     }
 
 }
