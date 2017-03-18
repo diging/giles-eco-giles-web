@@ -102,6 +102,12 @@ public class DigilibPassthroughController {
 
         logger.debug("Setting headers: " + headers);
         logger.debug("Response headers: " + response.getContentType());
+        try {
+            response.getOutputStream().close();
+        } catch (IOException e) {
+            return new ResponseEntity<String>(e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
