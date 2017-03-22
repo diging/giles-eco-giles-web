@@ -28,10 +28,14 @@
         <google.clientId></google.clientId>
         <google.secret></google.secret>
         <google.show.login>false</google.show.login>
-        <mitreid.clientId></mitreid.clientId>
-        <mitreid.secret></mitreid.secret>
-        <mitreid.server.url></mitreid.server.url>
+        <mitreid.clientId>e395ae9a-fd2e-4c46-8e07-126972f545a1</mitreid.clientId>
+        <mitreid.secret>MIr-4JPLGq70oeBMI1D2o5d9nNy6dSiYXiPog11a1Zp4I2gtknwse-IXRuaUUBFLRFMC9uYYXe6rBjShS5mUcA</mitreid.secret>
+        <mitreid.server.url>http://localhost:8082/openid-connect-server-webapp</mitreid.server.url>
         <mitreid.show.login>true</mitreid.show.login>
+        
+        <mitreid.introspect.clientId>4a98741e-1a5f-474a-97d0-3745ee252368</mitreid.introspect.clientId>
+        <mitreid.introspect.secret>AM1JXmZVEa8LVoxfo1Qs5aZSOHHrqDCh5hPezRfMr7vbrI2bjJrffKUqm4YmfvcRxd8iFrs-76kDPSbf40DfF6w</mitreid.introspect.secret>
+        
         <jwt.signing.secret></jwt.signing.secret>
         <jwt.signing.secret.apps></jwt.signing.secret.apps>
         <geco.giles.db_files></geco.giles.db_files>
@@ -67,12 +71,12 @@
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>requests</artifactId>
-            <version>0.1</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>util</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 
         <!-- Spring -->

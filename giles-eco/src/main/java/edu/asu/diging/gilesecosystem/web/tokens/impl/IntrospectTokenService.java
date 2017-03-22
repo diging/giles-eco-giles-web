@@ -2,6 +2,9 @@ package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,28 +25,42 @@ import com.google.gson.JsonParser;
 import com.nimbusds.jose.util.Base64;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
+import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
+import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 
 @Service
-public class IntrospectingTokenService {
+public class IntrospectTokenService {
 
     @Autowired
     private IPropertiesManager propertyManager;
 
+    @Autowired
+    private IRegisteredAppManager appsManager;
+
     private HttpComponentsClientHttpRequestFactory factory;
 
-    public IntrospectingTokenService() {
+    public IntrospectTokenService() {
         this(HttpClientBuilder.create().useSystemProperties().build());
     }
 
-    public IntrospectingTokenService(HttpClient httpClient) {
+    public IntrospectTokenService(HttpClient httpClient) {
         this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    boolean isValidAccessToken(String accessToken) {
+    public IApiTokenContents getOpenAccessToken(String accessToken, String appId) throws AppMisconfigurationException {
 
+        IRegisteredApp app = appsManager.getApp(appId);
+
+        if (app.getProviderClientId() == null || app.getProviderClientId().isEmpty()) {
+            throw new AppMisconfigurationException("No provider client id has been registered for your app.");
+        }
+
+        // use mitreid connect client with protected resource access
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
         final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);
 
@@ -51,7 +68,7 @@ public class IntrospectingTokenService {
 
         if (serverURL == null || serverURL.isEmpty()) {
             logger.error("Unable to load server URL");
-            return false;
+            return null;
         }
 
         // find out which URL to ask
@@ -75,15 +92,15 @@ public class IntrospectingTokenService {
         try {
             validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
-            logger.error("validateToken", rce);
-            return false;
+            logger.error("introspectToken", rce);
+            return null;
         }
 
         if (validatedToken != null) {
             // parse the json
             JsonElement jsonRoot = new JsonParser().parse(validatedToken);
             if (!jsonRoot.isJsonObject()) {
-                return false; // didn't get a proper JSON object
+                return null; // didn't get a proper JSON object
             }
 
             JsonObject tokenResponse = jsonRoot.getAsJsonObject();
@@ -92,22 +109,32 @@ public class IntrospectingTokenService {
                 // report an error?
                 logger.error("Got an error back: " + tokenResponse.get("error") + ", "
                         + tokenResponse.get("error_description"));
-                return false;
+                return null;
             }
 
             if (!tokenResponse.get("active").getAsBoolean()) {
                 // non-valid token
                 logger.info("Server returned non-active token");
-                return false;
+                return null;
             }
 
             // validated token is not null and has no error, it is a valid
             // access token
-            return true;
+
+            IApiTokenContents tokenContents = new ApiTokenContents();
+            
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            try {
+                Date expiryDate = dateFormat.parse(tokenResponse.get("expires_at").toString());
+                tokenContents.setExpired(expiryDate.before(new Date()));
+            } catch (ParseException e) {
+                logger.error("introspectToken ", e);
+            }
+            return tokenContents;
         }
 
         // validated token is null
-        return false;
+        return null;
     }
 
 }

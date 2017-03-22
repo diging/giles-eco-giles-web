@@ -13,6 +13,8 @@ public interface Properties {
     public final static String MITREID_CLIENT_ID = "mitreid_client_id";
     public final static String MITREID_SECRET = "mitreid_secret";
     public final static String MITREID_SERVER_URL = "mitreid_server_url";
+    public final static String MITREID_INTROSPECT_CLIENT_ID = "mitreid_introspect_clientId";
+    public final static String MITREID_INTROSPECT_SECRET = "mitreid_introspect_secret";
     
     public final static String SIGNING_KEY = "jwt_signing_secret";
     public final static String SIGNING_KEY_APPS = "jwt_signing_secret_apps";
@@ -49,4 +51,6 @@ public interface Properties {
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
 
     public final static String FREDDIE_HOST = "freddie_host";
+    
+    public final static String MITREID_CONNECT_ACCESSTOKEN = "mitreidconnectAccessToken";
 }

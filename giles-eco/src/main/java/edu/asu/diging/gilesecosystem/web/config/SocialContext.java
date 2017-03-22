@@ -27,6 +27,7 @@ import org.springframework.social.security.AuthenticationNameUserIdSource;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GoogleChecker;
+import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidAccessTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidChecker;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGithubConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGoogleConnectionFactory;
@@ -95,6 +96,11 @@ public class SocialContext implements SocialConfigurer {
         reloadService.addFactory(IReloadService.MITREID, mitreidFactory);
         identityProviderRegistry.addProvider(mitreidFactory.getProviderId());
         identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), MitreidChecker.ID);
+        
+        //new MITREid connect server provider for access token
+        identityProviderRegistry.addProvider(Properties.MITREID_CONNECT_ACCESSTOKEN);
+        identityProviderRegistry.addProviderTokenChecker(Properties.MITREID_CONNECT_ACCESSTOKEN, MitreidAccessTokenChecker.ID);
+        
     }
 
     @Override
