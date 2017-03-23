@@ -74,7 +74,7 @@
 
     <dependencies>
     
-            <!-- Giles Ecosystem -->
+        <!-- Giles Ecosystem -->
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>requests</artifactId>

@@ -52,5 +52,5 @@ public interface Properties {
 
     public final static String FREDDIE_HOST = "freddie_host";
     
-    public final static String MITREID_CONNECT_ACCESSTOKEN = "mitreidconnect_AccessToken";
+    public final static String MITREID_CONNECT_ACCESSTOKEN = "mitreidconnect_accessToken";
 }
