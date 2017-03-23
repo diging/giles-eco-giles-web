@@ -15,6 +15,14 @@
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
+
+        <geco.requests.version>0.2.1</geco.requests.version>
+        <geco.util.version>0.4.1</geco.util.version>
+
+        <tomcat.deploy.path></tomcat.deploy.path>
+        <tomcat.app.name>geco-giles</tomcat.app.name>
+        <tomcat.server.id>TomcatServer</tomcat.server.id>
+        
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
@@ -30,7 +38,7 @@
         <google.show.login>false</google.show.login>
         <mitreid.clientId></mitreid.clientId>
         <mitreid.secret></mitreid.secret>
-        <mitreid.server.url>http://localhost:8082/openid-connect-server-webapp</mitreid.server.url>
+        <mitreid.server.url></mitreid.server.url>
         <mitreid.show.login>true</mitreid.show.login>
         
         <mitreid.introspect.clientId></mitreid.introspect.clientId>
@@ -49,7 +57,6 @@
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
         <metadata.service.doc.url></metadata.service.doc.url>
-        <tomcat.deploy.path></tomcat.deploy.path>
         <deploy.path.test>giles-test</deploy.path.test>
         <deploy.path.dev>giles</deploy.path.dev>
         <deploy.path.prod>giles</deploy.path.prod>
@@ -66,17 +73,17 @@
     </properties>
 
     <dependencies>
-
-        <!-- Giles Ecosystem -->
+    
+            <!-- Giles Ecosystem -->
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>requests</artifactId>
-            <version>0.2.1-SNAPSHOT</version>
+            <version>${geco.requests.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>util</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>${geco.util.version}</version>
         </dependency>
 
         <!-- Spring -->
