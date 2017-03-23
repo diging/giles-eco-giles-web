@@ -45,9 +45,6 @@ public class NimbusTokenService implements INimbusTokenService {
     @Autowired
     private IRegisteredAppManager appsManager;
     
-    @Autowired
-    private IntrospectingTokenService introspecttokenService;
-    
     private String issuerUrl;
     
     @PostConstruct
@@ -91,12 +88,6 @@ public class NimbusTokenService implements INimbusTokenService {
         
         if (!audiences.contains(app.getProviderClientId())) {
             return null;
-        }
-        
-        //use introspect API here to validate clientId
-        //validate token string against introspection endpoint
-        if(!introspecttokenService.isValidAccessToken(token)) {
-            return null; 
         }
         
         Issuer iss = new Issuer(issuerUrl);
