@@ -18,4 +18,8 @@ public interface IAppToken extends ITokenContents {
 
     public abstract String getAppId();
 
+    public abstract String getAuthorizationType();
+
+    public abstract void setAuthorizationType(String authorizationType);
+
 }

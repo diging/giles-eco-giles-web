@@ -2,8 +2,6 @@ package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
 import java.io.IOException;
 import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.http.client.HttpClient;
@@ -106,7 +104,6 @@ public class IntrospectTokenService {
             JsonObject tokenResponse = jsonRoot.getAsJsonObject();
 
             if (tokenResponse.get("error") != null) {
-                // report an error?
                 logger.error("Got an error back: " + tokenResponse.get("error") + ", "
                         + tokenResponse.get("error_description"));
                 return null;
@@ -120,20 +117,22 @@ public class IntrospectTokenService {
 
             // validated token is not null and has no error, it is a valid
             // access token
-
             IApiTokenContents tokenContents = new ApiTokenContents();
             
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-            try {
-                Date expiryDate = dateFormat.parse(tokenResponse.get("expires_at").toString());
-                tokenContents.setExpired(expiryDate.before(new Date()));
-            } catch (ParseException e) {
-                logger.error("introspectToken ", e);
+            // get username, remove leading and trailing "" from username
+            String username = tokenResponse.get("sub").toString();
+            if(username != null) {
+                tokenContents.setUsername(username.replaceAll("^\"|\"$", ""));
             }
+            String expiryTime = tokenResponse.get("exp").toString();
+            if (expiryTime != null) {
+                Date expirationTime = new Date(Long.parseLong(expiryTime) * 1000);
+                tokenContents.setExpired(expirationTime.before(new Date()));
+            }
+
             return tokenContents;
         }
 
-        // validated token is null
         return null;
     }
 
