@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,14 +24,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
@@ -161,44 +158,6 @@ public class FilesController {
         }
 
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
-    }
-
-    @TokenCheck
-    @RequestMapping(value = GET_DOCUMENT_PATH
-            + "/access/change", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
-    public ResponseEntity<String> changeDocumentAccess(@RequestParam(defaultValue = "") String accessToken,
-            HttpServletRequest request, @PathVariable("docId") String docId, @RequestParam("access") String access,
-            User user) {
-
-        IDocument doc = filesManager.getDocument(docId);
-
-        if (!doc.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
-        }
-
-        DocumentAccess docAccess = null;
-        try {
-            docAccess = DocumentAccess.valueOf(access);
-            if (docAccess == null) {
-                return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
-            }
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            boolean isChangeSuccess = filesManager.changeDocumentAccess(doc, docAccess);
-            if (!isChangeSuccess) {
-                return new ResponseEntity<String>(
-                        "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
-                        HttpStatus.OK);
-            }
-        } catch (UnstorableObjectException e) {
-            return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @FileTokenAccessCheck

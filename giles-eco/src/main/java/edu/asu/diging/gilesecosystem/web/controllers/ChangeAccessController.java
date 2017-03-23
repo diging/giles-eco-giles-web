@@ -57,21 +57,10 @@ public class ChangeAccessController {
             // let's ignore it
             return "redirect:/files/upload";
         }
-        
+
+        document.setAccess(docAccess);
         try {
-            boolean isChangeSuccess = filesManager.changeDocumentAccess(document, docAccess);
-
-            if (!isChangeSuccess) {
-                redirectAttrs.addAttribute("show_alert", true);
-                redirectAttrs.addAttribute("alert_type", "warning");
-                redirectAttrs.addAttribute("alert_msg",
-                        "Access type successfully updated for document but one or more files could not be updated.");
-            } else {
-                redirectAttrs.addAttribute("show_alert", true);
-                redirectAttrs.addAttribute("alert_type", "success");
-                redirectAttrs.addAttribute("alert_msg", "Access type successfully updated.");
-            }
-
+            filesManager.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // this should not happen, since it's an existing object
             logger.error("Could not store document.", e);
@@ -82,7 +71,55 @@ public class ChangeAccessController {
             return "redirect:/uploads/" + uploadId;
         }
 
-        return "redirect:/uploads/" + uploadId;
+        boolean errorWhenSavingFiles = false;
+        
+        for (IPage page : document.getPages()) {
+            IFile imgFile = filesManager.getFile(page.getImageFileId());
+            if (imgFile != null) {
+                imgFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(imgFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+            
+            IFile txtFile = filesManager.getFile(page.getTextFileId());
+            if (txtFile != null) {
+                txtFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(txtFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+            
+            IFile ocrFile = filesManager.getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                ocrFile.setAccess(docAccess);
+                try {
+                    filesManager.saveFile(ocrFile);
+                } catch (UnstorableObjectException e) {
+                    logger.error("Could not store file.", e);
+                    errorWhenSavingFiles = true;
+                }
+            }
+        }
 
+        if (errorWhenSavingFiles) {
+            redirectAttrs.addAttribute("show_alert", true);
+            redirectAttrs.addAttribute("alert_type", "warning");
+            redirectAttrs.addAttribute("alert_msg",
+                    "Access type successfully updated for document but one or more files could not be updated.");
+        } else {
+            redirectAttrs.addAttribute("show_alert", true);
+            redirectAttrs.addAttribute("alert_type", "success");
+            redirectAttrs.addAttribute("alert_msg",
+                    "Access type successfully updated.");
+        }
+
+        return "redirect:/uploads/" + uploadId;
     }
 }
