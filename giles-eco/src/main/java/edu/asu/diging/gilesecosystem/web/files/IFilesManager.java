@@ -70,7 +70,8 @@ public interface IFilesManager {
     public abstract IFile getFileByRequestId(String requestId);
     
     /**
-     * This method changes document access type to provided new access type
+     * This method changes access type for document and all files attached
+     * as pages to this document to provided new access type
      *
      * @param doc document for which access type is requested to change
      * @param docAccess new access type for document

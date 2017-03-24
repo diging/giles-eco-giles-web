@@ -327,39 +327,38 @@ public class FilesManager implements IFilesManager {
         for (IPage page : doc.getPages()) {
             IFile imgFile = getFile(page.getImageFileId());
             if (imgFile != null) {
-                imgFile.setAccess(docAccess);
-                try {
-                    saveFile(imgFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    isChangeSuccess = false;
+                if(!changeFileAccess(imgFile, docAccess)) {
+                    isChangeSuccess  = false;
                 }
             }
 
             IFile txtFile = getFile(page.getTextFileId());
             if (txtFile != null) {
-                txtFile.setAccess(docAccess);
-                try {
-                    saveFile(txtFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    isChangeSuccess = false;
+                if(!changeFileAccess(txtFile, docAccess)) {
+                    isChangeSuccess  = false;
                 }
             }
 
             IFile ocrFile = getFile(page.getOcrFileId());
             if (ocrFile != null) {
-                ocrFile.setAccess(docAccess);
-                try {
-                    saveFile(ocrFile);
-                } catch (UnstorableObjectException e) {
-                    logger.error("Could not store file.", e);
-                    isChangeSuccess = false;
+                if(!changeFileAccess(ocrFile, docAccess)) {
+                    isChangeSuccess  = false;
                 }
             }
         }
 
         return isChangeSuccess;
+    }
+
+    private boolean changeFileAccess(IFile file, DocumentAccess docAccess) {
+        file.setAccess(docAccess);
+        try {
+            saveFile(file);
+        } catch (UnstorableObjectException e) {
+            logger.error("Could not store file.", e);
+            return false;
+        }
+        return true;
     }
 
 }
