@@ -28,9 +28,17 @@ import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException
 import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.tokens.IIntrospectTokenService;
 
+/**
+ * Class to introspect access token for MITREid connect server
+ * @author snilapwa
+ *
+ */
 @Service
-public class IntrospectTokenService {
+public class IntrospectTokenService implements IIntrospectTokenService{
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private IPropertiesManager propertyManager;
@@ -48,9 +56,14 @@ public class IntrospectTokenService {
         this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public IApiTokenContents getOpenAccessToken(String accessToken, String appId) throws AppMisconfigurationException {
+    /**
+     * Calls MITREid connect server introspect api using client with
+     * protected resource access.
+     *  @param accessToken accessToken to pass to introspect Api
+     *  @param appId appId to get provider client
+     *  @return tokenContents with username and expiration status
+     */
+    public IApiTokenContents introspectAccessToken(String accessToken, String appId) throws AppMisconfigurationException {
 
         IRegisteredApp app = appsManager.getApp(appId);
 
@@ -62,21 +75,15 @@ public class IntrospectTokenService {
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
         final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);
 
-        String serverURL = propertyManager.getProperty(Properties.MITREID_SERVER_URL);
+        String introspectionUrl = propertyManager.getProperty(Properties.MITREID_INTROSPECT_URL);
 
-        if (serverURL == null || serverURL.isEmpty()) {
-            logger.error("Unable to load server URL");
-            return null;
+        if (introspectionUrl == null || introspectionUrl.isEmpty()) {
+            throw new AppMisconfigurationException("Unable to load server URL");
         }
 
-        // find out which URL to ask
-        String introspectionUrl = propertyManager.getProperty(Properties.MITREID_SERVER_URL) + "/introspect";
-        String validatedToken = null;
-
-        RestTemplate restTemplate;
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
-        restTemplate = new RestTemplate(factory) {
+        RestTemplate restTemplate = new RestTemplate(factory) {
             @Override
             protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
                 ClientHttpRequest httpRequest = super.createRequest(url, method);
@@ -87,6 +94,7 @@ public class IntrospectTokenService {
         };
 
         form.add("token", accessToken);
+        String validatedToken = null;
         try {
             validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
@@ -94,46 +102,56 @@ public class IntrospectTokenService {
             return null;
         }
 
-        if (validatedToken != null) {
-            // parse the json
-            JsonElement jsonRoot = new JsonParser().parse(validatedToken);
-            if (!jsonRoot.isJsonObject()) {
-                return null; // didn't get a proper JSON object
-            }
+        return parseValidatedToken(validatedToken);
+    }
 
-            JsonObject tokenResponse = jsonRoot.getAsJsonObject();
+    private IApiTokenContents parseValidatedToken(String validatedToken) {
 
-            if (tokenResponse.get("error") != null) {
-                logger.error("Got an error back: " + tokenResponse.get("error") + ", "
-                        + tokenResponse.get("error_description"));
-                return null;
-            }
-
-            if (!tokenResponse.get("active").getAsBoolean()) {
-                // non-valid token
-                logger.info("Server returned non-active token");
-                return null;
-            }
-
-            // validated token is not null and has no error, it is a valid
-            // access token
-            IApiTokenContents tokenContents = new ApiTokenContents();
-            
-            // get username, remove leading and trailing "" from username
-            String username = tokenResponse.get("sub").toString();
-            if(username != null) {
-                tokenContents.setUsername(username.replaceAll("^\"|\"$", ""));
-            }
-            String expiryTime = tokenResponse.get("exp").toString();
-            if (expiryTime != null) {
-                Date expirationTime = new Date(Long.parseLong(expiryTime) * 1000);
-                tokenContents.setExpired(expirationTime.before(new Date()));
-            }
-
-            return tokenContents;
+        if (validatedToken == null) {
+            return null;
         }
 
-        return null;
+        // parse the json
+        JsonElement jsonRoot = new JsonParser().parse(validatedToken);
+        if (!jsonRoot.isJsonObject()) {
+            return null; // didn't get a proper JSON object
+        }
+
+        JsonObject tokenResponse = jsonRoot.getAsJsonObject();
+
+        if (tokenResponse.get("error") != null) {
+            logger.error("Got an error back: " + tokenResponse.get("error") + ", "
+                    + tokenResponse.get("error_description"));
+            return null;
+        }
+
+        if (!tokenResponse.get("active").getAsBoolean()) {
+            // non-valid token
+            logger.info("Server returned non-active token");
+            return null;
+        }
+
+        // validated token is not null and has no error, it is a valid
+        // access token
+        return updateTokenContents(tokenResponse);
+    }
+
+    private IApiTokenContents updateTokenContents(JsonObject tokenResponse) {
+
+        IApiTokenContents tokenContents = new ApiTokenContents();
+
+        // get username, remove leading and trailing "" from username
+        JsonElement username = tokenResponse.get("sub");
+        if (username != null) {
+            tokenContents.setUsername(username.toString().replaceAll("^\"|\"$", ""));
+        }
+        JsonElement expiryTime = tokenResponse.get("exp");
+        if (expiryTime != null) {
+            Date expirationTime = new Date(Long.parseLong(expiryTime.toString()) * 1000);
+            tokenContents.setExpired(expirationTime.before(new Date()));
+        }
+
+        return tokenContents;
     }
 
 }

@@ -4,6 +4,6 @@ import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException
 
 public interface IIntrospectTokenService {
 
-    public abstract IApiTokenContents getOpenAccessToken(String token, String appId) throws AppMisconfigurationException;
+    public abstract IApiTokenContents introspectAccessToken(String token, String appId) throws AppMisconfigurationException;
 
 }

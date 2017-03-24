@@ -43,6 +43,7 @@
         
         <mitreid.introspect.clientId></mitreid.introspect.clientId>
         <mitreid.introspect.secret></mitreid.introspect.secret>
+        <mitreid.introspect.url></mitreid.introspect.url>
         
         <jwt.signing.secret></jwt.signing.secret>
         <jwt.signing.secret.apps></jwt.signing.secret.apps>

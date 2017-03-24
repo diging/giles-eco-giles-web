@@ -26,6 +26,11 @@ public interface IRegisteredApp extends IStorableObject {
 
     public abstract String getProviderClientId();
 
+    /**
+     * authorization type required to use in token validation.
+     * @return empty string for IdToken validation
+     * @return non-empty string for accessToken validation
+     */
     public abstract String getAuthorizationType();
 
     public abstract void setAuthorizationType(String authorizationType);

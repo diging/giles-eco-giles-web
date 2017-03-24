@@ -15,6 +15,7 @@ public interface Properties {
     public final static String MITREID_SERVER_URL = "mitreid_server_url";
     public final static String MITREID_INTROSPECT_CLIENT_ID = "mitreid_introspect_clientId";
     public final static String MITREID_INTROSPECT_SECRET = "mitreid_introspect_secret";
+    public final static String MITREID_INTROSPECT_URL = "mitreid_introspect_url";
     
     public final static String SIGNING_KEY = "jwt_signing_secret";
     public final static String SIGNING_KEY_APPS = "jwt_signing_secret_apps";

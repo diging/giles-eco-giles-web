@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl;
 
-import io.jsonwebtoken.MalformedJwtException;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -12,13 +10,16 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerRes
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
 import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.exceptions.IdentityProviderMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.INimbusTokenService;
 import edu.asu.diging.gilesecosystem.web.tokens.impl.IntrospectTokenService;
 
+/**
+ * Class to validate access token, calls introspect token service.
+ * @author snilapwa
+ *
+ */
 @Service
 public class MitreidAccessTokenChecker implements IChecker {
     
@@ -40,7 +41,7 @@ public class MitreidAccessTokenChecker implements IChecker {
         
         IApiTokenContents accessToken;
         try {
-            accessToken = tokenService.getOpenAccessToken(token, appId);
+            accessToken = tokenService.introspectAccessToken(token, appId);
         } catch (AppMisconfigurationException e) {
             throw new ServerMisconfigurationException("App has not been properly registered.", e);
         }
