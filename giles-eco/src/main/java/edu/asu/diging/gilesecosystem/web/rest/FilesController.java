@@ -163,44 +163,6 @@ public class FilesController {
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
-    @TokenCheck
-    @RequestMapping(value = GET_DOCUMENT_PATH
-            + "/access/change", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
-    public ResponseEntity<String> changeDocumentAccess(@RequestParam(defaultValue = "") String accessToken,
-            HttpServletRequest request, @PathVariable("docId") String docId, @RequestParam("access") String access,
-            User user) {
-
-        IDocument doc = filesManager.getDocument(docId);
-
-        if (!doc.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
-        }
-
-        DocumentAccess docAccess = null;
-        try {
-            docAccess = DocumentAccess.valueOf(access);
-            if (docAccess == null) {
-                return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
-            }
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            boolean isChangeSuccess = filesManager.changeDocumentAccess(doc, docAccess);
-            if (!isChangeSuccess) {
-                return new ResponseEntity<String>(
-                        "{\"warning\": \"Access type successfully updated for document but one or more files could not be updated.\" }",
-                        HttpStatus.OK);
-            }
-        } catch (UnstorableObjectException e) {
-            return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
     @FileTokenAccessCheck
     @RequestMapping(value = DOWNLOAD_FILE_URL, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getFile(

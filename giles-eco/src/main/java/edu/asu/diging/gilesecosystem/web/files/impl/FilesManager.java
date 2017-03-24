@@ -327,23 +327,17 @@ public class FilesManager implements IFilesManager {
         for (IPage page : doc.getPages()) {
             IFile imgFile = getFile(page.getImageFileId());
             if (imgFile != null) {
-                if(!changeFileAccess(imgFile, docAccess)) {
-                    isChangeSuccess  = false;
-                }
+                isChangeSuccess = isChangeSuccess && changeFileAccess(imgFile, docAccess);
             }
 
             IFile txtFile = getFile(page.getTextFileId());
             if (txtFile != null) {
-                if(!changeFileAccess(txtFile, docAccess)) {
-                    isChangeSuccess  = false;
-                }
+                isChangeSuccess = isChangeSuccess && changeFileAccess(txtFile, docAccess);
             }
 
             IFile ocrFile = getFile(page.getOcrFileId());
             if (ocrFile != null) {
-                if(!changeFileAccess(ocrFile, docAccess)) {
-                    isChangeSuccess  = false;
-                }
+                isChangeSuccess = isChangeSuccess && changeFileAccess(ocrFile, docAccess);
             }
         }
 
