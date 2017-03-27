@@ -287,8 +287,7 @@ public class RestSecurityAspect {
         
         return joinPoint.proceed(arguments);
     }
-    
-    
+
     @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
     public Object checkFileGitHubAccess(ProceedingJoinPoint joinPoint, FileTokenAccessCheck check) throws Throwable {
         

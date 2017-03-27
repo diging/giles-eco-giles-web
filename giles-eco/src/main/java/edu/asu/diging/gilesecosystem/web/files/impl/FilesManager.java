@@ -21,6 +21,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
@@ -313,6 +314,45 @@ public class FilesManager implements IFilesManager {
         List<IFile> files = new ArrayList<>();
         fileIds.forEach(id -> files.add(getFile(id)));
         return files;
+    }
+
+    @Override
+    public boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException {
+
+        doc.setAccess(docAccess);
+        saveDocument(doc);
+
+        boolean isChangeSuccess = true;
+
+        for (IPage page : doc.getPages()) {
+            IFile imgFile = getFile(page.getImageFileId());
+            if (imgFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(imgFile, docAccess);
+            }
+
+            IFile txtFile = getFile(page.getTextFileId());
+            if (txtFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(txtFile, docAccess);
+            }
+
+            IFile ocrFile = getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(ocrFile, docAccess);
+            }
+        }
+
+        return isChangeSuccess;
+    }
+
+    private boolean changeFileAccess(IFile file, DocumentAccess docAccess) {
+        file.setAccess(docAccess);
+        try {
+            saveFile(file);
+        } catch (UnstorableObjectException e) {
+            logger.error("Could not store file.", e);
+            return false;
+        }
+        return true;
     }
 
 }
