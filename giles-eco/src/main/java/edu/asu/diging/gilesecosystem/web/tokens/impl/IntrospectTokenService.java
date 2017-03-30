@@ -1,42 +1,31 @@
 package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.Date;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.nimbusds.jose.util.Base64;
-
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
+import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.IIntrospectTokenService;
 
 /**
  * Class to introspect access token for MITREid connect server
+ * 
  * @author snilapwa
  *
  */
 @Service
-public class IntrospectTokenService implements IIntrospectTokenService{
+public class IntrospectTokenService implements IIntrospectTokenService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -44,59 +33,29 @@ public class IntrospectTokenService implements IIntrospectTokenService{
     private IPropertiesManager propertyManager;
 
     @Autowired
-    private IRegisteredAppManager appsManager;
-
-    private HttpComponentsClientHttpRequestFactory factory;
-
-    public IntrospectTokenService() {
-        this(HttpClientBuilder.create().useSystemProperties().build());
-    }
-
-    public IntrospectTokenService(HttpClient httpClient) {
-        this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-    }
+    private AccessTokenRestTemplate accessTokenRestTemplate;
 
     /**
-     * Calls MITREid connect server introspect api using client with
-     * protected resource access.
-     *  @param accessToken accessToken to pass to introspect Api
-     *  @param appId appId to get provider client
-     *  @return tokenContents with username and expiration status
+     * Calls MITREid connect server introspect api using client with protected
+     * resource access keys.
+     * 
+     * @param accessToken accessToken to pass to introspect Api
+     * @return tokenContents with username and expiration status
+     * @throws ServerMisconfigurationException
      */
-    public IApiTokenContents introspectAccessToken(String accessToken, String appId) throws AppMisconfigurationException {
-
-        IRegisteredApp app = appsManager.getApp(appId);
-
-        if (app.getProviderClientId() == null || app.getProviderClientId().isEmpty()) {
-            throw new AppMisconfigurationException("No provider client id has been registered for your app.");
-        }
-
-        // use mitreid connect client with protected resource access
-        final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
-        final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);
+    public IApiTokenContents introspectAccessToken(String accessToken) throws ServerMisconfigurationException {
 
         String introspectionUrl = propertyManager.getProperty(Properties.MITREID_INTROSPECT_URL);
 
         if (introspectionUrl == null || introspectionUrl.isEmpty()) {
-            throw new AppMisconfigurationException("Unable to load server URL");
+            throw new ServerMisconfigurationException("Unable to load server URL");
         }
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-
-        RestTemplate restTemplate = new RestTemplate(factory) {
-            @Override
-            protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
-                ClientHttpRequest httpRequest = super.createRequest(url, method);
-                httpRequest.getHeaders().add("Authorization",
-                        String.format("Basic %s", Base64.encode(String.format("%s:%s", clientId, clientSecret))));
-                return httpRequest;
-            }
-        };
-
         form.add("token", accessToken);
         String validatedToken = null;
         try {
-            validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
+            validatedToken = accessTokenRestTemplate.getRestTemplate().postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
             logger.error("introspectToken", rce);
             return null;
@@ -120,8 +79,7 @@ public class IntrospectTokenService implements IIntrospectTokenService{
         JsonObject tokenResponse = jsonRoot.getAsJsonObject();
 
         if (tokenResponse.get("error") != null) {
-            logger.error("Got an error back: " + tokenResponse.get("error") + ", "
-                    + tokenResponse.get("error_description"));
+            logger.error("Got an error back: " + tokenResponse.get("error") + ", " + tokenResponse.get("error_description"));
             return null;
         }
 

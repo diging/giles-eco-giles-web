@@ -33,10 +33,11 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     
     /* (non-Javadoc)
      * @see edu.asu.giles.service.impl.IIdentityProviderRegistry#addProvider(java.lang.String)
-     * providerId is combination of 'provider' + "_" + 'authorizationType'
+     */
+    /**
+     * @param providerId combination of 'provider' + "_" + 'authorizationType'
      * e.g mitreidconnect_accessToken has provider 'mitreidconnect' with authorization using 'accessToken'
      * make sure not to have '_' in your provider name.
-     *
      */
     @Override
     public void addProvider(String providerId) {

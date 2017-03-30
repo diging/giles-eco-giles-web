@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
-import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.impl.IntrospectTokenService;
@@ -35,17 +33,12 @@ public class MitreidAccessTokenChecker implements IChecker {
 
     @Override
     public CheckerResult validateToken(String token, String appId) throws GeneralSecurityException,
-            IOException, InvalidTokenException, ServerMisconfigurationException {
+            IOException, ServerMisconfigurationException {
         CheckerResult result = new CheckerResult();
         result.setResult(ValidationResult.INVALID);
         
-        IApiTokenContents accessToken;
-        try {
-            accessToken = tokenService.introspectAccessToken(token, appId);
-        } catch (AppMisconfigurationException e) {
-            throw new ServerMisconfigurationException("App has not been properly registered.", e);
-        }
-        
+        IApiTokenContents accessToken = tokenService.introspectAccessToken(token);
+
         result.setPayload(accessToken);
         if (accessToken == null) {
             result.setResult(ValidationResult.INVALID);
