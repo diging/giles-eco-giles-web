@@ -89,7 +89,7 @@ public class NimbusTokenService implements INimbusTokenService {
         if (!audiences.contains(app.getProviderClientId())) {
             return null;
         }
-
+        
         Issuer iss = new Issuer(issuerUrl);
         ClientID clientID = new ClientID(app.getProviderClientId());
         IDTokenValidator validator = new IDTokenValidator(iss, clientID, jwsAlg, jwkSetURL);
