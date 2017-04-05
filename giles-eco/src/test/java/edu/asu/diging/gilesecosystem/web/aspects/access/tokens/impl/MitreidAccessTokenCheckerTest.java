@@ -49,7 +49,7 @@ public class MitreidAccessTokenCheckerTest {
     }
 
     @Test
-    public void test_validateaccessToken_valid()
+    public void test_validateToken_valid()
             throws GeneralSecurityException, IOException, ServerMisconfigurationException {
         CheckerResult result = checkerToTest.validateToken(VALID_ACCESS_TOKEN, APP_ID);
         Assert.assertNotNull(result.getPayload());
@@ -57,13 +57,13 @@ public class MitreidAccessTokenCheckerTest {
     }
 
     @Test(expected = ServerMisconfigurationException.class)
-    public void test_misconfigured_server_access_token()
+    public void test_validateToken_misconfigured_server()
             throws GeneralSecurityException, IOException, ServerMisconfigurationException {
         checkerToTest.validateToken(MISCONFIGURED_SERVER_ACCESS_TOKEN, APP_ID);
     }
 
     @Test
-    public void test_validateaccessToken_invalid()
+    public void test_validateToken_invalid()
             throws GeneralSecurityException, IOException, ServerMisconfigurationException {
         CheckerResult result = checkerToTest.validateToken(INVALID_ACCESS_TOKEN, APP_ID);
         Assert.assertNull(result.getPayload());

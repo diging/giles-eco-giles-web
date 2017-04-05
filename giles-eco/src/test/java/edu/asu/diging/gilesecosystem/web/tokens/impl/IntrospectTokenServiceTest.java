@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.AccessTokenRestTemplateConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -22,7 +23,7 @@ public class IntrospectTokenServiceTest {
     private IPropertiesManager propertiesManager;
 
     @Mock
-    private AccessTokenRestTemplate accessTokenRestTemplate;
+    private AccessTokenRestTemplateConfig accessTokenRestTemplate;
 
     @Mock
     private RestTemplate restTemplate;
@@ -46,7 +47,7 @@ public class IntrospectTokenServiceTest {
     }
 
     @Test
-    public void test_accessToken_valid() throws AppMisconfigurationException, ServerMisconfigurationException {
+    public void test_introspectAccessToken_valid() throws AppMisconfigurationException, ServerMisconfigurationException {
         Mockito.when(accessTokenRestTemplate.getRestTemplate()).thenReturn(restTemplate);
         Mockito.when(restTemplate.postForObject(Matchers.eq(MITREID_INTROSPECT_URL), Matchers.anyMap(),
                 Matchers.anyObject())).thenReturn(VALID_REST_RESPONSE);
@@ -57,7 +58,7 @@ public class IntrospectTokenServiceTest {
     }
 
     @Test
-    public void test_accessToken_invalid() throws AppMisconfigurationException, ServerMisconfigurationException {
+    public void test_introspectAccessToken_invalid() throws AppMisconfigurationException, ServerMisconfigurationException {
         Mockito.when(accessTokenRestTemplate.getRestTemplate()).thenReturn(restTemplate);
         Mockito.when(restTemplate.postForObject(Matchers.eq(MITREID_INTROSPECT_URL), Matchers.anyMap(),
                 Matchers.anyObject())).thenReturn(INVALID_REST_RESPONSE);
@@ -66,7 +67,7 @@ public class IntrospectTokenServiceTest {
     }
 
     @Test(expected = ServerMisconfigurationException.class)
-    public void test_accessToken_misconfigured_server()
+    public void test_introspectAccessToken_misconfigured_server()
             throws AppMisconfigurationException, ServerMisconfigurationException {
         Mockito.when(propertiesManager.getProperty(Properties.MITREID_INTROSPECT_URL)).thenReturn(null);
         serviceToTest.introspectAccessToken(VALID_ACCESS_TOKEN);

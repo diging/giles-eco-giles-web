@@ -35,9 +35,12 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      * @see edu.asu.giles.service.impl.IIdentityProviderRegistry#addProvider(java.lang.String)
      */
     /**
+     * map providerId to provider name
      * @param providerId combination of 'provider' + "_" + 'authorizationType'
      * e.g mitreidconnect_accessToken has provider 'mitreidconnect' with authorization using 'accessToken'
      * make sure not to have '_' in your provider name.
+     * providerId does not necessarily have to contain 'authorizationType', in that case providerId just contain
+     * 'provider' without '_'
      */
     @Override
     public void addProvider(String providerId) {
@@ -67,7 +70,12 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     }
     
     @Override
-    public String getCheckerId(String providerId) {
-        return providerTokenChecker.get(providerId);
+    public String getCheckerId(String providerId, String authorizationType) {
+        if (authorizationType != null && !authorizationType.isEmpty()) {
+            return providerTokenChecker.get(providerId + "_" + authorizationType);
+        } else {
+            return providerTokenChecker.get(providerId);
+        }
+
     }
 }

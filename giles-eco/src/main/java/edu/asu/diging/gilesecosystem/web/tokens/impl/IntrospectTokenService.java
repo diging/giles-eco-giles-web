@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.AccessTokenRestTemplateConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
@@ -33,7 +34,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
     private IPropertiesManager propertyManager;
 
     @Autowired
-    private AccessTokenRestTemplate accessTokenRestTemplate;
+    private AccessTokenRestTemplateConfig accessTokenRestTemplate;
 
     /**
      * Calls MITREid connect server introspect api using client with protected
@@ -91,10 +92,10 @@ public class IntrospectTokenService implements IIntrospectTokenService {
 
         // validated token is not null and has no error, it is a valid
         // access token
-        return updateTokenContents(tokenResponse);
+        return getTokenContents(tokenResponse);
     }
 
-    private IApiTokenContents updateTokenContents(JsonObject tokenResponse) {
+    private IApiTokenContents getTokenContents(JsonObject tokenResponse) {
 
         IApiTokenContents tokenContents = new ApiTokenContents();
 

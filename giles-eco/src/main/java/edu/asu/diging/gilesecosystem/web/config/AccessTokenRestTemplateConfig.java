@@ -1,27 +1,32 @@
-package edu.asu.diging.gilesecosystem.web.tokens.impl;
+package edu.asu.diging.gilesecosystem.web.config;
 
 import java.io.IOException;
 import java.net.URI;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.jose.util.Base64;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.tokens.IAccessTokenRestTemplate;
 
-@Service
-public class AccessTokenRestTemplate extends RestTemplate implements IAccessTokenRestTemplate {
+/**
+ * Class to initialize rest template for MITREid connect server
+ * with protected resource access keys
+ * 
+ * @author snilapwa
+ *
+ */
+@Configuration
+public class AccessTokenRestTemplateConfig {
 
     @Autowired
     private IPropertiesManager propertyManager;
@@ -30,16 +35,16 @@ public class AccessTokenRestTemplate extends RestTemplate implements IAccessToke
 
     private RestTemplate restTemplate;
 
-    public AccessTokenRestTemplate() {
+    public AccessTokenRestTemplateConfig() {
         this(HttpClientBuilder.create().useSystemProperties().build());
     }
 
-    public AccessTokenRestTemplate(HttpClient httpClient) {
+    public AccessTokenRestTemplateConfig(HttpClient httpClient) {
         this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 
-    @PostConstruct
-    public void init() {
+    @Bean
+    public RestTemplate getRestTemplate() {
         // use mitreid connect client with protected resource access keys
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
         final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);
@@ -53,14 +58,7 @@ public class AccessTokenRestTemplate extends RestTemplate implements IAccessToke
                 return httpRequest;
             }
         };
-
-    }
-
-    public RestTemplate getRestTemplate() {
+        
         return restTemplate;
-    }
-
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
     }
 }

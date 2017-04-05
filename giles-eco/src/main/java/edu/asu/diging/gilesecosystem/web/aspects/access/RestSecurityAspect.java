@@ -125,11 +125,7 @@ public class RestSecurityAspect {
         IAppToken appToken = ((IAppToken)holder.tokenContents);
         String checkerId = null;
 
-        if (appToken.getAuthorizationType() != null && !appToken.getAuthorizationType().isEmpty()) {
-            checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId() + "_" + appToken.getAuthorizationType());
-        } else {
-            checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId());
-        }
+        checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId(), appToken.getAuthorizationType());
 
         if (checkerId == null) {
             logger.warn("Token references non existing identity provider.");
