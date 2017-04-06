@@ -66,7 +66,7 @@ public class UploadServiceTest {
             user.setUsername("user" + i);
             Mockito.when(
                     uploadHelper.processUpload(DocumentAccess.PUBLIC,
-                            DocumentType.MULTI_PAGE, null, null, user)).thenReturn(
+                            DocumentType.MULTI_PAGE, null, null, user, "id")).thenReturn(
                     statuses);
             threads.add(new Thread(new UploadRunnable("user" + i, failed)));
         }
@@ -142,7 +142,7 @@ public class UploadServiceTest {
 
             Mockito.when(
                     uploadHelper.processUpload(DocumentAccess.PRIVATE,
-                            DocumentType.SINGLE_PAGE, null, null, user)).thenReturn(
+                            DocumentType.SINGLE_PAGE, null, null, user, "id")).thenReturn(
                     statuses);
             String progId = serviceToTest.startUpload(DocumentAccess.PRIVATE, DocumentType.SINGLE_PAGE,
                     null, null, user);

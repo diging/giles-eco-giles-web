@@ -28,6 +28,7 @@
    	Document status: <span class="label label-${labelType}">${doc.statusLabel}</span>
    	</p>
     <a href="${doc.metadataUrl}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+    <p>Upload progress id: ${upload.uploadProgressId}</p>
     <p class="list-group-item-text">Uploaded on <span class="date">${doc.createdDate}</span>.</p>
     <ul style="list-style-type:none;">
     	<li>Uploaded file: <a href="<c:url value="/files/${doc.uploadedFile.id}" />" >${doc.uploadedFile.filename}</a></li>

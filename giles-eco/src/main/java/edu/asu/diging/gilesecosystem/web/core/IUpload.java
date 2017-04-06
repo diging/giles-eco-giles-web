@@ -17,4 +17,8 @@ public interface IUpload extends IStorableObject {
 
     public abstract void setCreatedDate(String createdDate);
 
+    public abstract void setUploadProgressId(String uploadProgressId);
+
+    public abstract String getUploadProgressId();
+
 }

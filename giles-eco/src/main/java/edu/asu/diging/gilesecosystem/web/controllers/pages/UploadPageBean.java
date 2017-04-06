@@ -12,6 +12,7 @@ public class UploadPageBean implements IUpload {
 	private String createdDate;
 	private int nrOfDocuments;
 	private List<IFile> uploadedFiles;
+	private String uploadProgressId;
 	
 	public UploadPageBean() {}
 	
@@ -76,6 +77,14 @@ public class UploadPageBean implements IUpload {
 
     public void setUploadedFiles(List<IFile> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
+    }
+
+    public void setUploadProgressId(String uploadProgressId) {
+        this.uploadProgressId = uploadProgressId;
+    }
+
+    public String getUploadProgressId() {
+        return uploadProgressId;
     }
 	
 }
