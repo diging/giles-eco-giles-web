@@ -22,6 +22,10 @@ import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
+import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
@@ -42,6 +46,9 @@ public class UploadService implements IUploadService {
 
     @Autowired
     private IPropertiesManager propertiesManager;
+    
+    @Autowired
+    private IFilesManager filesManager;
 
     private long expirationMiliseconds;
 
@@ -71,7 +78,7 @@ public class UploadService implements IUploadService {
         cleanUp();
 
         String uploadProgressId = generateId();
-        List<StorageStatus> statuses = uploadHelper.processUpload(access, type, files, fileBytes, user);
+        List<StorageStatus> statuses = uploadHelper.processUpload(access, type, files, fileBytes, user, uploadProgressId);
         for (StorageStatus status : statuses) {
             if (status.getDocument() != null) {
                 documentMap.put(status.getDocument().getId(), uploadProgressId);
@@ -143,7 +150,30 @@ public class UploadService implements IUploadService {
 
     @Override
     public List<StorageStatus> getUpload(String id) {
-        return currentUploads.get(id);
+        List<StorageStatus> statuses = currentUploads.get(id);
+        if (statuses == null || statuses.isEmpty()) {
+            statuses = new ArrayList<>();
+            IUpload upload = filesManager.getUploadByProgressId(id);
+            if (upload != null) {
+                final List<StorageStatus> stats = new ArrayList<>();
+                for (IDocument doc : filesManager.getDocumentsByUploadId(upload.getId())) {
+                    doc.getFiles().forEach(file -> stats.add(new StorageStatus(doc, file, null, getCorrespondingStatus(file.getProcessingStatus()))));
+                }
+                statuses.addAll(stats);
+            }
+        }
+        
+        return statuses;
+    }
+    
+    private RequestStatus getCorrespondingStatus(ProcessingStatus status) {
+        if (status == ProcessingStatus.COMPLETE) {
+            return RequestStatus.COMPLETE;
+        } else if (status == ProcessingStatus.AWAITING_STORAGE) {
+            return RequestStatus.NEW;
+        } else {
+            return RequestStatus.SUBMITTED;
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -21,13 +22,14 @@ import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.impl.Page;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 
 public class FilesManagerTest {
 
     @Mock private EntityManager em;
     @Mock private IDocumentDatabaseClient docDatabaseClientToTest;
     @Mock private IFilesDatabaseClient databaseClientToTest;
-    @InjectMocks private FilesManager filesManagerToTest;
+    @InjectMocks private IFilesManager filesManagerToTest;
 
     private String DOCUMENT_ID = "documentId";
     private String IMG_ID = "imgId";

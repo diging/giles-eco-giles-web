@@ -27,6 +27,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 
@@ -44,6 +45,9 @@ public class UploadController {
     
     @Autowired
     private StatusHelper statusHelper;
+    
+    @Autowired
+    private IUploadService uploadService;
 
 
     @AccountCheck
@@ -71,8 +75,9 @@ public class UploadController {
                     + " does not exist.", HttpStatus.BAD_REQUEST);
         }
         
-        List<StorageStatus> statuses = uploadHelper.processUpload(docAccess, DocumentType.SINGLE_PAGE, files, null, user);
-
+        String uploadProgressId = uploadService.startUpload(docAccess, DocumentType.SINGLE_PAGE, files, null, user);
+        List<StorageStatus> statuses = uploadService.getUpload(uploadProgressId);
+        
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();
         ArrayNode filesNode = root.putArray("files");
