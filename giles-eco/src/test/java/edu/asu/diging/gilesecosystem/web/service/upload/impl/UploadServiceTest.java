@@ -22,6 +22,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
+import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.User;
@@ -30,13 +31,15 @@ import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 public class UploadServiceTest {
     
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
 
     @Mock
     private IPropertiesManager propManager;
 
     @Mock
     private FileUploadHelper uploadHelper;
+    
+    @Mock
+    private IFilesManager filesManager;
 
     @InjectMocks
     private UploadService serviceToTest;
