@@ -36,14 +36,20 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      */
     /**
      * map providerId to provider name
-     * @param providerId combination of 'provider' + "_" + 'authorizationType'
-     * e.g mitreidconnect_accessToken has provider 'mitreidconnect' with authorization using 'accessToken'
+     * @param providerId type of provider used for authentication
+     * @param authorizationType type of token used, e.g accessToken
+     * e.g mitreidconnect_accessToken has providerId 'mitreidconnect' with authorization using 'accessToken'
      * make sure not to have '_' in your provider name.
-     * providerId does not necessarily have to contain 'authorizationType', in that case providerId just contain
-     * 'provider' without '_'
+     * authorizationType does not necessarily have to contain non empty value.
      */
     @Override
-    public void addProvider(String providerId) {
+    public void addProvider(String providerId, String authorizationType) {
+        // if authorization type is not empty, provider id is combination of provider id and
+        // authorization type
+        if (authorizationType != null && !authorizationType.isEmpty()) {
+            providerId = providerId + "_" + authorizationType;
+        }
+
         String providerName = env.getProperty(providerId);
         if (providerName == null || providerName.trim().isEmpty()) {
             providerName = WordUtils.capitalize(providerId);
@@ -52,8 +58,13 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     }
     
     @Override
-    public void addProviderTokenChecker(String providerId, String checkerId) {
-        providerTokenChecker.put(providerId, checkerId);
+    public void addProviderTokenChecker(String providerId, String authorizationType, String checkerId) {
+        if (authorizationType != null && !authorizationType.isEmpty()) {
+            providerTokenChecker.put(providerId + "_" + authorizationType, checkerId);
+        } else {
+            providerTokenChecker.put(providerId, checkerId);
+        }
+
     }
     
     /* (non-Javadoc)

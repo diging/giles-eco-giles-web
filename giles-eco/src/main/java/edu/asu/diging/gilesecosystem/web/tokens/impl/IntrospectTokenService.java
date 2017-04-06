@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.config.AccessTokenRestTemplateConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
@@ -34,7 +35,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
     private IPropertiesManager propertyManager;
 
     @Autowired
-    private AccessTokenRestTemplateConfig accessTokenRestTemplate;
+    private RestTemplate accessTokenRestTemplate;
 
     /**
      * Calls MITREid connect server introspect api using client with protected
@@ -56,7 +57,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
         form.add("token", accessToken);
         String validatedToken = null;
         try {
-            validatedToken = accessTokenRestTemplate.getRestTemplate().postForObject(introspectionUrl, form, String.class);
+            validatedToken = accessTokenRestTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
             logger.error("introspectToken", rce);
             return null;

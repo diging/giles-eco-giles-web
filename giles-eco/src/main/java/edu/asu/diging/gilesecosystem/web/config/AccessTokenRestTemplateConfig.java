@@ -31,25 +31,16 @@ public class AccessTokenRestTemplateConfig {
     @Autowired
     private IPropertiesManager propertyManager;
 
-    private HttpComponentsClientHttpRequestFactory factory;
-
-    private RestTemplate restTemplate;
-
-    public AccessTokenRestTemplateConfig() {
-        this(HttpClientBuilder.create().useSystemProperties().build());
-    }
-
-    public AccessTokenRestTemplateConfig(HttpClient httpClient) {
-        this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-    }
-
     @Bean
     public RestTemplate getRestTemplate() {
         // use mitreid connect client with protected resource access keys
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
         final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);
 
-        restTemplate = new RestTemplate(factory) {
+        HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+
+        return new RestTemplate(factory) {
             @Override
             protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
                 ClientHttpRequest httpRequest = super.createRequest(url, method);
@@ -58,7 +49,6 @@ public class AccessTokenRestTemplateConfig {
                 return httpRequest;
             }
         };
-        
-        return restTemplate;
+
     }
 }

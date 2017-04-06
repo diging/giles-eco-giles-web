@@ -23,9 +23,6 @@ public class IntrospectTokenServiceTest {
     private IPropertiesManager propertiesManager;
 
     @Mock
-    private AccessTokenRestTemplateConfig accessTokenRestTemplate;
-
-    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
@@ -48,7 +45,6 @@ public class IntrospectTokenServiceTest {
 
     @Test
     public void test_introspectAccessToken_valid() throws AppMisconfigurationException, ServerMisconfigurationException {
-        Mockito.when(accessTokenRestTemplate.getRestTemplate()).thenReturn(restTemplate);
         Mockito.when(restTemplate.postForObject(Matchers.eq(MITREID_INTROSPECT_URL), Matchers.anyMap(),
                 Matchers.anyObject())).thenReturn(VALID_REST_RESPONSE);
         IApiTokenContents token = serviceToTest.introspectAccessToken(VALID_ACCESS_TOKEN);
@@ -59,7 +55,6 @@ public class IntrospectTokenServiceTest {
 
     @Test
     public void test_introspectAccessToken_invalid() throws AppMisconfigurationException, ServerMisconfigurationException {
-        Mockito.when(accessTokenRestTemplate.getRestTemplate()).thenReturn(restTemplate);
         Mockito.when(restTemplate.postForObject(Matchers.eq(MITREID_INTROSPECT_URL), Matchers.anyMap(),
                 Matchers.anyObject())).thenReturn(INVALID_REST_RESPONSE);
         IApiTokenContents token = serviceToTest.introspectAccessToken(INVALID_ACCESS_TOKEN);
