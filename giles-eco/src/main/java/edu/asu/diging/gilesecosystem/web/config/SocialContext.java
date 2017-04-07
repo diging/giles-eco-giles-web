@@ -98,8 +98,8 @@ public class SocialContext implements SocialConfigurer {
         identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), null,  MitreidChecker.ID);
         
         //new MITREid connect server provider for access token
-        identityProviderRegistry.addProvider(mitreidFactory.getProviderId(), Properties.AUTHORIZATION_TYPE);
-        identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), Properties.AUTHORIZATION_TYPE, MitreidAccessTokenChecker.ID);
+        identityProviderRegistry.addProvider(mitreidFactory.getProviderId(), propertyManager.getProperty(Properties.AUTHORIZATION_TYPE_ACCESS_TOKEN));
+        identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), propertyManager.getProperty(Properties.AUTHORIZATION_TYPE_ACCESS_TOKEN), MitreidAccessTokenChecker.ID);
         
     }
 

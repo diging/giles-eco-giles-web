@@ -53,5 +53,7 @@ public interface Properties {
 
     public final static String FREDDIE_HOST = "freddie_host";
 
-    public final static String AUTHORIZATION_TYPE = "accessToken";
+    public final static String AUTHORIZATION_TYPE_ACCESS_TOKEN = "authorization_type_access_token";
+
+    public final static String APPLICATION_ID = "application_id";
 }

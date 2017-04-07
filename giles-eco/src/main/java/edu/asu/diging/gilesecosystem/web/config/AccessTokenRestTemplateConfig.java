@@ -32,7 +32,7 @@ public class AccessTokenRestTemplateConfig {
     private IPropertiesManager propertyManager;
 
     @Bean
-    public RestTemplate getRestTemplate() {
+    public RestTemplate getAccessTokenRestTemplate() {
         // use mitreid connect client with protected resource access keys
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
         final String clientSecret = propertyManager.getProperty(Properties.MITREID_INTROSPECT_SECRET);

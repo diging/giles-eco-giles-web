@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.SystemMessageHandlerConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
@@ -36,6 +37,9 @@ public class IntrospectTokenService implements IIntrospectTokenService {
 
     @Autowired
     private RestTemplate accessTokenRestTemplate;
+
+    @Autowired
+    private SystemMessageHandlerConfig systemMessageHandler;
 
     /**
      * Calls MITREid connect server introspect api using client with protected
@@ -59,7 +63,8 @@ public class IntrospectTokenService implements IIntrospectTokenService {
         try {
             validatedToken = accessTokenRestTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
-            logger.error("introspectToken", rce);
+            logger.error("introspect access token validation", rce);
+            systemMessageHandler.getMessageHandler().handleError("introspect access token validation", rce);
             return null;
         }
 
