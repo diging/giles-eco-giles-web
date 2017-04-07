@@ -23,7 +23,7 @@ public interface IFilesManager {
      * @return The list of saved files with ids and upload id set.
      */
     public abstract List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            User user, DocumentType docType, DocumentAccess access);
+            User user, DocumentType docType, DocumentAccess access, String uploadProgressId);
 
     /**
      * Get specified page of upload query. If pageSize is -1, default page size is 
@@ -68,5 +68,18 @@ public interface IFilesManager {
     public abstract Map<String, Map<String, String>> getUploadedFilenames(String username);
 
     public abstract IFile getFileByRequestId(String requestId);
+    
+    /**
+     * This method changes access type for document and all files attached
+     * as pages to this document to provided new access type
+     *
+     * @param doc document for which access type is requested to change
+     * @param docAccess new access type for document
+     * @return true if the document access change was successfully; otherwise false.
+     * @throws UnstorableObjectException for exception while saving updated document
+     */
+    public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
+
+    public abstract IUpload getUploadByProgressId(String progressId);
 
 }

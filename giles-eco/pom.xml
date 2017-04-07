@@ -439,21 +439,18 @@
             <id>mydev</id>
             <properties>
                 <admin.pw>${admin.password}</admin.pw>
-                <deploy.path>${deploy.path.dev}</deploy.path>
             </properties>
         </profile>
         <profile>
             <id>test</id>
             <properties>
                 <admin.pw>${admin.password}</admin.pw>
-                <deploy.path>${deploy.path.test}</deploy.path>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
                 <admin.pw>${admin.password}</admin.pw>
-                <deploy.path>${deploy.path.prod}</deploy.path>
                 <log.level>info</log.level>
             </properties>
         </profile>

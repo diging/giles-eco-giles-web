@@ -96,6 +96,14 @@ public class UploadImagesController {
             return generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
         
+        if (files == null || files.length == 0) {
+            Map<String, String> msgs = new HashMap<String, String>();
+            msgs.put("errorMsg", "There were no files attached to request.");
+            msgs.put("errorCode", "400");
+            
+            return generateResponse(msgs, HttpStatus.BAD_REQUEST);
+        }
+        
         List<byte[]> fileBytes = new ArrayList<byte[]>();
         for (MultipartFile file : files) {
             try {
@@ -116,6 +124,7 @@ public class UploadImagesController {
         msgs.put("id", id);
         msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
         
+        logger.info("Uploaded file started with id " + id);
         return generateResponse(msgs, HttpStatus.OK);
     }
     
@@ -128,7 +137,7 @@ public class UploadImagesController {
             User user) {
         
         List<StorageStatus> statusList = uploadService.getUpload(id);
-        if (statusList == null) {
+        if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Upload does not exist.");
             msgs.put("errorCode", "404");

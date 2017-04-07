@@ -21,6 +21,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
@@ -69,13 +70,13 @@ public class FilesManager implements IFilesManager {
      */
     @Override
     public List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            User user, DocumentType docType, DocumentAccess access) {
+            User user, DocumentType docType, DocumentAccess access, String uploadProgressId) {
 
         String username = user.getUsername();
         String uploadId = uploadDatabaseClient.generateId();
         String uploadDate = OffsetDateTime.now(ZoneId.of("UTC")).toString();
 
-        IUpload upload = createUpload(username, uploadId, uploadDate);
+        IUpload upload = createUpload(username, uploadId, uploadDate, uploadProgressId);
 
         List<StorageStatus> statuses = new ArrayList<StorageStatus>();
         IDocument document = null;
@@ -147,10 +148,11 @@ public class FilesManager implements IFilesManager {
     }
 
     private IUpload createUpload(String username, String uploadId,
-            String uploadDate) {
+            String uploadDate, String uploadProgressId) {
         IUpload upload = new Upload(uploadId);
         upload.setCreatedDate(uploadDate);
         upload.setUsername(username);
+        upload.setUploadProgressId(uploadProgressId);
         return upload;
     }
 
@@ -278,6 +280,11 @@ public class FilesManager implements IFilesManager {
     public IUpload getUpload(String id) {
         return uploadDatabaseClient.getUpload(id);
     }
+    
+    @Override
+    public IUpload getUploadByProgressId(String progressId) {
+        return uploadDatabaseClient.getUploadsByProgressId(progressId);
+    }
 
     @Override
     public String getFileUrl(IFile file) {
@@ -313,6 +320,45 @@ public class FilesManager implements IFilesManager {
         List<IFile> files = new ArrayList<>();
         fileIds.forEach(id -> files.add(getFile(id)));
         return files;
+    }
+
+    @Override
+    public boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException {
+
+        doc.setAccess(docAccess);
+        saveDocument(doc);
+
+        boolean isChangeSuccess = true;
+
+        for (IPage page : doc.getPages()) {
+            IFile imgFile = getFile(page.getImageFileId());
+            if (imgFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(imgFile, docAccess);
+            }
+
+            IFile txtFile = getFile(page.getTextFileId());
+            if (txtFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(txtFile, docAccess);
+            }
+
+            IFile ocrFile = getFile(page.getOcrFileId());
+            if (ocrFile != null) {
+                isChangeSuccess = isChangeSuccess && changeFileAccess(ocrFile, docAccess);
+            }
+        }
+
+        return isChangeSuccess;
+    }
+
+    private boolean changeFileAccess(IFile file, DocumentAccess docAccess) {
+        file.setAccess(docAccess);
+        try {
+            saveFile(file);
+        } catch (UnstorableObjectException e) {
+            logger.error("Could not store file.", e);
+            return false;
+        }
+        return true;
     }
 
 }

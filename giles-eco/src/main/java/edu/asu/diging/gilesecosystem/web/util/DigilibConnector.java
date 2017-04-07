@@ -38,12 +38,14 @@ public class DigilibConnector {
         con.setRequestMethod("GET");
         
         con = (HttpURLConnection) url.openConnection();
+        con.setDoOutput(true);
         
         logger.debug("Set content type for response: " + con.getHeaderField(HttpHeaders.CONTENT_TYPE));
         response.setContentType(con.getHeaderField(HttpHeaders.CONTENT_TYPE));
+        response.setContentLength(con.getContentLength());
         
         InputStream input = con.getInputStream();
-
+        
         byte[] buffer = new byte[4096];
         int n = -1;
         

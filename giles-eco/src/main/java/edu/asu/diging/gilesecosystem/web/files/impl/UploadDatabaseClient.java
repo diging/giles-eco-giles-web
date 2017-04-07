@@ -67,6 +67,19 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
     
     @Override
+    public IUpload getUploadsByProgressId(String progressId) {
+        List<IUpload> uploads = new ArrayList<IUpload>();
+        searchByProperty("uploadProgressId", progressId, Upload.class).forEach(x -> uploads.add(x));
+        
+        // we assume there is just one
+        if (!uploads.isEmpty()) {
+            return uploads.get(0);
+        }
+        
+        return null;
+    }
+    
+    @Override
     public List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection) {
         

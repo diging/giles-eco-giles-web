@@ -2,6 +2,8 @@ package edu.asu.diging.gilesecosystem.web.aspects.access;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +23,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -30,6 +31,8 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenChec
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
+import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
@@ -225,6 +228,67 @@ public class RestSecurityAspect {
     }
     
     @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
+    public Object checkImageAccess(ProceedingJoinPoint joinPoint, ImageAccessCheck check ) throws Throwable {
+
+        UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.value(), null);
+        User user = userTokenObj.user;
+        String token = userTokenObj.token;
+
+        if (user == null) {
+            throw new AspectMisconfigurationException(
+                    "User object is missing in method.");
+        }
+        
+        // Get the Method signature and the arguments passed to the method.
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+        Parameter[] paras = method.getParameters();
+        
+        int imagePathParamIdx = -1;
+        
+        // Get all arguments that are passed to the calling method.
+        Object[] arguments = joinPoint.getArgs();
+        
+        if (paras != null) {
+
+            for (int i = 0; i < paras.length; i++) {
+                Parameter p = paras[i];
+                if (p.getAnnotation(InjectImagePath.class) != null) {
+                    imagePathParamIdx = i;
+                    break;
+                }
+            }
+
+            if (imagePathParamIdx != -1) {
+
+                String imagePath = (String) arguments[imagePathParamIdx];
+                
+                IFile file = filesManager.getFileByPath(imagePath);
+                if (file == null) {
+                    return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+                }
+                
+                if (file.getAccess() == DocumentAccess.PUBLIC) {
+                    return joinPoint.proceed(arguments);
+                }
+            }
+
+        }
+
+        TokenHolder holder = new TokenHolder();
+        ResponseEntity<String> authResult = checkAuthorization(token, GilesChecker.ID, holder, null);
+        if (authResult != null) {
+            return authResult;
+        }
+        
+        // because we asked for the giles checker we know what type
+        // the token contents is
+        extractUser(user, (IApiTokenContents)holder.tokenContents);
+        
+        return joinPoint.proceed(arguments);
+    }
+
+    @Around("within(edu.asu.diging.gilesecosystem.web.rest..*) && @annotation(check)")
     public Object checkFileGitHubAccess(ProceedingJoinPoint joinPoint, FileTokenAccessCheck check) throws Throwable {
         
         UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.github(), check.value());
@@ -285,6 +349,7 @@ public class RestSecurityAspect {
                 if (tokenHeader != null) {
                     token = tokenHeader.substring(6);
                 }
+                
             }
             if (argTypes[i].equals(User.class)) {
                 user = (User) args[i];
