@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
@@ -115,11 +116,14 @@ public class UploadService implements IUploadService {
     
     private void cleanUpMaps(String id) {
         currentUploads.remove(id);
-        Iterator<Map.Entry<String, String>> iterator = documentMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> entry = iterator.next();
-            if (entry.getValue().equals(id)) {
-                documentMap.remove(entry.getKey());
+        Set<Entry<String, String>> entrySet = documentMap.entrySet();
+        synchronized (documentMap) {
+            Iterator<Map.Entry<String, String>> iterator = entrySet.iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> entry = iterator.next();
+                if (entry.getValue().equals(id)) {
+                    documentMap.remove(entry.getKey());
+                }
             }
         }
     }
