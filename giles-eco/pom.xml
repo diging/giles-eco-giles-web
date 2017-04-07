@@ -16,8 +16,9 @@
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
-        <geco.requests.version>0.3</geco.requests.version>
-        <geco.util.version>0.4.2-SNAPSHOT</geco.util.version>
+        <geco.requests.version>0.2.1</geco.requests.version>
+        <geco.util.version>0.4.1</geco.util.version>
+        <geco.september.util.version>0.0.1</geco.september.util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
@@ -40,11 +41,6 @@
         <mitreid.secret></mitreid.secret>
         <mitreid.server.url></mitreid.server.url>
         <mitreid.show.login>true</mitreid.show.login>
-        
-        <mitreid.introspect.clientId></mitreid.introspect.clientId>
-        <mitreid.introspect.secret></mitreid.introspect.secret>
-        <mitreid.introspect.url></mitreid.introspect.url>
-        
         <jwt.signing.secret></jwt.signing.secret>
         <jwt.signing.secret.apps></jwt.signing.secret.apps>
         <geco.giles.db_files></geco.giles.db_files>
@@ -74,7 +70,7 @@
     </properties>
 
     <dependencies>
-    
+
         <!-- Giles Ecosystem -->
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
@@ -89,7 +85,7 @@
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>september-util</artifactId>
-            <version>0.0.1</version>
+            <version>${geco.september.util.version}</version>
         </dependency>
 
         <!-- Spring -->
