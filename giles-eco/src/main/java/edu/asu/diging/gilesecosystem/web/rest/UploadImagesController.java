@@ -155,15 +155,17 @@ public class UploadImagesController {
         }
         
         if (!complete) {
-            // get upload id from first document 
-            // there should only be one upload id for a process id
-            String uploadId = statusList.get(0).getDocument().getUploadId();
-            String uploadUrl = urlHelper.getUrl(FilesController.GET_UPLOAD_PATH.replace(FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
-            
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("msg", "Upload in progress. Please check back later.");
             msgs.put("msgCode", "010");
-            msgs.put("uploadUrl", uploadUrl);
+            
+            // get upload id from first document 
+            // there should only be one upload id for a process id
+            if (statusList.get(0).getDocument() != null) { 
+                String uploadId = statusList.get(0).getDocument().getUploadId();
+                String uploadUrl = urlHelper.getUrl(FilesController.GET_UPLOAD_PATH.replace(FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
+                msgs.put("uploadUrl", uploadUrl);
+            }
             
             return generateResponse(msgs, HttpStatus.ACCEPTED);
         }
