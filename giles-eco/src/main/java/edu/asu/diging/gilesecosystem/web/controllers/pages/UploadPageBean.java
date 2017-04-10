@@ -13,6 +13,7 @@ public class UploadPageBean implements IUpload {
 	private int nrOfDocuments;
 	private List<IFile> uploadedFiles;
 	private String uploadProgressId;
+	private Badge status;
 	
 	public UploadPageBean() {}
 	
@@ -85,6 +86,14 @@ public class UploadPageBean implements IUpload {
 
     public String getUploadProgressId() {
         return uploadProgressId;
+    }
+
+    public Badge getStatus() {
+        return status;
+    }
+
+    public void setStatus(Badge status) {
+        this.status = status;
     }
 	
 }

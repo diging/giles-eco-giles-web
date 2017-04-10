@@ -17,7 +17,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
-import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
+import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
@@ -39,7 +39,7 @@ public class ViewUploadController {
     private IMetadataUrlService metadataService;
     
     @Autowired
-    private StatusHelper statusHelper;
+    private StatusBadgeHelper statusHelper;
     
     @Autowired
     private IProcessingRequestsDatabaseClient procReqDbClient;
@@ -95,17 +95,6 @@ public class ViewUploadController {
             }
             
             List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getId());
-            Map<String, List<IProcessingRequest>> requestsByFileId = new HashMap<String, List<IProcessingRequest>>();
-            procRequests.forEach(new Consumer<IProcessingRequest>() {
-                @Override
-                public void accept(IProcessingRequest t) {
-                    if (requestsByFileId.get(t.getFileId()) == null) {
-                        requestsByFileId.put(t.getFileId(), new ArrayList<>());
-                    }
-                    requestsByFileId.get(t.getFileId()).add(t);
-                }
-            });
-            
             statusHelper.createBadges(docBean, procRequests);
         }
         

@@ -23,7 +23,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAc
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.PagePageBean;
-import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
+import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
@@ -45,7 +45,7 @@ public class ViewDocumentController {
     private IMetadataUrlService metadataService;  
     
     @Autowired
-    private StatusHelper statusHelper;
+    private StatusBadgeHelper statusHelper;
     
     @Autowired
     private IProcessingRequestsDatabaseClient procReqDbClient;

@@ -58,4 +58,9 @@ public interface Properties {
     public final static String BADGE_OCR_COLOR = "ocr_color";
     
     public final static String BADGE_STATUS_PREFIX = "status_";
+    
+    public final static String BADGE_PROCESSING_UPLOAD_IN_PROGRESS = "processing_upload_in_progress";
+    public final static String BADGE_PROCESSING_UPLOAD_COMPLETE = "processing_upload_complete";
+    public final static String BADGE_PROCESSING_UPLOAD_LABEL = "processing_upload_label";
+    public final static String BADGE_PROCESSING_UPLOAD_COLOR = "processing_upload_color";
 }

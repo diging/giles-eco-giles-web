@@ -9,27 +9,27 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.IImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.IOCRRequest;
-import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.ITextExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
-import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
-import edu.asu.diging.gilesecosystem.requests.impl.OCRRequest;
-import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.Badge;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.util.IStatusHelper;
 
 @Service
-public class StatusHelper {
+public class StatusBadgeHelper {
 
     @Autowired
     private IPropertiesManager propertiesManager;
 
     @Autowired
     private MessageSource messageSource;
+    
+    @Autowired
+    private IStatusHelper statusHelper;
 
     public String getLabelText(RequestStatus status, Locale locale) {
         String label = "upload_status_text_"
@@ -42,58 +42,13 @@ public class StatusHelper {
         return messageSource.getMessage(label, new String[] {}, locale);
     }
 
-    public void setProcessingLabel(DocumentPageBean docBean,
-            List<IProcessingRequest> procRequests, Locale locale) {
-        if (procRequests.stream().allMatch(
-                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setStatusLabel(getLabelText(RequestStatus.COMPLETE, locale));
-        } else if (procRequests.stream().anyMatch(
-                preq -> preq.getRequestStatus() == RequestStatus.SUBMITTED
-                        || preq.getRequestStatus() == RequestStatus.NEW)) {
-            docBean.setStatusLabel(getLabelText(RequestStatus.SUBMITTED, locale));
-        }
-
-        if (procRequests.stream()
-                .filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest)
-                .count() > 0
-                && procRequests
-                        .stream()
-                        .filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest)
-                        .allMatch(
-                                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(getProcessText(
-                    ProcessingStatus.TEXT_EXTRACTION_COMPLETE, locale));
-        }
-        if (procRequests.stream()
-                .filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest)
-                .count() > 0
-                && procRequests
-                        .stream()
-                        .filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest)
-                        .allMatch(
-                                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(getProcessText(
-                    ProcessingStatus.IMAGE_EXTRACTION_COMPLETE, locale));
-        }
-        if (procRequests.stream()
-                .filter(preq -> preq.getSentRequest() instanceof OCRRequest).count() > 0
-                && procRequests
-                        .stream()
-                        .filter(preq -> preq.getSentRequest() instanceof OCRRequest)
-                        .allMatch(
-                                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(getProcessText(ProcessingStatus.OCR_COMPLETE,
-                    locale));
-        }
-    }
-
     public void createBadges(DocumentPageBean docBean,
             List<IProcessingRequest> procRequests) {
         // create text extraction badges
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof ITextExtractionRequest)
                 .count() > 0) {
-            RequestStatus status = calculateStatus(procRequests, ITextExtractionRequest.class);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(ITextExtractionRequest.class, docBean);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager
@@ -108,7 +63,7 @@ public class StatusHelper {
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof IImageExtractionRequest)
                 .count() > 0) {
-            RequestStatus status = calculateStatus(procRequests, IImageExtractionRequest.class);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(IImageExtractionRequest.class, docBean);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager
@@ -124,7 +79,7 @@ public class StatusHelper {
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof IOCRRequest)
                 .count() > 0) {
-            RequestStatus status = calculateStatus(procRequests, IOCRRequest.class);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(IOCRRequest.class, docBean);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager
@@ -139,21 +94,4 @@ public class StatusHelper {
         docBean.getBadges().sort((b1, b2) -> b1.getOrder() - b2.getOrder());
     }
 
-    private RequestStatus calculateStatus(List<IProcessingRequest> procRequests, Class<? extends IRequest> requestClass) {
-        RequestStatus status = RequestStatus.SUBMITTED;
-        if (procRequests
-                .stream()
-                .filter(preq -> requestClass.isAssignableFrom(preq.getSentRequest().getClass()))
-                .allMatch(
-                        preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            status = RequestStatus.COMPLETE;
-        } else if (procRequests
-                .stream()
-                .filter(preq -> requestClass.isAssignableFrom(preq.getSentRequest().getClass()))
-                .anyMatch(
-                        preq -> preq.getRequestStatus() == RequestStatus.FAILED)) {
-            status = RequestStatus.FAILED;
-        }
-        return status;
-    }
 }
