@@ -9,21 +9,8 @@
 <h1>${document.id}</h1>
 
 <p>
-   	<c:if test="${ document.request.status == 'SUBMITTED' }">
-   		<c:set var="labelType" value="warning" />
-   	</c:if>
-   	<c:if test="${ document.request.status == 'NEW' }">
-   		<c:set var="labelType" value="info" />
-   	</c:if>
-   	<c:if test="${ document.request.status == 'COMPLETE' }">
-   		<c:set var="labelType" value="success" />
-   	</c:if>
-   	<c:if test="${ document.request.status == 'FAILED' }">
-   		<c:set var="labelType" value="danger" />
-   	</c:if>
-   	Document status: <span class="label label-${labelType}">${document.statusLabel}</span>
-   	<span class="label label-info">${document.processingLabel}</span>
-   	</p>
+   <c:forEach items="${document.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"> </c:forEach>
+</p>
 
 <div class="row">
 <div class="col-md-9">

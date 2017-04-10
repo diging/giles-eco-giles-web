@@ -75,7 +75,7 @@ public class ViewDocumentController {
             }
         });
         
-        statusHelper.setProcessingLabel(docBean, procRequests, locale);
+        statusHelper.createBadges(docBean, procRequests);
         
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());
