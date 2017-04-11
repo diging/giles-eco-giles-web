@@ -151,7 +151,7 @@ public class UploadImagesController {
         
         boolean complete = true;
         for (StorageStatus status : statusList) {
-            complete = complete && status.getStatus() == RequestStatus.COMPLETE;
+            complete = complete && (status.getStatus() == RequestStatus.COMPLETE || status.getStatus() == RequestStatus.FAILED);
         }
         
         if (!complete) {

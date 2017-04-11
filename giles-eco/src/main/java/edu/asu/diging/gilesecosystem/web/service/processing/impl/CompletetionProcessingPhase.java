@@ -68,16 +68,5 @@ public class CompletetionProcessingPhase extends ProcessingPhase<IProcessingInfo
     @Override
     protected void postProcessing(IFile file) {
         storageManager.deleteFile(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId(), file.getFilename(), true);
-        IDocument document = docDbClient.getDocumentById(file.getDocumentId());
-        
-        if (document != null) {
-            List<IProcessingRequest> requests = pReqDbClient.getRequestByDocumentId(file.getDocumentId());
-            
-            boolean completed = requests.stream().allMatch(req -> req.getRequestStatus() == RequestStatus.COMPLETE || req.getRequestStatus() == RequestStatus.FAILED);
-            
-            if (completed) {
-                uploadService.updateStatus(file.getDocumentId(), RequestStatus.COMPLETE);
-            }
-        }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.util.IStatusHelper;
@@ -36,6 +37,26 @@ public class StatusHelper implements IStatusHelper {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public RequestStatus getFileProcessingResult(IFile file) {
+        List<IProcessingRequest> procRequests = procReqDbClient
+                .getRequestByDocumentId(file.getDocumentId());
+
+        if (procRequests.stream().filter(preq -> preq.getFileId().equals(file.getId()))
+                .anyMatch(preq -> preq.getRequestStatus() == RequestStatus.SUBMITTED)) {
+            return RequestStatus.SUBMITTED;
+        }
+        if (procRequests.stream().filter(preq -> preq.getFileId().equals(file.getId()))
+                .anyMatch(preq -> preq.getRequestStatus() == RequestStatus.NEW)) {
+            return RequestStatus.NEW;
+        }
+        if (procRequests.stream().filter(preq -> preq.getFileId().equals(file.getId()))
+                .allMatch(preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
+            return RequestStatus.COMPLETE;
+        }
+        return RequestStatus.FAILED;
     }
 
     @Override

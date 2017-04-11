@@ -1,8 +1,12 @@
 package edu.asu.diging.gilesecosystem.web.util;
 
+import java.util.List;
+
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 
 /**
  * Implementations of this interface provide support for calculating statuses of
@@ -41,5 +45,17 @@ public interface IStatusHelper {
      * </ol>
      */
     public abstract RequestStatus getProcessingPhaseResult(Class<? extends IRequest> requestClass, IDocument document);
+
+    /**
+     * Method to get the processing status of a file. If there exist a request that has
+     * the status {@link RequestStatus.SUBMITTED} or {@link RequestStatus.NEW} the 
+     * method will return {@link RequestStatus.SUBMITTED} or {@link RequestStatus.NEW}
+     * respectively. If all requests have the status {@link RequestStatus.COMPLETE} the
+     * method will return {@link RequestStatus.COMPLETE}. If none of the above is true,
+     * the method will return {@link RequestStatus.FAILED}.
+     * @param file The file for which the status is requested.
+     * @return {@link RequestStatus} according to the logic above.
+     */
+    public abstract RequestStatus getFileProcessingResult(IFile file);
 
 }
