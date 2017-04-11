@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
-import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
+import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -44,7 +44,7 @@ public class UploadController {
     private FileUploadHelper uploadHelper;
     
     @Autowired
-    private StatusHelper statusHelper;
+    private StatusBadgeHelper statusHelper;
     
     @Autowired
     private IUploadService uploadService;

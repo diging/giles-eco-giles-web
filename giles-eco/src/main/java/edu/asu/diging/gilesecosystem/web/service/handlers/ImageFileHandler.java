@@ -43,6 +43,9 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
     @Override
     public String getFileUrl(IFile file) {
         String relativePath = file.getFilepath();
+        if (relativePath == null) {
+            return null;
+        }
         String gilesUrl = propertyManager.getProperty(Properties.GILES_URL);
         String gilesDigilibEndpoint = propertyManager.getProperty(Properties.GILES_DIGILIB_ENDPOINT);
         

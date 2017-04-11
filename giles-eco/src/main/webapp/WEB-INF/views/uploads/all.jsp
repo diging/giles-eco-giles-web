@@ -24,7 +24,7 @@ You have ${totalUploads} uploads.
 		<td><a href="<c:url value="/uploads/${upload.id}" />">${upload.id}</a></td>
 		<td>${upload.nrOfDocuments} uploaded document<c:if test="${upload.nrOfDocuments>1}">s</c:if></td>
 		<td>
-			
+			<img src="https://img.shields.io/badge/${upload.status.subject}-${upload.status.status}-${upload.status.color}.svg">
 		</td>
 		<td>
 		<c:forEach items="${upload.uploadedFiles}" var="file" varStatus="loop">

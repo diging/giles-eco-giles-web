@@ -49,4 +49,18 @@ public interface Properties {
     public final static String GILES_TMP_FOLDER = "giles_files_tmp_dir";
 
     public final static String FREDDIE_HOST = "freddie_host";
+    
+    public final static String BADGE_TEXT_EXTRACTION_SUBJECT = "text_extraction_subject";
+    public final static String BADGE_TEXT_EXTRACTION_COLOR = "text_extraction_color";
+    public final static String BADGE_IMAGE_EXTRACTION_SUBJECT = "image_extraction_subject";
+    public final static String BADGE_IMAGE_EXTRACTION_COLOR = "image_extraction_color";
+    public final static String BADGE_OCR_SUBJECT = "ocr_subject";
+    public final static String BADGE_OCR_COLOR = "ocr_color";
+    
+    public final static String BADGE_STATUS_PREFIX = "status_";
+    
+    public final static String BADGE_PROCESSING_UPLOAD_IN_PROGRESS = "processing_upload_in_progress";
+    public final static String BADGE_PROCESSING_UPLOAD_COMPLETE = "processing_upload_complete";
+    public final static String BADGE_PROCESSING_UPLOAD_LABEL = "processing_upload_label";
+    public final static String BADGE_PROCESSING_UPLOAD_COLOR = "processing_upload_color";
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.OCRRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
@@ -24,12 +23,11 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAc
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.PagePageBean;
-import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
+import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
@@ -47,7 +45,7 @@ public class ViewDocumentController {
     private IMetadataUrlService metadataService;  
     
     @Autowired
-    private StatusHelper statusHelper;
+    private StatusBadgeHelper statusHelper;
     
     @Autowired
     private IProcessingRequestsDatabaseClient procReqDbClient;
@@ -77,27 +75,7 @@ public class ViewDocumentController {
             }
         });
         
-        if (procRequests.stream().allMatch(preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setStatusLabel(statusHelper.getLabelText(RequestStatus.COMPLETE, locale));
-        } else if (procRequests.stream().anyMatch(preq -> preq.getRequestStatus() == RequestStatus.SUBMITTED || preq.getRequestStatus() == RequestStatus.NEW)) {
-            docBean.setStatusLabel(statusHelper.getLabelText(RequestStatus.SUBMITTED, locale));
-        }
-        
-        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest).count() > 0 
-                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof TextExtractionRequest).allMatch( 
-                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.TEXT_EXTRACTION_COMPLETE, locale));
-        }
-        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest ).count() > 0  
-                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof ImageExtractionRequest ).allMatch(
-               preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.IMAGE_EXTRACTION_COMPLETE, locale));
-        }
-        if (procRequests.stream().filter(preq -> preq.getSentRequest() instanceof OCRRequest).count() > 0 
-                && procRequests.stream().filter(preq -> preq.getSentRequest() instanceof OCRRequest).allMatch( 
-                preq -> preq.getRequestStatus() == RequestStatus.COMPLETE)) {
-            docBean.setProcessingLabel(statusHelper.getProcessText(ProcessingStatus.OCR_COMPLETE, locale));
-        }
+        statusHelper.createBadges(docBean, procRequests);
         
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());
