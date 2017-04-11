@@ -85,7 +85,7 @@ public class StatusHelper implements IStatusHelper {
                 .stream()
                 .filter(preq -> requestClass.isAssignableFrom(preq.getSentRequest()
                         .getClass()))
-                .anyMatch(preq -> preq.getRequestStatus() == RequestStatus.NEW)) {
+                .anyMatch(preq -> preq.getRequestStatus() == RequestStatus.SUBMITTED)) {
             return RequestStatus.SUBMITTED;
         }
 
