@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.annotations.Index;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -22,8 +23,8 @@ import edu.asu.diging.gilesecosystem.web.core.ITask;
 public class Document implements IDocument {
 
     @Id private String id;
-    private String uploadId;
-    private String username;
+    @Index private String uploadId;
+    @Index private String username;
     private String createdDate;
     private String uploadedFile;
     private String extractedText;

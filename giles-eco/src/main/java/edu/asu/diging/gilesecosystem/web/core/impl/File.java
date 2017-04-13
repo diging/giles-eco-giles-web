@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
+import javax.jdo.annotations.Index;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -11,21 +12,21 @@ import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 public class File implements IFile {
 
     @Id private String id;
-    private String uploadId;
+    @Index private String uploadId;
     private String filename;
-    private String username;
-    private String documentId;
+    @Index private String username;
+    @Index private String documentId;
     private String uploadDate;
     private DocumentAccess access;
     private String contentType;
     private long size;
-    private String filepath; 
+    @Index private String filepath; 
     private String derivedFrom;
-    private String usernameForStorage;
-    private String requestId;
+    @Index private String usernameForStorage;
+    @Index private String requestId;
     private String storageId;
     private String downloadUrl;
-    private ProcessingStatus processingStatus;
+    @Index private ProcessingStatus processingStatus;
 
     public File() {}
 
