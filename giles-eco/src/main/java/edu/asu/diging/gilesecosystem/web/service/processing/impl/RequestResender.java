@@ -75,6 +75,7 @@ public class RequestResender implements IRequestResender {
             if (doc != null) {
                 try {
                     phase.sendRequest(sentRequest, doc);
+                    counter++;
                 } catch (GilesProcessingException e) {
                     // FIXME: send to september
                     logger.error("Could not send request.", e);
