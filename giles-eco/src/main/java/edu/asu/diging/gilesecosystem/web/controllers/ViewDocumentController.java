@@ -76,6 +76,7 @@ public class ViewDocumentController {
         });
         
         statusHelper.createBadges(docBean, procRequests);
+        //statusHelper.createExternalBadges(docBean);
         
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());

@@ -63,4 +63,8 @@ public interface IDocument extends IStorableObject {
 
     public abstract IRequest getRequest();
 
+    public abstract void setTasks(List<ITask> tasks);
+
+    public abstract List<ITask> getTasks();
+
 }

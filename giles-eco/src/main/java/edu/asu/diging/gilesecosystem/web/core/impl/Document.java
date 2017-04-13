@@ -16,6 +16,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
+import edu.asu.diging.gilesecosystem.web.core.ITask;
 
 @Entity
 public class Document implements IDocument {
@@ -37,6 +38,8 @@ public class Document implements IDocument {
     // forget possible entity not an entity warning/error 
     // this only happens because Eclipse can't read both annotations and ORM file
     @OneToOne(cascade=CascadeType.ALL) private IRequest request;
+    
+    @Basic(fetch = FetchType.EAGER) private List<ITask> tasks;
 
     /*
      * (non-Javadoc)
@@ -241,5 +244,15 @@ public class Document implements IDocument {
     @Override
     public void setRequest(IRequest request) {
         this.request = request;
+    }
+
+    @Override
+    public List<ITask> getTasks() {
+        return tasks;
+    }
+
+    @Override
+    public void setTasks(List<ITask> tasks) {
+        this.tasks = tasks;
     }
 }
