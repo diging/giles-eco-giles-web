@@ -12,6 +12,10 @@
    <c:forEach items="${document.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"> </c:forEach>
 </p>
 
+<p>
+    <c:forEach items="${document.tasks}" var="task">${task.taskHandlerId }${task.status } </c:forEach>
+</p>
+
 <div class="row">
 <div class="col-md-9">
 <p>

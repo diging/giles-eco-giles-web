@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.Badge;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.ITask;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.util.IStatusHelper;
@@ -92,6 +93,17 @@ public class StatusBadgeHelper {
         }
         
         docBean.getBadges().sort((b1, b2) -> b1.getOrder() - b2.getOrder());
+    }
+    
+    public void createExternalBadges(DocumentPageBean docBean) {
+        for(ITask task : docBean.getTasks()) {
+            docBean.getExternalBadges().add(new Badge(
+                    propertiesManager.getProperty(Properties.EXTERNAL_BADGE_PREFIX + task.getTaskHandlerId()),
+                    propertiesManager.getProperty(Properties.BADGE_STATUS_PREFIX + task.getStatus().name().toLowerCase()),
+                    propertiesManager.getProperty(Properties.EXTERNAL_BADGE_COLOR_PREFIX + task.getTaskHandlerId()),
+                    1
+                    ));
+        }
     }
 
 }

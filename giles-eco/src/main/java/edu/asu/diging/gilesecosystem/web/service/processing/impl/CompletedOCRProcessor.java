@@ -1,6 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
         IFile file = filesDbClient.getFileById(document.getUploadedFileId());
         
-        Map<String, IPage> pages = new HashMap<>();
-        document.getPages().forEach(page -> pages.put(page.getImageFileId(), page));
-        
+        Map<String, IPage> pages = getPageMap(document.getPages());
         IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
        
         try {
@@ -66,7 +65,8 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             logger.error("Could not store file.", e);
         }
         
-        IPage documentPage = pages.get(request.getFileId());
+        // we are looking for the image that was ocred
+        IPage documentPage = pages.get(request.getFilename());
         if (documentPage == null) {
             // FIXME what about page nr
             documentPage = new Page();
@@ -118,5 +118,24 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
     @Override
     public Class<? extends ICompletedOCRRequest> getRequestClass() {
         return CompletedOCRRequest.class;
+    }
+    
+    /**
+     * 
+     * This method maps pages to the filename of the image file of a page.
+     * @param pages List of pages to be mapped
+     * @return A map of the form imageFilename -> page
+     */
+    private Map<String, IPage> getPageMap(List<IPage> pages) {
+        Map<String, IPage> pageMap = new HashMap<>();
+        for (IPage page : pages) {
+            String imageFileId = page.getImageFileId();
+            IFile file = filesDbClient.getFileById(imageFileId);
+            
+            if (file != null) {
+                pageMap.put(file.getFilename(), page);
+            }
+        }
+        return pageMap;
     }
 }
