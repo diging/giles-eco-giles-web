@@ -1,8 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,12 +17,14 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
-import edu.asu.diging.gilesecosystem.web.controllers.util.StatusHelper;
+import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
@@ -34,7 +39,11 @@ public class ViewUploadController {
     private IMetadataUrlService metadataService;
     
     @Autowired
-    private StatusHelper statusHelper;
+    private StatusBadgeHelper statusHelper;
+    
+    @Autowired
+    private IProcessingRequestsDatabaseClient procReqDbClient;
+
     
     @AccountCheck
     @UploadIdAccessCheck
@@ -84,6 +93,9 @@ public class ViewUploadController {
                     docBean.getTextFiles().add(bean);
                 }
             }
+            
+            List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getId());
+            statusHelper.createBadges(docBean, procRequests);
         }
         
         model.addAttribute("upload", upload);

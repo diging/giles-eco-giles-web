@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
@@ -8,6 +9,7 @@ import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
+import edu.asu.diging.gilesecosystem.web.core.ITask;
 
 public class DocumentPageBean implements IDocument {
     private String id;
@@ -33,6 +35,11 @@ public class DocumentPageBean implements IDocument {
     private IRequest request;
     private String statusLabel;
     private String processingLabel;
+    
+    private List<Badge> badges = new ArrayList<Badge>();
+    private List<Badge> externalBadges = new ArrayList<>();
+    
+    private List<ITask> tasks;
     
     public String getId() {
         return id;
@@ -182,5 +189,22 @@ public class DocumentPageBean implements IDocument {
     public void setProcessingLabel(String processingLabel) {
         this.processingLabel = processingLabel;
     }
-    
+    public List<Badge> getBadges() {
+        return badges;
+    }
+    public void setBadges(List<Badge> badges) {
+        this.badges = badges;
+    }
+    public List<Badge> getExternalBadges() {
+        return externalBadges;
+    }
+    public void setExternalBadges(List<Badge> externalBadges) {
+        this.externalBadges = externalBadges;
+    }
+    public void setTasks(List<ITask> tasks) {
+        this.tasks = tasks;
+    }
+    public List<ITask> getTasks() {
+        return tasks;
+    }
 }

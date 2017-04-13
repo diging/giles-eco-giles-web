@@ -16,8 +16,8 @@
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
-        <geco.requests.version>0.2.1</geco.requests.version>
-        <geco.util.version>0.4.1</geco.util.version>
+        <geco.requests.version>0.4</geco.requests.version>
+        <geco.util.version>0.4.2</geco.util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
