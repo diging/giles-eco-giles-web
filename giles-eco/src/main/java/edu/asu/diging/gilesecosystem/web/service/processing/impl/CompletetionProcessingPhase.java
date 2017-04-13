@@ -64,4 +64,10 @@ public class CompletetionProcessingPhase extends ProcessingPhase<IProcessingInfo
     protected void postProcessing(IFile file) {
         storageManager.deleteFile(file.getUsernameForStorage(), file.getUploadId(), file.getDocumentId(), file.getFilename(), true);
     }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+        // This is the final processor and doesn't support any requests.
+        return null;
+    }
 }

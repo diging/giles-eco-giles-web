@@ -84,4 +84,9 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
     protected void postProcessing(IFile file) {
         // nothing to do here
     }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+        return TextExtractionRequest.class;
+    }
 }

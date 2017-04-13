@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
+import javax.jdo.annotations.Index;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -9,9 +10,9 @@ import edu.asu.diging.gilesecosystem.web.core.IUpload;
 public class Upload implements IUpload {
 
     @Id private String id;
-	private String username;
+    @Index private String username;
 	private String createdDate;
-	private String uploadProgressId;
+	@Index private String uploadProgressId;
 	
 	public Upload() {}
 	
