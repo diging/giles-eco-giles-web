@@ -111,6 +111,9 @@
           	<li role="presentation">
           		<a href="<c:url value="/admin/apps" />" >Apps</a>
           	</li>
+          	<li role="presentation">
+                <a href="<c:url value="/admin/requests" />">Requests</a>
+            </li>
           </sec:authorize>
           <sec:authorize access="isAuthenticated()">
           	<li role="presentation">

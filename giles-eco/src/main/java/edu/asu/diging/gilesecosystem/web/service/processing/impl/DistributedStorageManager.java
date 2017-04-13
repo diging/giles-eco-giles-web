@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
@@ -178,6 +179,11 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         if (newDir != null) {
             storageManager.setBaseDirectory(newDir);
         }
+    }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+        return StorageRequest.class;
     }
     
 }

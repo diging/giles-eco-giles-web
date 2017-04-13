@@ -81,4 +81,9 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
     protected void postProcessing(IFile file) {
         // nothing to do here
     }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+        return ImageExtractionRequest.class;
+    }
 }
