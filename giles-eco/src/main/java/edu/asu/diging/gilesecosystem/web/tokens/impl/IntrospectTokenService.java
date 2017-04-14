@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.tokens.impl;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.config.SystemMessageHandlerConfig;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
@@ -36,19 +37,12 @@ public class IntrospectTokenService implements IIntrospectTokenService {
     private IPropertiesManager propertyManager;
 
     @Autowired
+    @Qualifier("accessTokenRestTemplate")
     private RestTemplate accessTokenRestTemplate;
 
     @Autowired
-    private SystemMessageHandlerConfig systemMessageHandler;
+    private GilesTokenConfig tokenConfig;
 
-    /**
-     * Calls MITREid connect server introspect api using client with protected
-     * resource access keys.
-     * 
-     * @param accessToken accessToken to pass to introspect Api
-     * @return tokenContents with username and expiration status
-     * @throws ServerMisconfigurationException
-     */
     public IApiTokenContents introspectAccessToken(String accessToken) throws ServerMisconfigurationException {
 
         String introspectionUrl = propertyManager.getProperty(Properties.MITREID_INTROSPECT_URL);
@@ -64,7 +58,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
             validatedToken = accessTokenRestTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
             logger.error("introspect access token validation", rce);
-            systemMessageHandler.getMessageHandler().handleError("introspect access token validation", rce);
+            tokenConfig.getMessageHandler().handleError("introspect access token validation", rce);
             return null;
         }
 

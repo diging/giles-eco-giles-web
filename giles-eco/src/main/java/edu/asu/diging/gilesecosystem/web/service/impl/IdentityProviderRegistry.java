@@ -35,21 +35,15 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      * @see edu.asu.giles.service.impl.IIdentityProviderRegistry#addProvider(java.lang.String)
      */
     /**
-     * map providerId to provider name
+     * register a new provider with a given authorization type
+     * e.g authorization type 'mitreidconnect_accessToken' has providerId 'mitreidconnect' 
+     * with authorization using 'accessToken'. Make sure not to have '_' in your provider name.
      * @param providerId type of provider used for authentication
-     * @param authorizationType type of token used, e.g accessToken
-     * e.g mitreidconnect_accessToken has providerId 'mitreidconnect' with authorization using 'accessToken'
-     * make sure not to have '_' in your provider name.
-     * authorizationType can be null.
+     * @param authorizationType type of token used, can be null.
      */
     @Override
     public void addProvider(String providerId, String authorizationType) {
-        // if authorization type is not empty, provider id is combination of provider id and
-        // authorization type
-        if (authorizationType != null && !authorizationType.trim().isEmpty()) {
-            providerId = getProviderIdwithAuthType(providerId, authorizationType);
-        }
-
+        providerId = getProviderIdwithAuthType(providerId, authorizationType);
         String providerName = env.getProperty(providerId);
         if (providerName == null || providerName.trim().isEmpty()) {
             providerName = WordUtils.capitalize(providerId);
@@ -59,12 +53,7 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     
     @Override
     public void addProviderTokenChecker(String providerId, String authorizationType, String checkerId) {
-        if (authorizationType != null && !authorizationType.trim().isEmpty()) {
-            providerTokenChecker.put(getProviderIdwithAuthType(providerId, authorizationType), checkerId);
-        } else {
-            providerTokenChecker.put(providerId, checkerId);
-        }
-
+        providerTokenChecker.put(getProviderIdwithAuthType(providerId, authorizationType), checkerId);
     }
     
     /* (non-Javadoc)
@@ -82,15 +71,13 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     
     @Override
     public String getCheckerId(String providerId, String authorizationType) {
-        if (authorizationType != null && !authorizationType.trim().isEmpty()) {
-            return providerTokenChecker.get(getProviderIdwithAuthType(providerId, authorizationType));
-        } else {
-            return providerTokenChecker.get(providerId);
-        }
-
+        return providerTokenChecker.get(getProviderIdwithAuthType(providerId, authorizationType));
     }
 
     private String getProviderIdwithAuthType(String providerId, String authorizationType) {
-        return providerId + "_" + authorizationType;
+        if (authorizationType != null && !authorizationType.trim().isEmpty()) {
+            return providerId + "_" + authorizationType;
+        }
+        return providerId;
     }
 }

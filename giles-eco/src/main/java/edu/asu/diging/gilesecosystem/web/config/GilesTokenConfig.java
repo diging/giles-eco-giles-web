@@ -15,23 +15,25 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.jose.util.Base64;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 /**
  * Class to initialize rest template for MITREid connect server
- * with protected resource access keys
+ * with protected resource access keys and to initialize
+ * message handler class to send exception as kafka topic.
  * 
  * @author snilapwa
  *
  */
 @Configuration
-public class AccessTokenRestTemplateConfig {
+public class GilesTokenConfig {
 
     @Autowired
     private IPropertiesManager propertyManager;
 
-    @Bean
+    @Bean(name = "accessTokenRestTemplate")
     public RestTemplate getAccessTokenRestTemplate() {
         // use mitreid connect client with protected resource access keys
         final String clientId = propertyManager.getProperty(Properties.MITREID_INTROSPECT_CLIENT_ID);
@@ -50,5 +52,10 @@ public class AccessTokenRestTemplateConfig {
             }
         };
 
+    }
+    
+    @Bean
+    public SystemMessageHandler getMessageHandler() {
+        return new SystemMessageHandler(propertyManager.getProperty(Properties.APPLICATION_ID));
     }
 }
