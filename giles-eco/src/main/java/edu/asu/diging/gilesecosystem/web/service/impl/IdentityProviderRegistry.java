@@ -37,9 +37,9 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     /**
      * register a new provider with a given authorization type
      * e.g authorization type 'mitreidconnect_accessToken' has providerId 'mitreidconnect' 
-     * with authorization using 'accessToken'. Make sure not to have '_' in your provider name.
+     * with authorization using 'accessToken'. Make sure not to have '_' in your provider id.
      * @param providerId type of provider used for authentication
-     * @param authorizationType type of token used, can be null.
+     * @param authorizationType type of authorization used, can be null.
      */
     @Override
     public void addProvider(String providerId, String authorizationType) {
