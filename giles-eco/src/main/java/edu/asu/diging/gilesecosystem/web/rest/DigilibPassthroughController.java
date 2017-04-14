@@ -138,11 +138,7 @@ public class DigilibPassthroughController {
         IFile file = filesManager.getFileByPath(fn);
 
         if (file == null) {
-            if (fn.startsWith(File.separator)) {
-                fn = fn.substring(1);
-            } else {
-                fn = File.separator + fn;
-            }
+            fn = fn.startsWith(File.separator) ? fn.substring(1) : File.separator + fn;
             file = filesManager.getFileByPath(fn);
         }
 

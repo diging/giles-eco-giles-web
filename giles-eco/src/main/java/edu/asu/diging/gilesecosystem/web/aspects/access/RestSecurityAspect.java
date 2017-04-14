@@ -267,11 +267,8 @@ public class RestSecurityAspect {
                 IFile file = filesManager.getFileByPath(imagePath);
 
                 if (file == null) {
-                    if (imagePath.startsWith(File.separator)) {
-                        imagePath = imagePath.substring(1);
-                    } else {
-                        imagePath = File.separator + imagePath;
-                    }
+                    imagePath = imagePath.startsWith(File.separator) ? imagePath.substring(1)
+                            : File.separator + imagePath;
                     file = filesManager.getFileByPath(imagePath);
                 }
 
