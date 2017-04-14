@@ -135,11 +135,17 @@ public class DigilibPassthroughController {
             }
         }
         
-        if (fn.startsWith(File.separator)) {
-            fn = fn.substring(1);
-        }
-        
         IFile file = filesManager.getFileByPath(fn);
+
+        if (file == null) {
+            if (fn.startsWith(File.separator)) {
+                fn = fn.substring(1);
+            } else {
+                fn = File.separator + fn;
+            }
+            file = filesManager.getFileByPath(fn);
+        }
+
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
