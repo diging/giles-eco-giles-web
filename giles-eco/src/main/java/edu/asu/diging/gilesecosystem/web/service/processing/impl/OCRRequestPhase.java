@@ -81,4 +81,9 @@ public class OCRRequestPhase extends ProcessingPhase<IProcessingInfo> {
     protected void postProcessing(IFile file) {
         // nothing to do here
     }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+       return OCRRequest.class;
+    }
 }

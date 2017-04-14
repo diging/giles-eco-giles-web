@@ -87,6 +87,20 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
             throw new GilesProcessingException(e1);
         }     
         
+        sendRequest(request, document);
+        
+        request.setStatus(RequestStatus.SUBMITTED);
+        try {
+            documentsDbClient.saveDocument(document);
+        } catch (UnstorableObjectException e) {
+            throw new GilesProcessingException(e);
+        }
+        
+        return request.getStatus();
+    }
+
+    public void sendRequest(IRequest request, IDocument document)
+            throws GilesProcessingException {
         try {
             requestProducer.sendRequest(request, getTopic());
         } catch (MessageCreationException e) {
@@ -98,15 +112,6 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
             }
             throw new GilesProcessingException(e);
         }
-        
-        request.setStatus(RequestStatus.SUBMITTED);
-        try {
-            documentsDbClient.saveDocument(document);
-        } catch (UnstorableObjectException e) {
-            throw new GilesProcessingException(e);
-        }
-        
-        return request.getStatus();
     }
     
     protected abstract IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException ;
@@ -116,4 +121,6 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     protected abstract ProcessingStatus getCompletedStatus();
     
     protected abstract void postProcessing(IFile file);
+    
+    public abstract Class<? extends IRequest> getSupportedRequestType();
 }

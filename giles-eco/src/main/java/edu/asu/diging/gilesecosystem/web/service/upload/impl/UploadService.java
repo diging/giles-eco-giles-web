@@ -1,18 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.service.upload.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,24 +13,19 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
+import edu.asu.diging.gilesecosystem.web.util.IStatusHelper;
 
 @Service
 public class UploadService implements IUploadService {
      
-    private final static long DEFAULT_EXPIRATION = 24 * 60 * 60 * 1000L;
-
-    private Map<String, List<StorageStatus>> currentUploads;
-    private Map<String, String> documentMap;
-    private Map<Long, List<String>> expirationList;
-
     @Autowired
     private FileUploadHelper uploadHelper;
 
@@ -49,19 +34,9 @@ public class UploadService implements IUploadService {
     
     @Autowired
     private IFilesManager filesManager;
-
-    private long expirationMiliseconds;
-
-    @PostConstruct
-    public void init() {
-        currentUploads = Collections.synchronizedMap(new HashMap<>());
-        documentMap = Collections.synchronizedMap(new HashMap<>());
-        expirationList = Collections.synchronizedSortedMap(new TreeMap<>());
-
-        String expirationProp = propertiesManager
-                .getProperty(Properties.EXPIRATION_TIME_UPLOADS_MS);
-        expirationMiliseconds = expirationProp != null && !expirationProp.trim().isEmpty() ? new Long(expirationProp) : new Long(DEFAULT_EXPIRATION);
-    }
+    
+    @Autowired
+    private IStatusHelper statusHelper;
 
     /*
      * (non-Javadoc)
@@ -74,119 +49,35 @@ public class UploadService implements IUploadService {
     @Override
     public String startUpload(DocumentAccess access, DocumentType type,
             MultipartFile[] files, List<byte[]> fileBytes, User user) {
-        // clean out old uploads before adding new
-        cleanUp();
-
         String uploadProgressId = generateId();
-        List<StorageStatus> statuses = uploadHelper.processUpload(access, type, files, fileBytes, user, uploadProgressId);
-        for (StorageStatus status : statuses) {
-            if (status.getDocument() != null) {
-                documentMap.put(status.getDocument().getId(), uploadProgressId);
-            }
-        }
-        currentUploads.put(uploadProgressId, statuses);
-
-        Long time = new Date().getTime();
-        // make sure only one thread creates array list and adds to it
-        synchronized (expirationList) {
-            if (expirationList.get(time) == null) {
-                expirationList.put(time, new ArrayList<>());
-            }
-            expirationList.get(time).add(uploadProgressId);
-        }
-
+        uploadHelper.processUpload(access, type, files, fileBytes, user, uploadProgressId);
+     
         return uploadProgressId;
-    }
-
-    public void cleanUp() {
-        List<Long> remove = new ArrayList<Long>();
-        Set<Long> keySet = expirationList.keySet();
-
-        synchronized (expirationList) {
-            for (Long expirationTime : keySet) {
-                boolean expired = Math.abs(expirationTime - new Date().getTime()) > expirationMiliseconds;
-
-                if (expired) {
-                    remove.add(expirationTime);
-                } else {
-                    // since expirationList is sorted, we know we can stop here
-                    break;
-                }
-            }
-
-            for (Long expTime : remove) {
-                expirationList.get(expTime).forEach(id -> cleanUpMaps(id));
-                expirationList.remove(expTime);
-            }
-        }
-    }
-    
-    private void cleanUpMaps(String id) {
-        currentUploads.remove(id);
-        Set<Entry<String, String>> entrySet = documentMap.entrySet();
-        synchronized (documentMap) {
-            Iterator<Map.Entry<String, String>> iterator = entrySet.iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, String> entry = iterator.next();
-                if (entry.getValue().equals(id)) {
-                    documentMap.remove(entry.getKey());
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void updateStatus(String documentId, RequestStatus reqStatus) {
-        String progressId = documentMap.get(documentId);
-        List<StorageStatus> statuses = currentUploads.get(progressId);
-        if (statuses != null) {
-            for (StorageStatus status : statuses) {
-                if (status.getDocument() != null && status.getDocument().getId().equals(documentId)) {
-                    status.setStatus(reqStatus);
-                }
-            }
-        }
     }
 
     @Override
     public List<StorageStatus> getUpload(String id) {
-        List<StorageStatus> statuses = currentUploads.get(id);
-        if (statuses == null || statuses.isEmpty()) {
-            statuses = new ArrayList<>();
-            IUpload upload = filesManager.getUploadByProgressId(id);
-            if (upload != null) {
-                final List<StorageStatus> stats = new ArrayList<>();
-                for (IDocument doc : filesManager.getDocumentsByUploadId(upload.getId())) {
-                    doc.getFiles().forEach(file -> stats.add(new StorageStatus(doc, file, null, getCorrespondingStatus(file.getProcessingStatus()))));
-                }
-                statuses.addAll(stats);
+        List<StorageStatus> statuses = new ArrayList<>();
+        IUpload upload = filesManager.getUploadByProgressId(id);
+        if (upload != null) {
+            final List<StorageStatus> stats = new ArrayList<>();
+            for (IDocument doc : filesManager.getDocumentsByUploadId(upload.getId())) {
+                String uploadedFileId = doc.getUploadedFileId();
+                IFile uploadedFile = filesManager.getFile(uploadedFileId);
+                stats.add(new StorageStatus(doc, uploadedFile, null, statusHelper.isProcessingDone(doc) ? RequestStatus.COMPLETE : RequestStatus.SUBMITTED));
             }
+            statuses.addAll(stats);
         }
-        
-        return statuses;
-    }
     
-    private RequestStatus getCorrespondingStatus(ProcessingStatus status) {
-        if (status == ProcessingStatus.COMPLETE) {
-            return RequestStatus.COMPLETE;
-        } else if (status == ProcessingStatus.AWAITING_STORAGE) {
-            return RequestStatus.NEW;
-        } else {
-            return RequestStatus.SUBMITTED;
-        }
-    }
-
-    @Override
-    public long countNonExpiredUpload() {
-        return currentUploads.size();
+        return statuses;
     }
 
     protected String generateId() {
         String id = null;
         while (true) {
             id = "PROG" + generateUniqueId();
-            Object existingFile = currentUploads.get(id);
-            if (existingFile == null) {
+            IUpload existingUpload = filesManager.getUploadByProgressId(id);;
+            if (existingUpload == null) {
                 break;
             }
         }

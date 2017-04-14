@@ -5,7 +5,6 @@ import java.util.List;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.impl.File;
 
 public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
 

@@ -46,6 +46,9 @@ public class FilesController {
     public final static String FILE_ID_PLACEHOLDER = "{fileId}";
     public final static String DOWNLOAD_FILE_URL = "/rest/files/" + FILE_ID_PLACEHOLDER + "/content";
     
+    public final static String UPLOAD_ID_PLACEHOLDER = "{uploadId}";
+    public final static String GET_UPLOAD_PATH = "/rest/files/upload/" + UPLOAD_ID_PLACEHOLDER;
+    
     @Autowired
     private IFilesManager filesManager;
     
@@ -87,8 +90,8 @@ public class FilesController {
     }
 
     @TokenCheck
-    @RequestMapping(value = "/rest/files/upload/{uploadId}", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> getFilePathsForUpload(
+    @RequestMapping(value = GET_UPLOAD_PATH, produces = "application/json;charset=UTF-8")
+    public ResponseEntity<String> getUpload(
             @RequestParam(defaultValue = "") String accessToken, 
             HttpServletRequest request,
             @PathVariable("uploadId") String uploadId,

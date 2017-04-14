@@ -44,6 +44,7 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
+import edu.asu.diging.gilesecosystem.web.util.IGilesUrlHelper;
 
 @PropertySource("classpath:/config.properties")
 @Controller
@@ -68,6 +69,9 @@ public class UploadImagesController {
     
     @Autowired
     private IJSONHelper jsonHelper;
+    
+    @Autowired
+    private IGilesUrlHelper urlHelper;
 
     @TokenCheck
     @RequestMapping(value = "/rest/files/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -147,13 +151,21 @@ public class UploadImagesController {
         
         boolean complete = true;
         for (StorageStatus status : statusList) {
-            complete = complete && status.getStatus() == RequestStatus.COMPLETE;
+            complete = complete && (status.getStatus() == RequestStatus.COMPLETE || status.getStatus() == RequestStatus.FAILED);
         }
         
         if (!complete) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("msg", "Upload in progress. Please check back later.");
             msgs.put("msgCode", "010");
+            
+            // get upload id from first document 
+            // there should only be one upload id for a process id
+            if (statusList.get(0).getDocument() != null) { 
+                String uploadId = statusList.get(0).getDocument().getUploadId();
+                String uploadUrl = urlHelper.getUrl(FilesController.GET_UPLOAD_PATH.replace(FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
+                msgs.put("uploadUrl", uploadUrl);
+            }
             
             return generateResponse(msgs, HttpStatus.ACCEPTED);
         }

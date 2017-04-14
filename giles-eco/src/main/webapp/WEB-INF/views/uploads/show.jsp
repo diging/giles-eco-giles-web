@@ -13,19 +13,8 @@
     	<a href="<c:url value="/documents/${doc.id}" />">Document #${doc.id}</a> 
    	</h4>
    	<p>
-   	<c:if test="${ doc.request.status == 'SUBMITTED' }">
-   		<c:set var="labelType" value="warning" />
-   	</c:if>
-   	<c:if test="${ doc.request.status == 'NEW' }">
-   		<c:set var="labelType" value="info" />
-   	</c:if>
-   	<c:if test="${ doc.request.status == 'COMPLETE' }">
-   		<c:set var="labelType" value="success" />
-   	</c:if>
-   	<c:if test="${ doc.request.status == 'FAILED' }">
-   		<c:set var="labelType" value="danger" />
-   	</c:if>
-   	Document status: <span class="label label-${labelType}">${doc.statusLabel}</span>
+   	
+   	<c:forEach items="${doc.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"> </c:forEach>
    	</p>
     <a href="${doc.metadataUrl}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
     <p>Upload progress id: ${upload.uploadProgressId}</p>

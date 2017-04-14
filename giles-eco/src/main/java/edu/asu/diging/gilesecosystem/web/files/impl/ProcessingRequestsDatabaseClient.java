@@ -1,9 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,14 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
             // should never happen
             logger.error("Could not store element.", e);
         }
+    }
+    
+    @Override
+    public List<IProcessingRequest> getIncompleteRequests() {
+        List<IProcessingRequest> results = new ArrayList<IProcessingRequest>();
+        TypedQuery<ProcessingRequest> query = getClient().createQuery("SELECT t FROM " + ProcessingRequest.class.getName()  + " t WHERE t.completedRequest IS NULL", ProcessingRequest.class);
+        query.getResultList().forEach(x -> results.add(x));
+        return results;
     }
     
     @Override
