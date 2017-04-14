@@ -28,7 +28,9 @@ public class FileUploadHelper {
     @Autowired
     private IFilesManager filesManager;
  
-    public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType, MultipartFile[] files, List<byte[]> fileBytes, User user) {
+    public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType,
+            MultipartFile[] files, List<byte[]> fileBytes, User user,
+            String uploadProgressId) {
         Map<IFile, byte[]> uploadedFiles = new HashMap<>();
         
         if (access == null) {
@@ -70,6 +72,6 @@ public class FileUploadHelper {
             file.setAccess(access);
         }
 
-        return filesManager.addFiles(uploadedFiles, user, docType, access);
+        return filesManager.addFiles(uploadedFiles, user, docType, access, uploadProgressId);
     }
 }

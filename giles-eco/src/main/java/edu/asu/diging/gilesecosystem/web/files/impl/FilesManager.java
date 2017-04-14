@@ -70,13 +70,13 @@ public class FilesManager implements IFilesManager {
      */
     @Override
     public List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            User user, DocumentType docType, DocumentAccess access) {
+            User user, DocumentType docType, DocumentAccess access, String uploadProgressId) {
 
         String username = user.getUsername();
         String uploadId = uploadDatabaseClient.generateId();
         String uploadDate = OffsetDateTime.now(ZoneId.of("UTC")).toString();
 
-        IUpload upload = createUpload(username, uploadId, uploadDate);
+        IUpload upload = createUpload(username, uploadId, uploadDate, uploadProgressId);
 
         List<StorageStatus> statuses = new ArrayList<StorageStatus>();
         IDocument document = null;
@@ -148,10 +148,11 @@ public class FilesManager implements IFilesManager {
     }
 
     private IUpload createUpload(String username, String uploadId,
-            String uploadDate) {
+            String uploadDate, String uploadProgressId) {
         IUpload upload = new Upload(uploadId);
         upload.setCreatedDate(uploadDate);
         upload.setUsername(username);
+        upload.setUploadProgressId(uploadProgressId);
         return upload;
     }
 
@@ -278,6 +279,11 @@ public class FilesManager implements IFilesManager {
     @Override
     public IUpload getUpload(String id) {
         return uploadDatabaseClient.getUpload(id);
+    }
+    
+    @Override
+    public IUpload getUploadByProgressId(String progressId) {
+        return uploadDatabaseClient.getUploadsByProgressId(progressId);
     }
 
     @Override
