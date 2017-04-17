@@ -18,14 +18,14 @@ import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 
-@Transactional("txmanager_data")
+@Transactional
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PersistenceContext(unitName="DataPU")
+    @PersistenceContext
     private EntityManager em;
     
     @Override

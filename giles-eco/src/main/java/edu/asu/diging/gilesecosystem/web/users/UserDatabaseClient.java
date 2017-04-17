@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 
-@Transactional("txmanager_user")
+@Transactional
 @Component
 public class UserDatabaseClient {
 
-    @PersistenceContext(unitName="UserPU")
+    @PersistenceContext
     private EntityManager em;
 
 

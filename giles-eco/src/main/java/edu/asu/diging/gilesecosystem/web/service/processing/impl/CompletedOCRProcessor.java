@@ -71,6 +71,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // FIXME what about page nr
             documentPage = new Page();
             document.getPages().add(documentPage);
+            documentPage.setDocument(document);
         }
         documentPage.setOcrFileId(pageText.getId());
         

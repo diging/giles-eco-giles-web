@@ -14,12 +14,11 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 
-@Transactional("txmanager_data")
 @Component
 public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFilesDatabaseClient {
 
-    @PersistenceContext(unitName = "DataPU")
+    @PersistenceContext
     private EntityManager em;
 
     /*

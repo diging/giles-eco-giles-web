@@ -83,6 +83,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                 }
                 
                 IPage documentPage = new Page();
+                documentPage.setDocument(document);
                 documentPage.setPageNr(page.getPageNr());
                 documentPage.setTextFileId(pageText.getId());
                 

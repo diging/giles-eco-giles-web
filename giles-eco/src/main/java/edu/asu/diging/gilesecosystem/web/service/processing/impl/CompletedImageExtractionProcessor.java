@@ -73,6 +73,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                     documentPage = new Page();
                     documentPage.setPageNr(page.getPageNr());
                     document.getPages().add(documentPage);
+                    documentPage.setDocument(document);
                 }
                 documentPage.setImageFileId(pageText.getId());
                 
