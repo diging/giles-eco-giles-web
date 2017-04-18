@@ -32,7 +32,6 @@ public class DocumentPageBean implements IDocument {
     private IFile uploadedFileFile;
     private IFile extractedTextFile;
     
-    private IRequest request;
     private String statusLabel;
     private String processingLabel;
     
@@ -170,12 +169,6 @@ public class DocumentPageBean implements IDocument {
     }
     public void setExtractedTextFile(IFile extractedTextFile) {
         this.extractedTextFile = extractedTextFile;
-    }
-    public void setRequest(IRequest request) {
-        this.request = request;
-    }
-    public IRequest getRequest() {
-        return request;
     }
     public String getStatusLabel() {
         return statusLabel;

@@ -9,8 +9,9 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.FilesController;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.search.FileSearchResult;
 import edu.asu.diging.gilesecosystem.web.service.search.IFileSearchResultFactory;
@@ -22,14 +23,17 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
     private IPropertiesManager propertiesManager;
     
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
 
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.search.impl.IFileSearchResultFactory#createSearchResult(java.lang.String)
      */
     @Override
     public FileSearchResult createSearchResult(String fileId) {
-        IFile file = filesManager.getFile(fileId);
+        IFile file = fileService.getFileById(fileId);
         
         FileSearchResult result = new FileSearchResult();
         result.setAccess(file.getAccess());
@@ -44,7 +48,7 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
         result.setDocumentUrl(propertiesManager.getProperty(Properties.GILES_URL) + FilesController.GET_DOCUMENT_PATH.replace(FilesController.DOCUMENT_ID_PLACEHOLDER, file.getDocumentId()));
         result.setUrl(propertiesManager.getProperty(Properties.GILES_URL) + FilesController.DOWNLOAD_FILE_URL.replace(FilesController.FILE_ID_PLACEHOLDER, file.getId()));
         
-        IDocument document = filesManager.getDocument(file.getDocumentId());
+        IDocument document = documentService.getDocument(file.getDocumentId());
         
         if (document.getExtractedTextFileId().equals(fileId)) {
             // if it's found in the extracted text

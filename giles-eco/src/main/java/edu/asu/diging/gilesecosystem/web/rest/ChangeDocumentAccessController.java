@@ -18,6 +18,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Controller
@@ -29,6 +30,9 @@ public class ChangeDocumentAccessController {
     
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalDocumentService documentService;
 
     @TokenCheck
     @RequestMapping(value = GET_DOCUMENT_PATH
@@ -37,7 +41,7 @@ public class ChangeDocumentAccessController {
             HttpServletRequest request, @PathVariable("docId") String docId, @RequestParam("access") String access,
             User user) {
 
-        IDocument doc = filesManager.getDocument(docId);
+        IDocument doc = documentService.getDocument(docId);
 
         if (!doc.getUsername().equals(user.getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);

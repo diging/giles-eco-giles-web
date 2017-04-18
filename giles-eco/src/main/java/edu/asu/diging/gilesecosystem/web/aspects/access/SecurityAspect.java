@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
@@ -22,9 +21,10 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAcce
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Aspect
@@ -34,10 +34,13 @@ public class SecurityAspect {
     private Logger logger = LoggerFactory.getLogger(SecurityAspect.class);
 
     @Autowired
-    private IUserManager userManager;
-
+    private ITransactionalUploadService uploadService;
+    
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
     
     @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(noCheck)")
     public Object doNotCheckUserAccess(ProceedingJoinPoint joinPoint,
@@ -56,7 +59,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        IUpload upload = filesManager.getUpload(uploadId);
+        IUpload upload = uploadService.getUpload(uploadId);
         if (upload == null) {
             return "notFound";
         }
@@ -76,7 +79,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        IDocument doc = filesManager.getDocument(docId);
+        IDocument doc = documentService.getDocument(docId);
         if (doc == null) {
             return "notFound";
         }
@@ -99,7 +102,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        IFile file = filesManager.getFile(fileId);
+        IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

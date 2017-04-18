@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -24,21 +22,17 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
-import edu.asu.diging.gilesecosystem.web.core.impl.Document;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.impl.StorageRequestProcessingInfo;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
-@Transactional
 @PropertySource("classpath:/config.properties")
 @Service
 public class FilesManager implements IFilesManager {
@@ -46,17 +40,14 @@ public class FilesManager implements IFilesManager {
     private Logger logger = LoggerFactory.getLogger(FilesManager.class);
 
     @Autowired
-    private IPropertiesManager propertyManager;
-
+    private ITransactionalFileService fileService;
+    
     @Autowired
-    private IFilesDatabaseClient databaseClient;
-
+    private ITransactionalDocumentService documentService;
+    
     @Autowired
-    private IUploadDatabaseClient uploadDatabaseClient;
-
-    @Autowired
-    private IDocumentDatabaseClient documentDatabaseClient;
-
+    private ITransactionalUploadService uploadService;
+    
     @Autowired
     private IFileHandlerRegistry fileHandlerRegistry;
     
@@ -73,19 +64,19 @@ public class FilesManager implements IFilesManager {
             User user, DocumentType docType, DocumentAccess access, String uploadProgressId) {
 
         String username = user.getUsername();
-        String uploadId = uploadDatabaseClient.generateId();
+        String uploadId = uploadService.generateUploadId();
         String uploadDate = OffsetDateTime.now(ZoneId.of("UTC")).toString();
 
-        IUpload upload = createUpload(username, uploadId, uploadDate, uploadProgressId);
+        IUpload upload = uploadService.createUpload(username, uploadId, uploadDate, uploadProgressId);
 
         List<StorageStatus> statuses = new ArrayList<StorageStatus>();
         IDocument document = null;
         if (docType == DocumentType.MULTI_PAGE) {
-            document = createDocument(uploadId, uploadDate, access, docType, username);
+            document = documentService.createDocument(uploadId, uploadDate, access, docType, username);
         }
         for (IFile file : files.keySet()) {
             if (docType == DocumentType.SINGLE_PAGE) {
-                document = createDocument(uploadId, uploadDate,
+                document = documentService.createDocument(uploadId, uploadDate,
                         file.getAccess(), docType, username);
             }
 
@@ -96,9 +87,7 @@ public class FilesManager implements IFilesManager {
                 continue;
             }
 
-            String id = databaseClient.generateId();
-
-            
+            String id = fileService.generateFileId();
 
             file.setId(id);
             file.setDocumentId(document.getId());
@@ -111,7 +100,7 @@ public class FilesManager implements IFilesManager {
             document.setUploadedFileId(file.getId());
 
             try {
-                documentDatabaseClient.saveDocument(document);
+                documentService.saveDocument(document);
                 
                 // send file off to be stored
                 StorageRequestProcessingInfo info = new StorageRequestProcessingInfo();
@@ -136,7 +125,7 @@ public class FilesManager implements IFilesManager {
                 status -> status.getStatus() != RequestStatus.FAILED);
         if (atLeastOneSuccess) {
             try {
-                uploadDatabaseClient.saveUpload(upload);
+                uploadService.saveUpload(upload);
             } catch (UnstorableObjectException e) {
                 // let's silently fail because this should never happen
                 // we set the id
@@ -147,73 +136,17 @@ public class FilesManager implements IFilesManager {
         return statuses;
     }
 
-    private IUpload createUpload(String username, String uploadId,
-            String uploadDate, String uploadProgressId) {
-        IUpload upload = new Upload(uploadId);
-        upload.setCreatedDate(uploadDate);
-        upload.setUsername(username);
-        upload.setUploadProgressId(uploadProgressId);
-        return upload;
-    }
-
-    private IDocument createDocument(String uploadId, String uploadDate,
-            DocumentAccess access, DocumentType docType, String username) {
-        IDocument document = new Document();
-        String docId = documentDatabaseClient.generateId();
-        document.setUsername(username);
-        document.setId(docId);
-        document.setCreatedDate(uploadDate);
-        document.setAccess(access);
-        document.setUploadId(uploadId);
-        document.setFileIds(new ArrayList<>());
-        document.setTextFileIds(new ArrayList<>());
-        document.setDocumentType(docType);
-
-        return document;
-    }
-
-    @Override
-    public List<IFile> getFilesByUploadId(String uploadId) {
-        return databaseClient.getFilesByUploadId(uploadId);
-    }
-
     @Override
     public List<IDocument> getDocumentsByUploadId(String uploadId) {
-        List<IDocument> documents = documentDatabaseClient
-                .getDocumentByUploadId(uploadId);
+        List<IDocument> documents = documentService
+                .getDocumentsByUploadId(uploadId);
         for (IDocument doc : documents) {
             doc.setFiles(new ArrayList<>());
             for (String fileId : doc.getFileIds()) {
-                doc.getFiles().add(databaseClient.getFileById(fileId));
+                doc.getFiles().add(fileService.getFileById(fileId));
             }
         }
         return documents;
-    }
-
-    @Override
-    public IFile getFile(String id) {
-        if (id == null) {
-            return null;
-        }
-        return databaseClient.getFileById(id);
-    }
-
-    @Override
-    public IFile getFileByPath(String path) {
-        IFile file = new edu.asu.diging.gilesecosystem.web.core.impl.File();
-        file.setFilepath(path);
-
-        List<IFile> files = databaseClient.getFilesByPath(path);
-        if (files == null || files.isEmpty()) {
-            return null;
-        }
-
-        return files.get(0);
-    }
-    
-    @Override
-    public IFile getFileByRequestId(String requestId) {
-        return databaseClient.getFileByRequestId(requestId);
     }
 
     @Override
@@ -223,31 +156,8 @@ public class FilesManager implements IFilesManager {
         return handler.getFileContent(file);
     }
 
-    @Override
-    public void saveFile(IFile file) throws UnstorableObjectException {
-        databaseClient.saveFile(file);
-    }
-
-    @Override
-    public List<IUpload> getUploadsOfUser(String username, int page, int pageSize, String sortBy, int sortDirection) {
-        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
-        if (pageSize == -1) {
-            pageSize = defaultPageSize;
-        }
-        if (page < 1) {
-            page = 1;
-        }
-        int pageCount = getUploadsOfUserPageCount(username);
-        pageCount = pageCount > 0 ? pageCount : 1;
-        if (page > pageCount) {
-            page = pageCount;
-        }
-        return uploadDatabaseClient.getUploadsForUser(username, page, pageSize, sortBy, sortDirection);
-    }
-    
-    @Override
     public Map<String, Map<String, String>> getUploadedFilenames(String username) {
-        List<IDocument> documents = documentDatabaseClient.getDocumentsByUsername(username);
+        List<IDocument> documents = documentService.getDocumentsByUsername(username);
         Map<String, Map<String, String>> filenames = new HashMap<String, Map<String, String>>();
         
         for (IDocument doc : documents) {
@@ -257,35 +167,13 @@ public class FilesManager implements IFilesManager {
                 filenames.put(doc.getUploadId(), filenameList);
             }
             String fileId = doc.getUploadedFileId();
-            IFile file = databaseClient.getFileById(fileId);
+            IFile file = fileService.getFileById(fileId);
             filenameList.put(file.getId(), file.getFilename());
         }
         return filenames;
     }
-    
-    @Override
-    public int getUploadsOfUserCount(String username) {
-        List<IUpload> uploads = uploadDatabaseClient.getUploadsForUser(username);
-        return uploads.size();
-    }
-    
-    @Override
-    public int getUploadsOfUserPageCount(String username) {
-        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
-        int totalUploads = getUploadsOfUserCount(username);
-        return (int) Math.ceil(new Double(totalUploads) / new Double(defaultPageSize));
-    }
 
-    @Override
-    public IUpload getUpload(String id) {
-        return uploadDatabaseClient.getUpload(id);
-    }
     
-    @Override
-    public IUpload getUploadByProgressId(String progressId) {
-        return uploadDatabaseClient.getUploadsByProgressId(progressId);
-    }
-
     @Override
     public String getFileUrl(IFile file) {
         IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
@@ -294,21 +182,11 @@ public class FilesManager implements IFilesManager {
     }
 
     @Override
-    public IDocument getDocument(String id) {
-        return documentDatabaseClient.getDocumentById(id);
-    }
-
-    @Override
-    public void saveDocument(IDocument document) throws UnstorableObjectException {
-        documentDatabaseClient.saveDocument(document);
-    }
-
-    @Override
     public List<IFile> getFilesOfDocument(IDocument doc) {
         List<String> fileIds = doc.getFileIds();
 
         List<IFile> files = new ArrayList<>();
-        fileIds.forEach(id -> files.add(getFile(id)));
+        fileIds.forEach(id -> files.add(fileService.getFileById(id)));
 
         return files;
     }
@@ -318,7 +196,7 @@ public class FilesManager implements IFilesManager {
         List<String> fileIds = doc.getTextFileIds();
         
         List<IFile> files = new ArrayList<>();
-        fileIds.forEach(id -> files.add(getFile(id)));
+        fileIds.forEach(id -> files.add(fileService.getFileById(id)));
         return files;
     }
 
@@ -326,22 +204,22 @@ public class FilesManager implements IFilesManager {
     public boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException {
 
         doc.setAccess(docAccess);
-        saveDocument(doc);
+        documentService.saveDocument(doc);
 
         boolean isChangeSuccess = true;
 
         for (IPage page : doc.getPages()) {
-            IFile imgFile = getFile(page.getImageFileId());
+            IFile imgFile = fileService.getFileById(page.getImageFileId());
             if (imgFile != null) {
                 isChangeSuccess = isChangeSuccess && changeFileAccess(imgFile, docAccess);
             }
 
-            IFile txtFile = getFile(page.getTextFileId());
+            IFile txtFile = fileService.getFileById(page.getTextFileId());
             if (txtFile != null) {
                 isChangeSuccess = isChangeSuccess && changeFileAccess(txtFile, docAccess);
             }
 
-            IFile ocrFile = getFile(page.getOcrFileId());
+            IFile ocrFile = fileService.getFileById(page.getOcrFileId());
             if (ocrFile != null) {
                 isChangeSuccess = isChangeSuccess && changeFileAccess(ocrFile, docAccess);
             }
@@ -353,7 +231,7 @@ public class FilesManager implements IFilesManager {
     private boolean changeFileAccess(IFile file, DocumentAccess docAccess) {
         file.setAccess(docAccess);
         try {
-            saveFile(file);
+            fileService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
             return false;

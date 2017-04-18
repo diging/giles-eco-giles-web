@@ -14,7 +14,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.ITask;
 import edu.asu.diging.gilesecosystem.web.core.impl.Task;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
@@ -27,7 +27,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
     private IPropertiesManager propertiesManager;
     
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
    
     @Override
     public String getProcessedTopic() {
@@ -36,7 +36,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
 
     @Override
     public void processRequest(ICompletionNotificationRequest request) {
-        IDocument document = filesManager.getDocument(request.getDocumentId());
+        IDocument document = documentService.getDocument(request.getDocumentId());
         ITask task = new Task();
         task.setFileId(request.getFileId());
         task.setStatus(request.getStatus());
@@ -48,7 +48,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
         
         document.getTasks().add(task);
         try {
-            filesManager.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // should never happen
             logger.error("Could not store document.", e);

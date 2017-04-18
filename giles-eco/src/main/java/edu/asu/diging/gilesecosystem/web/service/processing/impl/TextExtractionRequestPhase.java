@@ -15,8 +15,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -27,10 +26,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
     public final static String REQUEST_PREFIX = "TEEXREQ";
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
-    
-    @Autowired 
-    private IDocumentDatabaseClient documentsDbClient;
+    private ITransactionalFileService filesService;
     
     @Autowired
     private IRequestFactory<ITextExtractionRequest, TextExtractionRequest> requestFactory;
@@ -51,7 +47,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         
         ITextExtractionRequest request;
         try {
-            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
+            request = requestFactory.createRequest(filesService.generateRequestId(REQUEST_PREFIX), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);

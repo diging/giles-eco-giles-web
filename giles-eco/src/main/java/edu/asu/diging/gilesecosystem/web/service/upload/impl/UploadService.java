@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
-import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
@@ -30,10 +30,13 @@ public class UploadService implements IUploadService {
     private FileUploadHelper uploadHelper;
 
     @Autowired
-    private IPropertiesManager propertiesManager;
+    private IFilesManager filesManager;
     
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalFileService fileService;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
     
     @Autowired
     private IStatusHelper statusHelper;
@@ -58,12 +61,12 @@ public class UploadService implements IUploadService {
     @Override
     public List<StorageStatus> getUpload(String id) {
         List<StorageStatus> statuses = new ArrayList<>();
-        IUpload upload = filesManager.getUploadByProgressId(id);
+        IUpload upload = uploadService.getUploadByProgressId(id);
         if (upload != null) {
             final List<StorageStatus> stats = new ArrayList<>();
             for (IDocument doc : filesManager.getDocumentsByUploadId(upload.getId())) {
                 String uploadedFileId = doc.getUploadedFileId();
-                IFile uploadedFile = filesManager.getFile(uploadedFileId);
+                IFile uploadedFile = fileService.getFileById(uploadedFileId);
                 stats.add(new StorageStatus(doc, uploadedFile, null, statusHelper.isProcessingDone(doc) ? RequestStatus.COMPLETE : RequestStatus.SUBMITTED));
             }
             statuses.addAll(stats);
@@ -76,7 +79,7 @@ public class UploadService implements IUploadService {
         String id = null;
         while (true) {
             id = "PROG" + generateUniqueId();
-            IUpload existingUpload = filesManager.getUploadByProgressId(id);;
+            IUpload existingUpload = uploadService.getUploadByProgressId(id);;
             if (existingUpload == null) {
                 break;
             }

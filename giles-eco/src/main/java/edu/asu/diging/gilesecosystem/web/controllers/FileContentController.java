@@ -19,6 +19,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 @Controller
 public class FileContentController {
@@ -27,6 +28,9 @@ public class FileContentController {
     
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
 
     @AccountCheck
     @FileAccessCheck
@@ -36,7 +40,7 @@ public class FileContentController {
             HttpServletResponse response,
             HttpServletRequest request, Principal principal) {
 
-        IFile file = filesManager.getFile(fileId);
+        IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

@@ -26,7 +26,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessC
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.DigilibConnector;
 
@@ -37,7 +37,7 @@ public class DigilibPassthroughController {
             .getLogger(DigilibPassthroughController.class);
 
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalFileService filesService;
 
     @Autowired
     private DigilibConnector digilibConnector;
@@ -53,7 +53,7 @@ public class DigilibPassthroughController {
             @RequestParam(defaultValue = "") @InjectImagePath String fn)
             throws UnsupportedEncodingException {
         
-        IFile file = filesManager.getFileByPath(fn);
+        IFile file = filesService.getFileByPath(fn);
         
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
@@ -139,7 +139,7 @@ public class DigilibPassthroughController {
             fn = fn.substring(1);
         }
         
-        IFile file = filesManager.getFileByPath(fn);
+        IFile file = filesService.getFileByPath(fn);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

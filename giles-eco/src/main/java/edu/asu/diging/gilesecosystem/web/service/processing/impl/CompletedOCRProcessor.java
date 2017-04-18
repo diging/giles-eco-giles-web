@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedOCRRequest;
@@ -21,24 +20,23 @@ import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Page;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedOCRProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-@Transactional
 public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedOCRRequest>, ICompletedOCRProcessor {
 
     public final static String REQUEST_PREFIX = "STOCRREQ";
     
     @Autowired
-    private IDocumentDatabaseClient docsDbClient;
+    private ITransactionalDocumentService documentService;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
      
     @Autowired
     private IProcessingCoordinator processCoordinator;
@@ -52,14 +50,14 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
      */
     @Override
     public void processRequest(ICompletedOCRRequest request) {
-        IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
-        IFile file = filesDbClient.getFileById(document.getUploadedFileId());
+        IDocument document = documentService.getDocument(request.getDocumentId());
+        IFile file = filesService.getFileById(document.getUploadedFileId());
         
         Map<String, IPage> pages = getPageMap(document.getPages());
         IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
        
         try {
-            filesDbClient.saveFile(pageText);
+            filesService.saveFile(pageText);
         } catch (UnstorableObjectException e) {
             // should never happen, we're setting the id
             logger.error("Could not store file.", e);
@@ -88,7 +86,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         file.setProcessingStatus(ProcessingStatus.OCR_COMPLETE);
         
         try {
-            filesDbClient.saveFile(file);
+            filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
             // fail silently...
@@ -96,7 +94,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         }
         
         try {
-            docsDbClient.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // shoudl never happen
             // report to monitoring app
@@ -131,7 +129,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         Map<String, IPage> pageMap = new HashMap<>();
         for (IPage page : pages) {
             String imageFileId = page.getImageFileId();
-            IFile file = filesDbClient.getFileById(imageFileId);
+            IFile file = filesService.getFileById(imageFileId);
             
             if (file != null) {
                 pageMap.put(file.getFilename(), page);

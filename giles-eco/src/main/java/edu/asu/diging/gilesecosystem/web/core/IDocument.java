@@ -2,7 +2,6 @@ package edu.asu.diging.gilesecosystem.web.core;
 
 import java.util.List;
 
-import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 public interface IDocument extends IStorableObject {
@@ -58,10 +57,6 @@ public interface IDocument extends IStorableObject {
     public abstract void setExtractedTextFileId(String extractedText);
 
     public abstract String getExtractedTextFileId();
-
-    public abstract void setRequest(IRequest request);
-
-    public abstract IRequest getRequest();
 
     public abstract void setTasks(List<ITask> tasks);
 

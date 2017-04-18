@@ -37,13 +37,12 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
-import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 import edu.asu.diging.gilesecosystem.web.util.IGilesUrlHelper;
 
 @PropertySource("classpath:/config.properties")
@@ -59,13 +58,10 @@ public class UploadImagesController {
     private IPropertiesManager propertyManager;
     
     @Autowired
-    private FileUploadHelper uploadHelper;
-    
-    @Autowired
     private IUploadService uploadService;
 
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
     
     @Autowired
     private IJSONHelper jsonHelper;
@@ -179,7 +175,7 @@ public class UploadImagesController {
 
         
         for (String docId : docIds) {
-            IDocument doc = filesManager.getDocument(docId);
+            IDocument doc = documentService.getDocument(docId);
             ObjectNode docNode = mapper.createObjectNode();
             root.add(docNode);
 

@@ -15,9 +15,9 @@ import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
@@ -27,13 +27,13 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     private final Logger logger = LoggerFactory.getLogger(getClass());
      
     @Autowired 
-    private IDocumentDatabaseClient documentsDbClient;
+    private ITransactionalDocumentService documentService;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
     
     @Autowired
-    private IProcessingRequestsDatabaseClient pReqDbClient;
+    private ITransactionalProcessingRequestService processingRequestService;
     
     @Autowired
     private IRequestProducer requestProducer;  
@@ -56,7 +56,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         if (request == null) {
             file.setProcessingStatus(getCompletedStatus());
             try {
-                filesDbClient.saveFile(file);
+                filesService.saveFile(file);
             } catch (UnstorableObjectException e) {
                 throw new GilesProcessingException(e);
             }
@@ -70,8 +70,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
             }
         }
         
-        IDocument document = documentsDbClient.getDocumentById(file.getDocumentId());
-        document.setRequest(request);
+        IDocument document = documentService.getDocument(file.getDocumentId());
         
         IProcessingRequest procReq = new ProcessingRequest();
         procReq.setRequestId(request.getRequestId());
@@ -79,10 +78,10 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         procReq.setFileId(file.getId());
         procReq.setSentRequest(request);
         procReq.setRequestStatus(request.getStatus());
-        pReqDbClient.saveNewRequest(procReq);
+        processingRequestService.saveNewProcessingRequest(procReq);
         
         try {
-            documentsDbClient.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e1) {
             throw new GilesProcessingException(e1);
         }     
@@ -91,7 +90,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         
         request.setStatus(RequestStatus.SUBMITTED);
         try {
-            documentsDbClient.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             throw new GilesProcessingException(e);
         }
@@ -106,7 +105,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         } catch (MessageCreationException e) {
             request.setStatus(RequestStatus.FAILED);
             try {
-                documentsDbClient.saveDocument(document);
+                documentService.saveDocument(document);
             } catch (UnstorableObjectException e1) {
                 throw new GilesProcessingException(e1);
             }

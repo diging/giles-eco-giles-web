@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
@@ -19,24 +18,23 @@ import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Page;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedImageExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-@Transactional
 public class CompletedImageExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedImageExtractionRequest>, ICompletedImageExtractionProcessor {
 
     public final static String REQUEST_PREFIX = "IMGREQ";
     
     @Autowired
-    private IDocumentDatabaseClient docsDbClient;
+    private ITransactionalDocumentService documentService;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
      
     @Autowired
     private IProcessingCoordinator processCoordinator;
@@ -50,8 +48,8 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
      */
     @Override
     public void processRequest(ICompletedImageExtractionRequest request) {
-        IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
-        IFile file = filesDbClient.getFileById(document.getUploadedFileId());
+        IDocument document = documentService.getDocument(request.getDocumentId());
+        IFile file = filesService.getFileById(document.getUploadedFileId());
         
         Map<Integer, IPage> pages = new HashMap<>();
         document.getPages().forEach(page -> pages.put(page.getPageNr(), page));
@@ -62,7 +60,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                 IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
                
                 try {
-                    filesDbClient.saveFile(pageText);
+                    filesService.saveFile(pageText);
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
                     logger.error("Could not store file.", e);
@@ -88,7 +86,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         file.setProcessingStatus(ProcessingStatus.IMAGE_EXTRACTION_COMPLETE);
         
         try {
-            filesDbClient.saveFile(file);
+            filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
             // fail silently...
@@ -96,7 +94,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         }
         
         try {
-            docsDbClient.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // shoudl never happen
             // report to monitoring app

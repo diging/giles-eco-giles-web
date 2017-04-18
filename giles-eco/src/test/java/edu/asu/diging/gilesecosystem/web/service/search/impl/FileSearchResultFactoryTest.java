@@ -8,16 +8,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.googlecode.mp4parser.boxes.dece.AssetInformationBox;
-
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.FilesController;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.search.FileSearchResult;
 
@@ -27,7 +26,10 @@ public class FileSearchResultFactoryTest {
     private IPropertiesManager propertiesManager;
 
     @Mock
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
+    
+    @Mock
+    private ITransactionalFileService fileService;
 
     @InjectMocks
     private FileSearchResultFactory factoryToTest;
@@ -60,7 +62,7 @@ public class FileSearchResultFactoryTest {
 
         Mockito.when(propertiesManager.getProperty(Properties.GILES_URL)).thenReturn(
                 GILES_URL);
-        Mockito.when(filesManager.getFile(FILE_ID)).thenReturn(file);
+        Mockito.when(fileService.getFileById(FILE_ID)).thenReturn(file);
     }
 
     @Test
@@ -69,7 +71,7 @@ public class FileSearchResultFactoryTest {
         document.setId(DOCUMENT_ID);
         document.setExtractedTextFileId(FILE_ID);
 
-        Mockito.when(filesManager.getDocument(DOCUMENT_ID)).thenReturn(document);
+        Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
 
         FileSearchResult result = factoryToTest.createSearchResult(FILE_ID);
         Assert.assertEquals(access, result.getAccess());

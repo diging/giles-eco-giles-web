@@ -7,16 +7,12 @@ import javax.jdo.annotations.Index;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.requests.impl.Request;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -41,8 +37,6 @@ public class Document implements IDocument {
     @ElementCollection @LazyCollection(LazyCollectionOption.FALSE) private List<String> textFileIds;
     @OneToMany(cascade=CascadeType.ALL, targetEntity=Page.class, mappedBy="document") @LazyCollection(LazyCollectionOption.FALSE) private List<IPage> pages;
 
-    @OneToOne(cascade=CascadeType.ALL, targetEntity=Request.class) @LazyCollection(LazyCollectionOption.FALSE) private IRequest request;
-    
     @OneToMany(cascade=CascadeType.ALL, targetEntity=Task.class) @LazyCollection(LazyCollectionOption.FALSE) private List<ITask> tasks;
 
     /*
@@ -238,16 +232,6 @@ public class Document implements IDocument {
     @Override
     public void setExtractedTextFileId(String extractedText) {
         this.extractedText = extractedText;
-    }
-
-    @Override
-    public IRequest getRequest() {
-        return request;
-    }
-
-    @Override
-    public void setRequest(IRequest request) {
-        this.request = request;
     }
 
     @Override

@@ -3,7 +3,6 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
@@ -17,24 +16,23 @@ import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.Page;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedTextExtractionProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-@Transactional
 public class CompletedTextExtractionProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedTextExtractionRequest>, ICompletedTextExtractionProcessor {
     
     public final static String REQUEST_PREFIX = "TXTREQ";
       
     @Autowired
-    private IDocumentDatabaseClient docsDbClient;
+    private ITransactionalDocumentService documentService;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
      
     @Autowired
     private IProcessingCoordinator processCoordinator;
@@ -48,8 +46,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
      */
     @Override
     public void processRequest(ICompletedTextExtractionRequest request) {
-        IDocument document = docsDbClient.getDocumentById(request.getDocumentId());
-        IFile file = filesDbClient.getFileById(document.getUploadedFileId());
+        IDocument document = documentService.getDocument(request.getDocumentId());
+        IFile file = filesService.getFileById(document.getUploadedFileId());
         
         String completeTextDownload = request.getDownloadUrl();
         // text was extracted
@@ -58,7 +56,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             IFile completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
             
             try {
-                filesDbClient.saveFile(completeText);
+                filesService.saveFile(completeText);
             } catch (UnstorableObjectException e) {
                 // should never happen, we're setting the id
                 logger.error("Could not store file.", e);
@@ -76,7 +74,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                 IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
                
                 try {
-                    filesDbClient.saveFile(pageText);
+                    filesService.saveFile(pageText);
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
                     logger.error("Could not store file.", e);
@@ -97,7 +95,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         markRequestComplete(request);
         
         try {
-            filesDbClient.saveFile(file);
+            filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
             // fail silently...
@@ -105,7 +103,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         }
         
         try {
-            docsDbClient.saveDocument(document);
+            documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // shoudl never happen
             // report to monitoring app

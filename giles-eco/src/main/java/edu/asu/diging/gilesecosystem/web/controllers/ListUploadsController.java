@@ -24,6 +24,7 @@ import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.User;
@@ -34,6 +35,9 @@ public class ListUploadsController {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
 
     @Autowired
     private IStatusHelper statusHelper;
@@ -64,9 +68,9 @@ public class ListUploadsController {
         int sortDirInt = new Integer(sortDir);
 
         if (username != null) {
-            pageCount = filesManager.getUploadsOfUserPageCount(username);
+            pageCount = uploadService.getUploadsOfUserPageCount(username);
 
-            List<IUpload> uploads = filesManager.getUploadsOfUser(username, pageInt, -1,
+            List<IUpload> uploads = uploadService.getUploadsOfUser(username, pageInt, -1,
                     "createdDate", sortDirInt);
             List<UploadPageBean> mappedUploads = new ArrayList<UploadPageBean>();
 
@@ -110,7 +114,7 @@ public class ListUploadsController {
             model.addAttribute("count", pageCount);
             model.addAttribute("uploads", mappedUploads);
             model.addAttribute("totalUploads",
-                    filesManager.getUploadsOfUserCount(username));
+                    uploadService.getUploadsOfUserCount(username));
         }
         if (pageInt < 1) {
             pageInt = 1;

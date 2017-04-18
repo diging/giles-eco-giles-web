@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.controllers;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,8 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 
 @Controller
 public class ChangeAccessController {
@@ -28,6 +25,9 @@ public class ChangeAccessController {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalDocumentService documentService;
 
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
@@ -44,7 +44,7 @@ public class ChangeAccessController {
             return "redirect:/files/upload";
         }
 
-        IDocument document = filesManager.getDocument(documentId);
+        IDocument document = documentService.getDocument(documentId);
         if (document == null) {
             // and again, something weird going on
             // let's ignore it

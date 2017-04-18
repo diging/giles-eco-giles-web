@@ -17,8 +17,8 @@ import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
@@ -37,10 +37,10 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     protected RequestHelper requestHelper;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService fileService;
     
     @Autowired
-    private IProcessingRequestsDatabaseClient pReqDbClient;
+    private ITransactionalProcessingRequestService processingRequestService;
      
     @Autowired
     private IUserManager userManager;
@@ -49,7 +49,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     protected void sendRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
         try {
-            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId));
+            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX));
         } catch (GilesProcessingException e) {
             // should not happen
             // FIXME: send to monitor app
@@ -62,7 +62,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         procReq.setFileId(file.getId());
         procReq.setSentRequest(storageRequest);
         procReq.setRequestId(storageRequest.getRequestId());
-        pReqDbClient.saveNewRequest(procReq);
+        processingRequestService.saveNewProcessingRequest(procReq);
         
         try {
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
@@ -81,12 +81,12 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         pagefile.setUploadId(file.getUploadId());
         pagefile.setUploadDate(OffsetDateTime.now(ZoneId.of("UTC")).toString());
         pagefile.setFilename(filename);
-        pagefile.setRequestId(filesDbClient.generateId(requestPrefix, filesDbClient::getFileByRequestId));
+        pagefile.setRequestId(fileService.generateRequestId(requestPrefix));
         pagefile.setUsername(document.getUsername());
         pagefile.setUsernameForStorage(requestHelper.getUsernameForStorage(userManager.findUser(document.getUsername())));
         pagefile.setProcessingStatus(ProcessingStatus.AWAITING_STORAGE);
         pagefile.setSize(size);
-        pagefile.setId(filesDbClient.generateId());
+        pagefile.setId(fileService.generateFileId());
         
         return pagefile;
     }

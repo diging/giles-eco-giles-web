@@ -5,20 +5,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 
-@Transactional
 public abstract class ACompletedRequestProcessor {
     
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private IProcessingRequestsDatabaseClient pReqDbClient;
+    private ITransactionalProcessingRequestService pReqDbClient;
     
     protected void markRequestComplete(IRequest completeRequest) {
         List<IProcessingRequest> pRequests = pReqDbClient.getProcRequestsByRequestId(completeRequest.getRequestId());
@@ -26,7 +24,7 @@ public abstract class ACompletedRequestProcessor {
             pReq.setCompletedRequest(completeRequest);
             pReq.setRequestStatus(completeRequest.getStatus());
             try {
-                pReqDbClient.store(pReq);
+                pReqDbClient.save(pReq);
             } catch (UnstorableObjectException e) {
                 // should never happen
                 // FIXME send to monitoring app
