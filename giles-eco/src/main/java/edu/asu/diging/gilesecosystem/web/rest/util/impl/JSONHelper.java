@@ -16,12 +16,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 @Component
 public class JSONHelper implements IJSONHelper {
@@ -30,6 +31,9 @@ public class JSONHelper implements IJSONHelper {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.rest.util.IJSONHelper#createDocumentJson(edu.asu.giles.core.IDocument, com.fasterxml.jackson.databind.ObjectMapper, com.fasterxml.jackson.databind.node.ObjectNode)
@@ -37,7 +41,7 @@ public class JSONHelper implements IJSONHelper {
     @Override
     public void createDocumentJson(IDocument doc, ObjectMapper mapper, ObjectNode docNode) {
         
-        IFile uploadedFile = filesManager.getFile(doc.getUploadedFileId());
+        IFile uploadedFile = fileService.getFileById(doc.getUploadedFileId());
         docNode.put("documentId", doc.getId());
         docNode.put("documentStatus", uploadedFile.getProcessingStatus().toString());
         docNode.put("uploadId", doc.getUploadId());
@@ -51,7 +55,7 @@ public class JSONHelper implements IJSONHelper {
         }
         
         if (doc.getExtractedTextFileId() != null) {
-            IFile extractedTextFile = filesManager.getFile(doc.getExtractedTextFileId());
+            IFile extractedTextFile = fileService.getFileById(doc.getExtractedTextFileId());
             docNode.set("extractedText", createFileJsonObject(mapper, extractedTextFile));
         }
         
@@ -61,15 +65,15 @@ public class JSONHelper implements IJSONHelper {
                 ObjectNode pageNode = pagesArray.addObject();
                 pageNode.put("nr", page.getPageNr());
                 if (page.getImageFileId() != null) {
-                    IFile imageFile = filesManager.getFile(page.getImageFileId());
+                    IFile imageFile = fileService.getFileById(page.getImageFileId());
                     pageNode.set("image", createFileJsonObject(mapper, imageFile));
                 }
                 if (page.getTextFileId() != null) {
-                    IFile textFile = filesManager.getFile(page.getTextFileId());
+                    IFile textFile = fileService.getFileById(page.getTextFileId());
                     pageNode.set("text", createFileJsonObject(mapper, textFile));
                 }
                 if (page.getOcrFileId() != null) {
-                    IFile ocrFile = filesManager.getFile(page.getOcrFileId());
+                    IFile ocrFile = fileService.getFileById(page.getOcrFileId());
                     pageNode.set("ocr", createFileJsonObject(mapper, ocrFile));
                 }
             }

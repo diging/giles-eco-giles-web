@@ -19,11 +19,11 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.impl.ResendingResult;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IRequestResender;
@@ -37,10 +37,10 @@ public class RequestResender implements IRequestResender {
     private ApplicationContext ctx;
     
     @Autowired
-    private IProcessingRequestsDatabaseClient pReqDbClient;
+    private ITransactionalProcessingRequestService requestService;
     
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
     
     private Map<Class<? extends IRequest>, ProcessingPhase<? extends IProcessingInfo>> phaseMap;
     
@@ -67,11 +67,11 @@ public class RequestResender implements IRequestResender {
     @Async
     public Future<ResendingResult> resendRequests() {
         int counter = 0;
-        List<IProcessingRequest> requests = pReqDbClient.getIncompleteRequests();
+        List<IProcessingRequest> requests = requestService.getIncompleteRequests();
         for (IProcessingRequest request : requests) {
             IRequest sentRequest = request.getSentRequest();
             ProcessingPhase<?> phase = phaseMap.get(sentRequest.getClass());
-            IDocument doc = filesManager.getDocument(request.getDocumentId());
+            IDocument doc = documentService.getDocument(request.getDocumentId());
             if (doc != null) {
                 try {
                     phase.sendRequest(sentRequest, doc);

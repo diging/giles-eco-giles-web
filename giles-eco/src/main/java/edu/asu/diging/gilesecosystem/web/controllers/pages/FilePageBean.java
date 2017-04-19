@@ -3,9 +3,9 @@ package edu.asu.diging.gilesecosystem.web.controllers.pages;
 import org.apache.commons.lang3.NotImplementedException;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 
 public class FilePageBean implements IFile {
 

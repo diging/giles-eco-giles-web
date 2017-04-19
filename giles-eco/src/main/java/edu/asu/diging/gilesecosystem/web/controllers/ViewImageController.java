@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
 import edu.asu.diging.gilesecosystem.web.util.DigilibConnector;
 
@@ -39,7 +39,7 @@ public class ViewImageController {
     private DigilibConnector digilibConnector;
 
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalFileService filesService;
     
     @Autowired
     private IMetadataUrlService metadataService;
@@ -67,7 +67,7 @@ public class ViewImageController {
             }
         }
 
-        IFile file = filesManager.getFile(fileId);
+        IFile file = filesService.getFileById(fileId);
         parameterBuffer.append("fn=");
         try {
             parameterBuffer.append(URLEncoder.encode(file.getFilepath(), "UTF-8"));
@@ -97,7 +97,7 @@ public class ViewImageController {
     @RequestMapping(value = "/files/{fileId}")
     public String showImagePage(Model model,
             @PathVariable("fileId") String fileId) throws GilesMappingException {
-        IFile file = filesManager.getFile(fileId);
+        IFile file = filesService.getFileById(fileId);
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
         
         FilePageBean fileBean = fileMappingService.convertToT2(file, new FilePageBean());
@@ -105,7 +105,7 @@ public class ViewImageController {
         model.addAttribute("file", fileBean);
         
         if (file.getDerivedFrom() != null) {
-            model.addAttribute("derivedFrom", filesManager.getFile(file.getDerivedFrom()));
+            model.addAttribute("derivedFrom", filesService.getFileById(file.getDerivedFrom()));
         }
 
         return "files/file";

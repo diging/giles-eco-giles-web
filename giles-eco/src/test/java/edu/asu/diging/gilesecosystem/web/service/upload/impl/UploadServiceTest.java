@@ -18,12 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.DocumentType;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.impl.Document;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
@@ -40,6 +39,9 @@ public class UploadServiceTest {
     
     @Mock
     private IFilesManager filesManager;
+    
+    @Mock
+    private ITransactionalUploadService uploadService;
 
     @InjectMocks
     private UploadService serviceToTest;

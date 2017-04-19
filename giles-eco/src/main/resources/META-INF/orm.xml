@@ -7,18 +7,18 @@
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.Request" access="FIELD">
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" access="FIELD">
-    	<attributes>
-	        <basic name="pages" fetch="EAGER"/>
-	    </attributes>
+        <attributes>
+            <basic name="pages" fetch="EAGER"/>
+        </attributes>
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest" access="FIELD">
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest" access="FIELD">
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest" access="FIELD">
-    	<attributes>
-	        <basic name="pages" fetch="EAGER"/>
-	    </attributes>
+        <attributes>
+            <basic name="pages" fetch="EAGER"/>
+        </attributes>
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest" access="FIELD">
     </embeddable>
@@ -30,5 +30,5 @@
     </embeddable>
     
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.Page" access="FIELD">
-	</embeddable>
+    </embeddable>
 </entity-mappings>

@@ -3,13 +3,12 @@ package edu.asu.diging.gilesecosystem.web.controllers.pages;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.DocumentType;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
-import edu.asu.diging.gilesecosystem.web.core.ITask;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.ITask;
 
 public class DocumentPageBean implements IDocument {
     private String id;
@@ -32,7 +31,6 @@ public class DocumentPageBean implements IDocument {
     private IFile uploadedFileFile;
     private IFile extractedTextFile;
     
-    private IRequest request;
     private String statusLabel;
     private String processingLabel;
     
@@ -170,12 +168,6 @@ public class DocumentPageBean implements IDocument {
     }
     public void setExtractedTextFile(IFile extractedTextFile) {
         this.extractedTextFile = extractedTextFile;
-    }
-    public void setRequest(IRequest request) {
-        this.request = request;
-    }
-    public IRequest getRequest() {
-        return request;
     }
     public String getStatusLabel() {
         return statusLabel;

@@ -7,16 +7,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
-import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 
 @Service
 public class CompletetionProcessingPhase extends ProcessingPhase<IProcessingInfo> {
@@ -27,18 +23,6 @@ public class CompletetionProcessingPhase extends ProcessingPhase<IProcessingInfo
     @Qualifier("tmpStorageManager") 
     private IFileStorageManager storageManager;
     
-    @Autowired
-    private IDocumentDatabaseClient docDbClient;
-    
-    @Autowired
-    private IFilesDatabaseClient fileDbClient;
-    
-    @Autowired
-    private IUploadService uploadService;
-    
-    @Autowired
-    private IProcessingRequestsDatabaseClient pReqDbClient;
-
     @Override
     public ProcessingPhaseName getPhaseName() {
         return ProcessingPhaseName.COMPLETE;

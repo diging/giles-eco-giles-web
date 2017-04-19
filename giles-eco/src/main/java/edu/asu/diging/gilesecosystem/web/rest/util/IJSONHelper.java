@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 
 public interface IJSONHelper {
 

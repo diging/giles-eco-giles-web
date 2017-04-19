@@ -32,6 +32,9 @@
 
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
+    <task:annotation-driven executor="myExecutor" />
+    <task:executor id="myExecutor" pool-size="1" />
+    
     <!-- Add JPA support -->
     <bean id="emf_data"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -41,39 +44,9 @@
                 class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
         </property>
     </bean>
-    <bean id="emf_apps"
-        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="AppsPU" />
-        <property name="loadTimeWeaver">
-            <bean
-                class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
-        </property>
-    </bean>
-    <bean id="emf_user"
-        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="UserPU" />
-        <property name="loadTimeWeaver">
-            <bean
-                class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
-        </property>
-    </bean>
 
-    <bean id="txmanager_user" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="emf_user" />
-    </bean>
-
-    <bean id="txmanager_apps" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="emf_apps" />
-    </bean>
-    <bean id="txmanager_data" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <!-- <bean id="txmanager_data" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="emf_data" />
-    </bean>
-
-    <!-- Use @Transaction annotations for managing transactions -->
-    <tx:annotation-driven proxy-target-class="true"
-        transaction-manager="txmanager_data" />
-
-    <task:annotation-driven executor="myExecutor" />
-    <task:executor id="myExecutor" pool-size="1" />
+    </bean> -->
 
 </beans>

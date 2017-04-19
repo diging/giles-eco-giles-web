@@ -1,8 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 
 public class StorageRequestProcessingInfo implements IProcessingInfo {

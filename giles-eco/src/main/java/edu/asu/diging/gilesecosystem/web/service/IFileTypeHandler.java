@@ -3,7 +3,7 @@ package edu.asu.diging.gilesecosystem.web.service;
 import java.util.List;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 
 public interface IFileTypeHandler {
     

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+ 
+<hibernate-mapping>
+    <class name="edu.asu.diging.gilesecosystem.requests.impl.Request">
+        <id name="id">
+            <generator class="increment" />
+        </id>
+        <property name="requestId" type="string" />
+        <property name="requestType" type="string" />
+        <property name="uploadId" type="string" />
+        <property name="documentId" type="string" />
+        <property name="fileId" type="string" />
+        <property name="status" >
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">edu.asu.diging.gilesecosystem.requests.RequestStatus</param>
+            </type>
+        </property>
+        <property name="downloadUrl" type="string" />
+        <property name="downloadPath" type="string" />
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest">
+            <key column="id" />
+            <property name="extractionDate" type="string" />
+            <property name="imageFilename" type="string" />
+            <list name="pages" cascade="all" table="CompletedImageExtractionRequest_Page">
+                <key column="request_id" />
+                <list-index column="idx" />
+                <many-to-many class="edu.asu.diging.gilesecosystem.requests.impl.Page" unique="true" />
+            </list>
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest">
+            <key column="id" />
+            <property name="ocrDate" type="string" />
+            <property name="textFilename" type="string" />
+            <property name="size" type="long" />
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest">
+            <key column="id" />
+            <property name="storageDate" type="string" />
+            <property name="storedFileId" type="string" />
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest">
+            <key column="id" />
+            <property name="extractionDate" type="string" />
+            <property name="textFilename" type="string" />
+            <property name="size" type="long" />
+            <list name="pages" cascade="all" table="CompletedTextExtractionRequest_Page">
+                <key column="request_id" />
+                <list-index column="idx" />
+                <many-to-many class="edu.asu.diging.gilesecosystem.requests.impl.Page" unique="true" />
+            </list>
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest">
+            <key column="id" />
+            <property name="filename" type="string" />
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.OCRRequest">
+            <key column="id" />
+            <property name="filename" type="string" />
+            <property name="pagenr" type="int" />
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.StorageRequest">
+            <key column="id" />
+            <property name="fileType">
+                <type name="org.hibernate.type.EnumType">
+                    <param name="enumClass">edu.asu.diging.gilesecosystem.requests.FileType</param>
+                </type>
+            </property>
+            <property name="username" type="string" />
+            <property name="uploadDate" type="string" />
+            <property name="filename" type="string" />
+        </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest">
+            <key column="id" />
+            <property name="filename" type="string" />
+        </joined-subclass>
+    </class>
+    <class name="edu.asu.diging.gilesecosystem.requests.impl.Page" table="RequestPage">
+        <id name="id" column="pageId">
+            <generator class="increment" />
+        </id>
+        <property name="pageNr" type="int" />
+        <property name="filename" type="string" />
+        <property name="pathToFile" type="string" />
+        <property name="downloadUrl" type="string" />
+        <property name="contentType" type="string" />
+        <property name="size" type="long" />
+    </class>
+</hibernate-mapping>

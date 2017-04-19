@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 
 public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
     

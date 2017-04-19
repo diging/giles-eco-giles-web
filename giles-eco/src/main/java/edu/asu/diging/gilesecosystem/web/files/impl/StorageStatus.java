@@ -1,8 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 
 public class StorageStatus {

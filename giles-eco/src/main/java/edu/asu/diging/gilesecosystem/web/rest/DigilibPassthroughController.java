@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 import edu.asu.diging.gilesecosystem.web.util.DigilibConnector;
 
@@ -37,7 +37,7 @@ public class DigilibPassthroughController {
             .getLogger(DigilibPassthroughController.class);
 
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalFileService filesService;
 
     @Autowired
     private DigilibConnector digilibConnector;
@@ -53,7 +53,7 @@ public class DigilibPassthroughController {
             @RequestParam(defaultValue = "") @InjectImagePath String fn)
             throws UnsupportedEncodingException {
         
-        IFile file = filesManager.getFileByPath(fn);
+        IFile file = filesService.getFileByPath(fn);
         
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
@@ -135,11 +135,11 @@ public class DigilibPassthroughController {
             }
         }
         
-        IFile file = filesManager.getFileByPath(fn);
+        IFile file = filesService.getFileByPath(fn);
 
         if (file == null) {
             fn = fn.startsWith(File.separator) ? fn.substring(1) : File.separator + fn;
-            file = filesManager.getFileByPath(fn);
+            file = filesService.getFileByPath(fn);
         }
 
         if (file == null) {

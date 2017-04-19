@@ -18,7 +18,7 @@ import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
 
-@Transactional("txmanager_apps")
+@Transactional("transactionManager")
 @Service
 public class RegisteredAppsManager implements IRegisteredAppManager {
 

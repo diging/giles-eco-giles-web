@@ -5,25 +5,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.ICompletedStorageRequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-@Transactional
 public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,7 +31,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     private IFileStorageManager storageManager;
 
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
     
     @Autowired
     private IProcessingCoordinator processCoordinator;
@@ -47,7 +45,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
      */
     @Override
     public void processRequest(ICompletedStorageRequest request) {
-        IFile file = filesDbClient.getFileById(request.getFileId());
+        IFile file = filesService.getFileById(request.getFileId());
         
         file.setStorageId(request.getStoredFileId());
         file.setDownloadUrl(request.getDownloadUrl());
@@ -62,7 +60,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         markRequestComplete(request);
         
         try {
-            filesDbClient.saveFile(file);
+            filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
             // fail silently...

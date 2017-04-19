@@ -12,10 +12,10 @@ import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -29,7 +29,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
     private IRequestFactory<IImageExtractionRequest, ImageExtractionRequest> requestFactory;
     
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ITransactionalFileService filesService;
     
     @Autowired
     private IPropertiesManager propertyManager;
@@ -53,7 +53,7 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
         
         IImageExtractionRequest request;
         try {
-            request = requestFactory.createRequest(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId), file.getUploadId());
+            request = requestFactory.createRequest(filesService.generateRequestId(REQUEST_PREFIX), file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
