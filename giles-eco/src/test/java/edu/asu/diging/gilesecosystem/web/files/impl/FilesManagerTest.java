@@ -20,15 +20,15 @@ import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.domain.impl.Document;
 import edu.asu.diging.gilesecosystem.web.domain.impl.File;
 import edu.asu.diging.gilesecosystem.web.domain.impl.Page;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 public class FilesManagerTest {
 
     @Mock private EntityManager em;
-    @Mock private IDocumentDatabaseClient docDatabaseClientToTest;
-    @Mock private IFilesDatabaseClient databaseClientToTest;
+    @Mock private ITransactionalDocumentService documentService;
+    @Mock private ITransactionalFileService fileService;
     @InjectMocks private IFilesManager filesManagerToTest;
 
     private String DOCUMENT_ID = "documentId";
@@ -70,25 +70,25 @@ public class FilesManagerTest {
         pages.add(page);
         doc.setPages(pages);
 
-        Mockito.when(databaseClientToTest.getFileById(IMG_ID)).thenReturn((File) imgFile);
-        Mockito.when(databaseClientToTest.getFileById(TXT_ID)).thenReturn((File) txtFile);
-        Mockito.when(databaseClientToTest.getFileById(OCR_ID)).thenReturn((File) ocrFile);
+        Mockito.when(fileService.getFileById(IMG_ID)).thenReturn((File) imgFile);
+        Mockito.when(fileService.getFileById(TXT_ID)).thenReturn((File) txtFile);
+        Mockito.when(fileService.getFileById(OCR_ID)).thenReturn((File) ocrFile);
     }
 
     @Test
     public void test_changeDocumentAccess() throws UnstorableObjectException {
         boolean isChangeSuccess = filesManagerToTest.changeDocumentAccess(doc, DocumentAccess.PUBLIC);
-        Mockito.verify(docDatabaseClientToTest).saveDocument(doc);
+        Mockito.verify(documentService).saveDocument(doc);
         Assert.assertEquals(isChangeSuccess, true);
         Assert.assertEquals(doc.getAccess(), DocumentAccess.PUBLIC);
 
-        Mockito.verify(databaseClientToTest).getFileById(IMG_ID);
+        Mockito.verify(fileService).getFileById(IMG_ID);
         Assert.assertEquals(imgFile.getAccess(), DocumentAccess.PUBLIC);
 
-        Mockito.verify(databaseClientToTest).getFileById(TXT_ID);
+        Mockito.verify(fileService).getFileById(TXT_ID);
         Assert.assertEquals(txtFile.getAccess(), DocumentAccess.PUBLIC);
 
-        Mockito.verify(databaseClientToTest).getFileById(OCR_ID);
+        Mockito.verify(fileService).getFileById(OCR_ID);
         Assert.assertEquals(ocrFile.getAccess(), DocumentAccess.PUBLIC);
     }
 }
