@@ -41,7 +41,7 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      * when specifying the label for a provider in the drop down menu when registering new applications.
      * Make sure not to have '_' in the passed provider id.
      * @param providerId type of provider used for authentication (e.g. 'mitreidconnect')
-     * @param authorizationType type of authorization used, may be null (e.g. 'ac')cessToken
+     * @param authorizationType type of authorization used, may be null (e.g. 'accessToken')
      */
     @Override
     public void addProvider(String providerId, String authorizationType) {
