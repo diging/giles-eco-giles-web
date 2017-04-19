@@ -36,8 +36,10 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      */
     /**
      * register a new provider with a given authorization type
-     * e.g authorization type 'mitreidconnect_accessToken' has providerId 'mitreidconnect' 
-     * with authorization using 'accessToken'. Make sure not to have '_' in your provider id.
+     * e.g provider 'MITREid Connect Server <AccessToken>' internally converts to key
+     * 'mitreidconnect_accessToken' with providerId as 'mitreidconnect'
+     * authorization type as 'accessToken' combined using '_'.
+     * Make sure not to have '_' in your provider id.
      * @param providerId type of provider used for authentication
      * @param authorizationType type of authorization used, can be null.
      */
