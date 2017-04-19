@@ -43,6 +43,14 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         String id = databaseClient.generateId();
         app.setId(id);
 
+        String[] providerId = app.getProviderId().split("_");
+        if(providerId.length > 1) {
+            app.setProviderId(providerId[0]);
+            app.setAuthorizationType(providerId[1]);
+        } else {
+            app.setAuthorizationType("");
+        }
+
         try {
             databaseClient.store(app);
         } catch (UnstorableObjectException e) {

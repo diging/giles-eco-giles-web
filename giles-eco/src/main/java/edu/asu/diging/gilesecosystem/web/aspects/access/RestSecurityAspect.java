@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -78,7 +79,7 @@ public class RestSecurityAspect {
     private List<IChecker> checkers;
     
     private Map<String, IChecker> tokenCheckers;
-    
+
     @PostConstruct
     public void init() {
         tokenCheckers = new HashMap<>();
@@ -128,7 +129,8 @@ public class RestSecurityAspect {
         }
         
         IAppToken appToken = ((IAppToken)holder.tokenContents);
-        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId());
+        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId(), appToken.getAuthorizationType());
+
         if (checkerId == null) {
             logger.warn("Token references non existing identity provider.");
             Map<String, String> msgs = new HashMap<String, String>();
@@ -267,12 +269,21 @@ public class RestSecurityAspect {
             if (imagePathParamIdx != -1) {
 
                 String imagePath = (String) arguments[imagePathParamIdx];
-                
+
                 IFile file = fileService.getFileByPath(imagePath);
+
+                if (file == null) {
+                    imagePath = imagePath.startsWith(File.separator) ? imagePath.substring(1)
+                            : File.separator + imagePath;
+                    file = fileService.getFileByPath(imagePath);
+                }
+
                 if (file == null) {
                     return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
                 }
-                
+
+                arguments[imagePathParamIdx] = imagePath;
+
                 if (file.getAccess() == DocumentAccess.PUBLIC) {
                     return joinPoint.proceed(arguments);
                 }

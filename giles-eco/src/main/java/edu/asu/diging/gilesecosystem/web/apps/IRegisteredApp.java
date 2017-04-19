@@ -26,4 +26,11 @@ public interface IRegisteredApp extends IStorableObject {
 
     public abstract String getProviderClientId();
 
+    /**
+     * return type of authorization used.
+     */
+    public abstract String getAuthorizationType();
+
+    public abstract void setAuthorizationType(String authorizationType);
+
 }

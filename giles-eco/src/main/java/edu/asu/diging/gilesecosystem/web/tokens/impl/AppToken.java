@@ -8,6 +8,7 @@ public class AppToken implements IAppToken {
     private String token;
     private String appId;
     private String providerId;
+    private String authorizationType;
     
     /* (non-Javadoc)
      * @see edu.asu.giles.apps.impl.IAppToken#getId()
@@ -52,6 +53,14 @@ public class AppToken implements IAppToken {
     @Override
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+    @Override
+    public String getAuthorizationType() {
+        return authorizationType;
+    }
+    @Override
+    public void setAuthorizationType(String authorizationType) {
+        this.authorizationType = authorizationType;
     }
     
     
