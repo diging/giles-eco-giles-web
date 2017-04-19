@@ -35,13 +35,13 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
      * @see edu.asu.giles.service.impl.IIdentityProviderRegistry#addProvider(java.lang.String)
      */
     /**
-     * register a new provider with a given authorization type
-     * e.g provider 'MITREid Connect Server <AccessToken>' internally converts to key
-     * 'mitreidconnect_accessToken' with providerId as 'mitreidconnect'
-     * authorization type as 'accessToken' combined using '_'.
-     * Make sure not to have '_' in your provider id.
-     * @param providerId type of provider used for authentication
-     * @param authorizationType type of authorization used, can be null.
+     * Method to register a new provider with a given authorization type.
+     * Internally, this method creates a key of the form providerId_authorizationType 
+     * (e.g. 'mitreidconnect_accessToken'), which should be used in the properties file
+     * when specifying the label for a provider in the drop down menu when registering new applications.
+     * Make sure not to have '_' in the passed provider id.
+     * @param providerId type of provider used for authentication (e.g. 'mitreidconnect')
+     * @param authorizationType type of authorization used, may be null (e.g. 'ac')cessToken
      */
     @Override
     public void addProvider(String providerId, String authorizationType) {
