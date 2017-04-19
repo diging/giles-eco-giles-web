@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.Index;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
+import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.IDocument;
@@ -23,21 +22,25 @@ import edu.asu.diging.gilesecosystem.web.core.ITask;
 @Entity
 public class Document implements IDocument {
 
-    @Index @Id private String id;
+    @Id private String id;
     @Index private String uploadId;
     @Index private String username;
     private String createdDate;
     private String uploadedFile;
     private String extractedText;
-    @ElementCollection @LazyCollection(LazyCollectionOption.FALSE) private List<String> fileIds;
+    @Basic(fetch = FetchType.EAGER) private List<String> fileIds;
     private DocumentAccess access;
     private transient List<IFile> files;
     private DocumentType documentType;
     private int pageCount;
-    @ElementCollection @LazyCollection(LazyCollectionOption.FALSE) private List<String> textFileIds;
-    @OneToMany(cascade=CascadeType.ALL, targetEntity=Page.class, mappedBy="document") @LazyCollection(LazyCollectionOption.FALSE) private List<IPage> pages;
+    @Basic(fetch = FetchType.EAGER) private List<String> textFileIds;
+    @Basic(fetch = FetchType.EAGER) private List<IPage> pages;
 
-    @OneToMany(cascade=CascadeType.ALL, targetEntity=Task.class) @LazyCollection(LazyCollectionOption.FALSE) private List<ITask> tasks;
+    // forget possible entity not an entity warning/error 
+    // this only happens because Eclipse can't read both annotations and ORM file
+    @OneToOne(cascade=CascadeType.ALL) private IRequest request;
+    
+    @Basic(fetch = FetchType.EAGER) private List<ITask> tasks;
 
     /*
      * (non-Javadoc)
@@ -232,6 +235,16 @@ public class Document implements IDocument {
     @Override
     public void setExtractedTextFileId(String extractedText) {
         this.extractedText = extractedText;
+    }
+
+    @Override
+    public IRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public void setRequest(IRequest request) {
+        this.request = request;
     }
 
     @Override

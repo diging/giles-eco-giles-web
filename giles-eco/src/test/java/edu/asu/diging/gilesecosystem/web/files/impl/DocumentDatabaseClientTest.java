@@ -18,9 +18,9 @@ import org.slf4j.Logger;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.IPropertiesCopier;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.impl.Document;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Document;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 
 public class DocumentDatabaseClientTest {

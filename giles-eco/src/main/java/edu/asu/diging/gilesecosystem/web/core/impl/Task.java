@@ -1,17 +1,13 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.ITask;
 
-@Entity
+@Embeddable
 public class Task implements ITask {
 
-    @Id @GeneratedValue(strategy=GenerationType.SEQUENCE) private Integer id;
     private String taskHandlerId;
     private RequestStatus status;
     private String fileId;
@@ -51,11 +47,5 @@ public class Task implements ITask {
     @Override
     public void setFileId(String fileId) {
         this.fileId = fileId;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
     }
 }

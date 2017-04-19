@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.impl.Document;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Document;
 import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 
 @Transactional
@@ -20,7 +20,7 @@ import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
 
-    @PersistenceContext
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
     /*

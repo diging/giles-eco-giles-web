@@ -1,29 +1,16 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
-import javax.jdo.annotations.Index;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Embeddable;
 
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 
-@Entity
+@Embeddable
 public class Page implements IPage {
     
-    @Index @Id @GeneratedValue(strategy=GenerationType.SEQUENCE) private Integer id;
     private int pageNr;
     private String imageFileId;
     private String textFileId;
     private String ocrFileId;
-    
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity=Document.class)
-    @JoinColumn(name = "document_id", nullable = false)
-    private IDocument document;
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -75,18 +62,5 @@ public class Page implements IPage {
     public void setOcrFileId(String ocrFileId) {
         this.ocrFileId = ocrFileId;
     }
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    @Override
-    public IDocument getDocument() {
-        return document;
-    }
-    @Override
-    public void setDocument(IDocument document) {
-        this.document = document;
-    }
+    
 }

@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.core.impl.ProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 
 @Transactional
@@ -24,7 +24,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
-    @PersistenceContext
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
     @Override

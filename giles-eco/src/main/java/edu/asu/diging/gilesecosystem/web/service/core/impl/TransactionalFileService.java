@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 @Service
-@Transactional
+@Transactional("transactionManager")
 public class TransactionalFileService implements ITransactionalFileService {
     
     private final static String REQUEST_PREFIX = "STREQ";
@@ -53,7 +53,7 @@ public class TransactionalFileService implements ITransactionalFileService {
     
     @Override
     public IFile getFileByPath(String path) {
-        IFile file = new edu.asu.diging.gilesecosystem.web.core.impl.File();
+        IFile file = new edu.asu.diging.gilesecosystem.web.domain.impl.File();
         file.setFilepath(path);
 
         List<IFile> files = filesDbClient.getFilesByPath(path);

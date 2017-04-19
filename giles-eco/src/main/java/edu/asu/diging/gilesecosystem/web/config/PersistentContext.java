@@ -41,7 +41,7 @@ public class PersistentContext {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web");
+        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web.domain", "edu.asu.diging.gilesecosystem.web.apps", "edu.asu.diging.gilesecosystem.web.users");
  
         Properties jpaProperties = new Properties();
      
@@ -74,7 +74,7 @@ public class PersistentContext {
         );
  
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
-        entityManagerFactoryBean.setMappingResources("edu/asu/diging/gilesecosystem/web/core/orm.xml");
+        entityManagerFactoryBean.setMappingResources("edu/asu/diging/gilesecosystem/web/domain/orm.xml");
  
         return entityManagerFactoryBean;
     }

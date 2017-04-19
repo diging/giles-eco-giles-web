@@ -16,7 +16,7 @@ import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 @Component
 public class UserDatabaseClient {
 
-    @PersistenceContext
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
 
 

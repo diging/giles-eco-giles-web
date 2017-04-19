@@ -1,16 +1,13 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
 import javax.jdo.annotations.Index;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
-import edu.asu.diging.gilesecosystem.requests.impl.Request;
 import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 
 /**
@@ -27,8 +24,8 @@ public class ProcessingRequest implements IProcessingRequest {
     @Index private String fileId;
     @Index private String requestId;
     private RequestStatus requestStatus;
-    @OneToOne(targetEntity=Request.class) @Cascade({CascadeType.ALL}) private IRequest sentRequest;
-    @OneToOne(targetEntity=Request.class) @Cascade({CascadeType.ALL})  private IRequest completedRequest;
+    @Basic(fetch = FetchType.EAGER) private IRequest sentRequest;
+    @Basic(fetch = FetchType.EAGER) private IRequest completedRequest;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.core.impl.IProcessingRequests#getId()

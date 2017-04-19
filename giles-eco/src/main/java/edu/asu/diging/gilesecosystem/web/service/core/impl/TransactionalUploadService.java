@@ -8,14 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
-@Transactional
+@Transactional("transactionManager")
 public class TransactionalUploadService implements ITransactionalUploadService {
 
     @Autowired

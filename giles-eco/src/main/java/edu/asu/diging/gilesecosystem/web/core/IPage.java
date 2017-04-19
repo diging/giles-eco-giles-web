@@ -19,8 +19,4 @@ public interface IPage {
 
     public abstract String getOcrFileId();
 
-    void setDocument(IDocument document);
-
-    IDocument getDocument();
-
 }

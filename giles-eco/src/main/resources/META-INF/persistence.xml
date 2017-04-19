@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+ 
+   <persistence-unit name="UserPU" transaction-type="RESOURCE_LOCAL">
+    <provider>com.objectdb.jpa.Provider</provider>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="${geco.giles.db_files}/users.odb"/>
+      <property name="javax.persistence.jdbc.user" value="admin"/>
+      <property name="javax.persistence.jdbc.password" value="admin"/>
+    </properties>
+  </persistence-unit>
+  
+  <persistence-unit name="DataPU" transaction-type="RESOURCE_LOCAL">
+    <provider>com.objectdb.jpa.Provider</provider>
+    <mapping-file>META-INF/orm.xml</mapping-file>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="${geco.giles.db_files}/data.odb"/>
+      <property name="javax.persistence.jdbc.user" value="admin"/>
+      <property name="javax.persistence.jdbc.password" value="admin"/>
+    </properties>
+  </persistence-unit>
+  
+  <persistence-unit name="AppsPU" transaction-type="RESOURCE_LOCAL">
+    <provider>com.objectdb.jpa.Provider</provider>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="${geco.giles.db_files}/apps.odb"/>
+      <property name="javax.persistence.jdbc.user" value="admin"/>
+      <property name="javax.persistence.jdbc.password" value="admin"/>
+    </properties>
+  </persistence-unit>
+
+</persistence>

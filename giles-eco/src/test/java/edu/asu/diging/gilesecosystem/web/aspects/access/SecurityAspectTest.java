@@ -23,10 +23,10 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import edu.asu.diging.gilesecosystem.web.aspects.access.SecurityAspect;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.impl.File;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.impl.File;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;

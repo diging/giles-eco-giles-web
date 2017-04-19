@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 
 public abstract class ACompletedRequestProcessor {

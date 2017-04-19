@@ -14,18 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 
-@Transactional
+@Transactional("transactionManager")
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PersistenceContext
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
     @Override

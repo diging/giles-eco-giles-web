@@ -34,5 +34,19 @@
 
     <task:annotation-driven executor="myExecutor" />
     <task:executor id="myExecutor" pool-size="1" />
+    
+    <!-- Add JPA support -->
+    <bean id="emf_data"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="DataPU" />
+        <property name="loadTimeWeaver">
+            <bean
+                class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+        </property>
+    </bean>
+
+    <!-- <bean id="txmanager_data" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="emf_data" />
+    </bean> -->
 
 </beans>

@@ -40,9 +40,9 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.Validation
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.AppTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GilesChecker;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.AspectMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
