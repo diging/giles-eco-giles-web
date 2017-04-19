@@ -74,7 +74,7 @@ public class RestSecurityAspect {
     private List<IChecker> checkers;
     
     private Map<String, IChecker> tokenCheckers;
-    
+
     @PostConstruct
     public void init() {
         tokenCheckers = new HashMap<>();
@@ -124,7 +124,8 @@ public class RestSecurityAspect {
         }
         
         IAppToken appToken = ((IAppToken)holder.tokenContents);
-        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId());
+        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId(), appToken.getAuthorizationType());
+
         if (checkerId == null) {
             logger.warn("Token references non existing identity provider.");
             Map<String, String> msgs = new HashMap<String, String>();

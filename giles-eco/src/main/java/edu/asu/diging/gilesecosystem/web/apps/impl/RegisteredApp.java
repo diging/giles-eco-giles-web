@@ -17,6 +17,7 @@ public class RegisteredApp implements IRegisteredApp {
     private String providerId;
     @Basic(fetch = FetchType.EAGER) private List<String> tokenIds;
     private String providerClientId;
+    private String authorizationType;
     
     /* (non-Javadoc)
      * @see edu.asu.giles.apps.impl.IRegisteredApp#getId()
@@ -75,6 +76,14 @@ public class RegisteredApp implements IRegisteredApp {
     @Override
     public void setProviderClientId(String providerClientId) {
         this.providerClientId = providerClientId;
+    }
+    @Override
+    public String getAuthorizationType() {
+        return authorizationType;
+    }
+    @Override
+    public void setAuthorizationType(String authorizationType) {
+        this.authorizationType = authorizationType;
     }
        
     

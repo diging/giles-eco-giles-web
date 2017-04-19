@@ -99,7 +99,7 @@ public class RestSecurityAspectTest {
         Mockito.when(gilesChecker.getId()).thenReturn(GilesChecker.ID);
         Mockito.when(appTokenChecker.getId()).thenReturn(AppTokenChecker.ID);
         
-        Mockito.when(identityProvidersRegistry.getCheckerId("github")).thenReturn(GitHubChecker.ID);
+        Mockito.when(identityProvidersRegistry.getCheckerId("github", null)).thenReturn(GitHubChecker.ID);
         
         aspectToTest.init();   
         
