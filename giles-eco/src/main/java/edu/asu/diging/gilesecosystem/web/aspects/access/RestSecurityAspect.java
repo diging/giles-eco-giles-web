@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -262,12 +263,21 @@ public class RestSecurityAspect {
             if (imagePathParamIdx != -1) {
 
                 String imagePath = (String) arguments[imagePathParamIdx];
-                
+
                 IFile file = filesManager.getFileByPath(imagePath);
+
+                if (file == null) {
+                    imagePath = imagePath.startsWith(File.separator) ? imagePath.substring(1)
+                            : File.separator + imagePath;
+                    file = filesManager.getFileByPath(imagePath);
+                }
+
                 if (file == null) {
                     return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
                 }
-                
+
+                arguments[imagePathParamIdx] = imagePath;
+
                 if (file.getAccess() == DocumentAccess.PUBLIC) {
                     return joinPoint.proceed(arguments);
                 }
