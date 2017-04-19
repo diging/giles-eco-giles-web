@@ -48,10 +48,6 @@
         <jwt.signing.secret></jwt.signing.secret>
         <jwt.signing.secret.apps></jwt.signing.secret.apps>
         <geco.giles.db_files></geco.giles.db_files>
-        <db.driver>com.mysql.jdbc.Driver</db.driver>
-        <db.database.url></db.database.url>
-        <db.user></db.user>
-        <db.password></db.password>
         <giles.file.tmp.dir></giles.file.tmp.dir>
         <digilib.url></digilib.url>
         <jars.url>http://diging.asu.edu/jars</jars.url>
@@ -65,6 +61,14 @@
         <buildNumber></buildNumber>
         <log.level>debug</log.level>
         <iframing.hostname></iframing.hostname>
+        
+        <!-- DB config -->
+        <db.driver>com.mysql.jdbc.Driver</db.driver>
+        <db.database.url></db.database.url>
+        <db.user></db.user>
+        <db.password></db.password>
+        <hibernate.dialect>org.hibernate.dialect.MySQL5InnoDBDialect</hibernate.dialect>
+        <hibernate.log.sql>false</hibernate.log.sql>
 
         <!-- Kafka -->
         <giles.kafka.hosts>localhost:9092</giles.kafka.hosts>
