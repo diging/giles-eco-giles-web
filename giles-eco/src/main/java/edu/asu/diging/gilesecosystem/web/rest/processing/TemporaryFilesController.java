@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
@@ -35,6 +36,9 @@ public class TemporaryFilesController {
     
     @Autowired
     private IDistributedStorageManager storageManager;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @AppTokenOnlyCheck
     @RequestMapping(value = GET_CONTENT_URL, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -59,6 +63,7 @@ public class TemporaryFilesController {
             response.getOutputStream().close();
         } catch (IOException e) {
             logger.error("Could not write to output stream.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write to output stream.", e);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

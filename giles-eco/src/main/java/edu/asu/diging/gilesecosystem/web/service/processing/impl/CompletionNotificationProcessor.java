@@ -11,6 +11,7 @@ import edu.asu.diging.gilesecosystem.requests.ICompletionNotificationRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletionNotificationRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.ITask;
 import edu.asu.diging.gilesecosystem.web.domain.impl.Task;
@@ -28,6 +29,9 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
    
     @Override
     public String getProcessedTopic() {
@@ -52,6 +56,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
         } catch (UnstorableObjectException e) {
             // should never happen
             logger.error("Could not store document.", e);
+            tokenConfig.getMessageHandler().handleError("Could not store document.", e);
         }
      }
 

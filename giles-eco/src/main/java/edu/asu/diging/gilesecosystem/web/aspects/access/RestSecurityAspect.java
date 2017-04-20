@@ -41,6 +41,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.Validation
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.AppTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GilesChecker;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -77,6 +78,9 @@ public class RestSecurityAspect {
     
     @Autowired
     private List<IChecker> checkers;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     private Map<String, IChecker> tokenCheckers;
 
@@ -394,6 +398,7 @@ public class RestSecurityAspect {
             tokenHolder.tokenContents = validationResult.getPayload();
         } catch (GeneralSecurityException e) {
             logger.error("Security issue with token.", e);
+            tokenConfig.getMessageHandler().handleError("Security issue with token.", e);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
@@ -401,6 +406,7 @@ public class RestSecurityAspect {
             return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
         } catch (IOException e) {
             logger.error("Network issue.", e);
+            tokenConfig.getMessageHandler().handleError("Network issue.", e);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
@@ -408,6 +414,7 @@ public class RestSecurityAspect {
             return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvalidTokenException e) {
             logger.error("Token is invalid.", e);
+            tokenConfig.getMessageHandler().handleError("Token is invalid.", e);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
@@ -415,6 +422,7 @@ public class RestSecurityAspect {
             return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
         } catch (ServerMisconfigurationException e) {
             logger.error("Server or apps are misconfigured.", e);
+            tokenConfig.getMessageHandler().handleError("Server or apps are misconfigured.", e);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
@@ -492,6 +500,7 @@ public class RestSecurityAspect {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
             logger.error("Could not write json.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write json.", e);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
@@ -54,6 +55,8 @@ public class FilesManager implements IFilesManager {
     @Autowired
     private IProcessingCoordinator processCoordinator;
 
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     /*
      * (non-Javadoc)
      * 
@@ -114,9 +117,11 @@ public class FilesManager implements IFilesManager {
                 statuses.add(new StorageStatus(document, file, null, requestStatus));
             } catch (GilesProcessingException e) {
                 logger.error("Could not store uploaded files.", e);
+                tokenConfig.getMessageHandler().handleError("Could not store uploaded files.", e);
                 statuses.add(new StorageStatus(document, file, e, RequestStatus.FAILED));
             } catch (UnstorableObjectException e) {
                 logger.error("Object is not storable. Please review your code.", e);
+                tokenConfig.getMessageHandler().handleError("Object is not storable. Please review your code.", e);
                 statuses.add(new StorageStatus(document, file, new GilesProcessingException(e), RequestStatus.FAILED));
             } 
         }
@@ -130,6 +135,7 @@ public class FilesManager implements IFilesManager {
                 // let's silently fail because this should never happen
                 // we set the id
                 logger.error("Could not store upload.", e);
+                tokenConfig.getMessageHandler().handleError("Could not store upload.", e);
             }
         }
 
@@ -234,6 +240,7 @@ public class FilesManager implements IFilesManager {
             fileService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
+            tokenConfig.getMessageHandler().handleError("Could not store file.", e);
             return false;
         }
         return true;

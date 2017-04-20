@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -66,6 +67,9 @@ public class FilesController {
     
     @Autowired
     private IJSONHelper jsonHelper;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     @TokenCheck
     @RequestMapping(value = "/rest/files/uploads", produces = "application/json;charset=UTF-8")
@@ -93,6 +97,7 @@ public class FilesController {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
             logger.error("Could not write json.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write json.", e);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -139,6 +144,7 @@ public class FilesController {
         try {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(
                     "{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -167,6 +173,7 @@ public class FilesController {
         try {
             mapper.writeValue(sw, docNode);
         } catch (IOException e) {
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(
                     "{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -207,6 +214,7 @@ public class FilesController {
             response.getOutputStream().close();
         } catch (IOException e) {
             logger.error("Could not write to output stream.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write to output stream.", e);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
@@ -43,6 +44,9 @@ public class ViewImageController {
     
     @Autowired
     private IMetadataUrlService metadataService;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     @AccountCheck
     @FileAccessCheck
@@ -73,6 +77,7 @@ public class ViewImageController {
             parameterBuffer.append(URLEncoder.encode(file.getFilepath(), "UTF-8"));
         } catch (UnsupportedEncodingException e1) {
             logger.error("Could not encode path.", e1);
+            tokenConfig.getMessageHandler().handleError("Could not encode path.", e1);
             parameterBuffer.append(file.getFilepath());
         }
 
@@ -81,10 +86,12 @@ public class ViewImageController {
                     response);
         } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

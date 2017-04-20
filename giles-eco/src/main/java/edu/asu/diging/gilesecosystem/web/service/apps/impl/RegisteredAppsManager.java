@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.TokenGenerationErrorException;
 import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
@@ -29,6 +30,9 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
 
     @Autowired
     private ITokenService tokenService;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     /*
      * (non-Javadoc)
@@ -55,6 +59,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
             databaseClient.store(app);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store app.", e);
+            tokenConfig.getMessageHandler().handleError("Could not store app.", e);
             return null;
         }
         return app;

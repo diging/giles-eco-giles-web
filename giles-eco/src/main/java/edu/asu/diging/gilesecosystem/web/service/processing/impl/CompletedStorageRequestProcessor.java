@@ -11,6 +11,7 @@ import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -39,6 +40,8 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Autowired
     private IPropertiesManager propertiesManager;
    
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedStorageRequestProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest)
@@ -63,6 +66,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
             filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
             logger.error("Could not store file.", e);
+            tokenConfig.getMessageHandler().handleError("Could not store file.", e);
             // fail silently...
             // this should never happen
         }
@@ -72,6 +76,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         } catch (GilesProcessingException e) {
             //FIXME: this should go in a monitoring app
             logger.error("Exception occured in next processing phase.", e);
+            tokenConfig.getMessageHandler().handleError("Exception occured in next processing phase.", e);
         }
     }
 

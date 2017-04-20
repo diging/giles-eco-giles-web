@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.github.GitHubTemplateFac
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.impl.ApiTokenContents;
@@ -28,7 +29,10 @@ public class GitHubChecker implements IChecker {
     
     @Autowired
     private GitHubTemplateFactory templateFactory;
-    
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
+
     @Override
     public String getId() {
         return ID;
@@ -50,6 +54,7 @@ public class GitHubChecker implements IChecker {
             result.setResult(ValidationResult.VALID);
         } catch (RestClientException ex) {
             logger.warn("Could not authenticate user with GitHub.", ex);
+            tokenConfig.getMessageHandler().handleError("Could not authenticate user with GitHub", ex);
             // validation result already set
         }
         

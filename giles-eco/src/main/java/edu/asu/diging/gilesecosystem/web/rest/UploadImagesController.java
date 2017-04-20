@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
@@ -68,6 +69,9 @@ public class UploadImagesController {
     
     @Autowired
     private IGilesUrlHelper urlHelper;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @TokenCheck
     @RequestMapping(value = "/rest/files/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -110,6 +114,7 @@ public class UploadImagesController {
                 fileBytes.add(file.getBytes());
             } catch (IOException e) {
                 logger.error("Error reading bytes.", e);
+                tokenConfig.getMessageHandler().handleError("Error reading bytes.", e);
                 Map<String, String> msgs = new HashMap<String, String>();
                 msgs.put("errorMsg", "File bytes could not be read.");
                 msgs.put("errorCode", "500");
@@ -187,6 +192,7 @@ public class UploadImagesController {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
             logger.error("Could not write json.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write json.", e);
             return new ResponseEntity<String>(
                     "{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -208,6 +214,7 @@ public class UploadImagesController {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
             logger.error("Could not write json.", e);
+            tokenConfig.getMessageHandler().handleError("Could not write json.", e);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);

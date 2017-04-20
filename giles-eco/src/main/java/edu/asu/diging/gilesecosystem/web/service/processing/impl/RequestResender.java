@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -41,6 +42,9 @@ public class RequestResender implements IRequestResender {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     private Map<Class<? extends IRequest>, ProcessingPhase<? extends IProcessingInfo>> phaseMap;
     
@@ -79,6 +83,7 @@ public class RequestResender implements IRequestResender {
                 } catch (GilesProcessingException e) {
                     // FIXME: send to september
                     logger.error("Could not send request.", e);
+                    tokenConfig.getMessageHandler().handleError("Could not send request.", e);
                 }
             }
         }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -33,6 +34,9 @@ public class ChangeDocumentAccessController {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @TokenCheck
     @RequestMapping(value = GET_DOCUMENT_PATH
@@ -56,6 +60,7 @@ public class ChangeDocumentAccessController {
             }
         } catch (IllegalArgumentException e) {
             logger.error("Incorrect access type", e);
+            tokenConfig.getMessageHandler().handleError("Incorrect access type.", e);
             return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
         }
 
@@ -68,6 +73,7 @@ public class ChangeDocumentAccessController {
             }
         } catch (UnstorableObjectException e) {
             logger.error("Could not save updated access type", e);
+            tokenConfig.getMessageHandler().handleError("Could not save updated access type.", e);
             return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

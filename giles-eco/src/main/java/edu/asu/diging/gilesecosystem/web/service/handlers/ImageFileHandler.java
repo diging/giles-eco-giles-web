@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
@@ -24,6 +25,9 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
     
     @Autowired
     private IFilesDatabaseClient filesDbClient;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @Override
     public List<String> getHandledFileTypes() {
@@ -53,6 +57,7 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
             return gilesUrl + gilesDigilibEndpoint + "?fn=" + URLEncoder.encode(relativePath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             logger.error("Could not encode path.", e);
+            tokenConfig.getMessageHandler().handleError("Could not encode path.", e);
             return gilesUrl + gilesDigilibEndpoint + "?fn=" + relativePath;
         }
     }

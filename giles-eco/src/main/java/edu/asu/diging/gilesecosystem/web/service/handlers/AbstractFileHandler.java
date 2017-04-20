@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
@@ -27,6 +28,9 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     
     @Autowired
     protected IFileContentHelper fileContentHelper;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     protected byte[] getFileContentFromUrl(URL url) throws IOException {
         URLConnection con = url.openConnection();
@@ -58,6 +62,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
             return fileContentHelper.getFileContentFromUrl(new URL(file.getDownloadUrl()));
         } catch (IOException e) {
             logger.error("Could not download file.", e);
+            tokenConfig.getMessageHandler().handleError("Could not download file.", e);
             return null;
         }
     }

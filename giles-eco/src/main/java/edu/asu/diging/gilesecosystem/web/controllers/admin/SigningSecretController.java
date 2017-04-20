@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.PropertiesStorageException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.service.system.ISigningSecretGenerator;
 
@@ -27,6 +28,9 @@ public class SigningSecretController {
     
     @Autowired
     private IPropertiesManager propertiesManager;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @RequestMapping(value="/admin/system/auth")
     public String showPage(Model model) {
@@ -48,6 +52,7 @@ public class SigningSecretController {
             propertiesManager.updateProperties(props);
         } catch (PropertiesStorageException e) {
             logger.error("Properties could not be stored.", e);
+            tokenConfig.getMessageHandler().handleError("Properties could not be stored.", e);
         }
         
         return "admin/system/auth/done";

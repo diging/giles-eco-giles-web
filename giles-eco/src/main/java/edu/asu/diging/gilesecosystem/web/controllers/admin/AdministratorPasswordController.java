@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.AdminUser;
 import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnauthorizedException;
@@ -37,6 +38,9 @@ public class AdministratorPasswordController {
     
     @Autowired
     private IAdminUserManager adminManager;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -76,6 +80,7 @@ public class AdministratorPasswordController {
         } catch (BadPasswordException | UnauthorizedException e) {
             // this should never happen because it should be caught by the validator
             logger.error("Could not update password.", e);
+            tokenConfig.getMessageHandler().handleError("Could not update password.", e);
         }
 
         if (success) {

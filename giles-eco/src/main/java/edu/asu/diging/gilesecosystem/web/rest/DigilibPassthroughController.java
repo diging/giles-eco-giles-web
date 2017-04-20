@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -41,7 +42,9 @@ public class DigilibPassthroughController {
 
     @Autowired
     private DigilibConnector digilibConnector;
-       
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     @ImageAccessCheck
     @RequestMapping(value = "/rest/digilib")
@@ -92,10 +95,12 @@ public class DigilibPassthroughController {
             }
         } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -105,6 +110,7 @@ public class DigilibPassthroughController {
         try {
             response.getOutputStream().close();
         } catch (IOException e) {
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -162,10 +168,12 @@ public class DigilibPassthroughController {
             }
         } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

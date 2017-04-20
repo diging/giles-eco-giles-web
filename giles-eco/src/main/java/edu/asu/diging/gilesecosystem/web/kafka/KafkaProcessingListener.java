@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 
 @PropertySource("classpath:/config.properties")
@@ -32,6 +33,9 @@ public class KafkaProcessingListener {
     private ApplicationContext ctx;
     
     private Map<String, RequestProcessor<? extends IRequest>> requestProcessors;
+
+    @Autowired
+    private GilesTokenConfig tokenConfig;
     
     @PostConstruct
     public void init() {
@@ -62,6 +66,7 @@ public class KafkaProcessingListener {
             request = mapper.readValue(message, processor.getRequestClass());
         } catch (IOException e) {
             logger.error("Could not unmarshall request.", e);
+            tokenConfig.getMessageHandler().handleError("Could not unmarshall request.", e);
             // FIXME: handle this case
             return;
         }

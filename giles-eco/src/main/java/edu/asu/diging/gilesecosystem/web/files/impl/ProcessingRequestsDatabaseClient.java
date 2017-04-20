@@ -9,11 +9,13 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
+import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
@@ -27,6 +29,9 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
+    @Autowired
+    private GilesTokenConfig tokenConfig;
+
     @Override
     public List<IProcessingRequest> getRequestByDocumentId(String docId) {
         return searchByProperty("documentId", docId, ProcessingRequest.class);
@@ -45,6 +50,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
         } catch (UnstorableObjectException e) {
             // should never happen
             logger.error("Could not store element.", e);
+            tokenConfig.getMessageHandler().handleError("Could not store element.", e);
         }
     }
     
