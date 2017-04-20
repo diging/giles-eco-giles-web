@@ -27,12 +27,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Controller
@@ -51,6 +54,15 @@ public class FilesController {
     
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
     
     @Autowired
     private IJSONHelper jsonHelper;
@@ -97,7 +109,7 @@ public class FilesController {
             @PathVariable("uploadId") String uploadId,
             User user) {
 
-        IUpload upload = filesManager.getUpload(uploadId);
+        IUpload upload = uploadService.getUpload(uploadId);
         if (upload == null) {
             return new ResponseEntity<String>(
                     "{'error': 'Upload does not exist.'}", HttpStatus.NOT_FOUND);
@@ -143,7 +155,7 @@ public class FilesController {
             @PathVariable("docId") String docId,
             User user) {
         
-        IDocument doc = filesManager.getDocument(docId);
+        IDocument doc = documentService.getDocument(docId);
         
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -172,7 +184,7 @@ public class FilesController {
             HttpServletResponse response,
             HttpServletRequest request) {
 
-        IFile file = filesManager.getFile(fileId);
+        IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

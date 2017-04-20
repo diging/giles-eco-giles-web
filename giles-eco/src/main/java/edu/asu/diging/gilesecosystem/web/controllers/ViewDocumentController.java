@@ -24,22 +24,26 @@ import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.PagePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
 
 @Controller
 public class ViewDocumentController {
     
     @Autowired
-    private IFilesManager fileManager;
+    private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
     
     @Autowired
     private IMetadataUrlService metadataService;  
@@ -54,7 +58,7 @@ public class ViewDocumentController {
     @DocumentIdAccessCheck
     @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
     public String showDocument(@PathVariable String docId, Model model, Locale locale) throws GilesMappingException {
-        IDocument doc = fileManager.getDocument(docId);
+        IDocument doc = documentService.getDocument(docId);
         
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
         IGilesMappingService<IDocument, DocumentPageBean> docMappingService = new GilesMappingService<>();
@@ -82,9 +86,8 @@ public class ViewDocumentController {
         docBean.setTextFiles(new ArrayList<>());
         docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
         docBean.setPages(new ArrayList<>());
-        docBean.setRequest(doc.getRequest());
         
-        IFile origFile = fileManager.getFile(doc.getUploadedFileId());  
+        IFile origFile = fileService.getFileById(doc.getUploadedFileId());  
         if (origFile != null) {
             
             FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
@@ -94,7 +97,7 @@ public class ViewDocumentController {
             setRequestStatus(bean, requestsByFileId);
         }
         
-        IFile textFile = fileManager.getFile(doc.getExtractedTextFileId());
+        IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = fileMappingService.convertToT2(textFile, new FilePageBean());
             bean.setMetadataLink(metadataService.getFileLink(textFile));
@@ -106,7 +109,7 @@ public class ViewDocumentController {
             PagePageBean bean = pageMappingService.convertToT2(page, new PagePageBean());
             docBean.getPages().add(bean);
             
-            IFile imageFile = fileManager.getFile(page.getImageFileId());
+            IFile imageFile = fileService.getFileById(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean imageBean = fileMappingService.convertToT2(imageFile, new FilePageBean());
                 imageBean.setMetadataLink(metadataService.getFileLink(imageFile));
@@ -114,7 +117,7 @@ public class ViewDocumentController {
                 setRequestStatus(imageBean, requestsByFileId);
             }
             
-            IFile pageTextFile = fileManager.getFile(page.getTextFileId());
+            IFile pageTextFile = fileService.getFileById(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = fileMappingService.convertToT2(pageTextFile, new FilePageBean());
                 textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
@@ -122,7 +125,7 @@ public class ViewDocumentController {
                 setRequestStatus(textBean, requestsByFileId);
             }
             
-            IFile ocrFile = fileManager.getFile(page.getOcrFileId());
+            IFile ocrFile = fileService.getFileById(page.getOcrFileId());
             if (ocrFile != null) {
                 FilePageBean ocrBean = fileMappingService.convertToT2(ocrFile, new FilePageBean());
                 ocrBean.setMetadataLink(metadataService.getFileLink(ocrFile));

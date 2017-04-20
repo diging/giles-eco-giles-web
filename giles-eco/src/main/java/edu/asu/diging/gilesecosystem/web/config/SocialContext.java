@@ -27,6 +27,7 @@ import org.springframework.social.security.AuthenticationNameUserIdSource;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GoogleChecker;
+import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidAccessTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidChecker;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGithubConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGoogleConnectionFactory;
@@ -72,8 +73,8 @@ public class SocialContext implements SocialConfigurer {
         googleFactory.setScope("email");
         cfConfig.addConnectionFactory(tmpGooglefactory);
         reloadService.addFactory(IReloadService.GOOGLE, googleFactory);
-        identityProviderRegistry.addProvider(googleFactory.getProviderId());
-        identityProviderRegistry.addProviderTokenChecker(googleFactory.getProviderId(), GoogleChecker.ID);
+        identityProviderRegistry.addProvider(googleFactory.getProviderId(), null);
+        identityProviderRegistry.addProviderTokenChecker(googleFactory.getProviderId(), null, GoogleChecker.ID);
         
         String githubClientId = propertyManager.getProperty(Properties.GITHUB_CLIENT_ID);
         String githubSecret = propertyManager.getProperty(Properties.GITHUB_SECRET);
@@ -83,8 +84,8 @@ public class SocialContext implements SocialConfigurer {
         
         cfConfig.addConnectionFactory(githubFactory);
         reloadService.addFactory(IReloadService.GITHUB, githubFactory);
-        identityProviderRegistry.addProvider(githubFactory.getProviderId());
-        identityProviderRegistry.addProviderTokenChecker(githubFactory.getProviderId(), GitHubChecker.ID);
+        identityProviderRegistry.addProvider(githubFactory.getProviderId(), null);
+        identityProviderRegistry.addProviderTokenChecker(githubFactory.getProviderId(), null, GitHubChecker.ID);
         
         String mitreidClientId = propertyManager.getProperty(Properties.MITREID_CLIENT_ID);
         String mitreidSecret = propertyManager.getProperty(Properties.MITREID_SECRET);
@@ -93,8 +94,13 @@ public class SocialContext implements SocialConfigurer {
 //        MitreidConnectConnectionFactory mitreidFactory = new MitreidConnectConnectionFactory(mitreidClientId, mitreidSecret, mitreidServer);
         cfConfig.addConnectionFactory(mitreidFactory);
         reloadService.addFactory(IReloadService.MITREID, mitreidFactory);
-        identityProviderRegistry.addProvider(mitreidFactory.getProviderId());
-        identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), MitreidChecker.ID);
+        identityProviderRegistry.addProvider(mitreidFactory.getProviderId(), null);
+        identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), null,  MitreidChecker.ID);
+        
+        //new MITREid connect server provider for access token
+        identityProviderRegistry.addProvider(mitreidFactory.getProviderId(), propertyManager.getProperty(Properties.AUTHORIZATION_TYPE_ACCESS_TOKEN));
+        identityProviderRegistry.addProviderTokenChecker(mitreidFactory.getProviderId(), propertyManager.getProperty(Properties.AUTHORIZATION_TYPE_ACCESS_TOKEN), MitreidAccessTokenChecker.ID);
+        
     }
 
     @Override

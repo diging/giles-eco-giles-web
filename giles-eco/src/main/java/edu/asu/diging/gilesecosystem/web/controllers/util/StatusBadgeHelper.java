@@ -14,9 +14,9 @@ import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.Badge;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.core.ITask;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.ITask;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.util.IStatusHelper;
 

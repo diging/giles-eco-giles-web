@@ -2,8 +2,8 @@ package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
 import java.util.List;
 
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 
 public class UploadPageBean implements IUpload {
 

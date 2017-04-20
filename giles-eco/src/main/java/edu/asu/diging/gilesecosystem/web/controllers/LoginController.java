@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.UploadPageBean;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
@@ -28,6 +29,9 @@ public class LoginController {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
     
     @Autowired
     private IUserManager userManager;
@@ -49,7 +53,7 @@ public class LoginController {
         }
 
         if (username != null) {
-            List<IUpload> uploads = filesManager.getUploadsOfUser(username, 1, -1, "createdDate", IUploadDatabaseClient.DESCENDING);
+            List<IUpload> uploads = uploadService.getUploadsOfUser(username, 1, -1, "createdDate", IUploadDatabaseClient.DESCENDING);
 
             List<IUpload> latestUploads = uploads.subList(0, uploads.size() > 5 ? 5 : uploads.size());
             

@@ -18,7 +18,7 @@ import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
 
-@Transactional("txmanager_apps")
+@Transactional("transactionManager")
 @Service
 public class RegisteredAppsManager implements IRegisteredAppManager {
 
@@ -42,6 +42,14 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
 
         String id = databaseClient.generateId();
         app.setId(id);
+
+        String[] providerId = app.getProviderId().split("_");
+        if(providerId.length > 1) {
+            app.setProviderId(providerId[0]);
+            app.setAuthorizationType(providerId[1]);
+        } else {
+            app.setAuthorizationType("");
+        }
 
         try {
             databaseClient.store(app);

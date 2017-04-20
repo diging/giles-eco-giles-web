@@ -18,7 +18,7 @@ import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
 @Component
 public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> implements IRegisteredAppDatabaseClient {
 
-    @PersistenceContext(unitName="AppsPU")
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
     @Override

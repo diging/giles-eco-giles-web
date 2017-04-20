@@ -23,11 +23,13 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import edu.asu.diging.gilesecosystem.web.aspects.access.SecurityAspect;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.impl.File;
-import edu.asu.diging.gilesecosystem.web.core.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.impl.File;
+import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
@@ -37,6 +39,10 @@ public class SecurityAspectTest {
     @Mock private IUserManager userManager;
     
     @Mock private IFilesManager filesManager;
+    
+    @Mock private ITransactionalFileService fileService;
+    
+    @Mock private ITransactionalUploadService uploadService;
     
     @Mock private ProceedingJoinPoint joinPoint;
     
@@ -68,22 +74,22 @@ public class SecurityAspectTest {
         
         IUpload upload = new Upload();
         upload.setUsername("test");
-        Mockito.when(filesManager.getUpload("UP123")).thenReturn(upload);
+        Mockito.when(uploadService.getUpload("UP123")).thenReturn(upload);
         
         IUpload upload2 = new Upload();
         upload2.setUsername("test2");
         upload2.setId("UP456");
-        Mockito.when(filesManager.getUpload("UP456")).thenReturn(upload2);
+        Mockito.when(uploadService.getUpload("UP456")).thenReturn(upload2);
         
         IFile file = new File();
         file.setUsername("test");
         file.setId("FI123");
-        Mockito.when(filesManager.getFile("FI123")).thenReturn(file);
+        Mockito.when(fileService.getFileById("FI123")).thenReturn(file);
         
         IFile file2 = new File();
         file2.setUsername("test2");
         file2.setId("FI123");
-        Mockito.when(filesManager.getFile("FI456")).thenReturn(file2);
+        Mockito.when(fileService.getFileById("FI456")).thenReturn(file2);
         
         Mockito.when(userManager.findUser("test")).thenReturn(user);
         Mockito.when(userManager.findUser("test2")).thenReturn(addedAccount);

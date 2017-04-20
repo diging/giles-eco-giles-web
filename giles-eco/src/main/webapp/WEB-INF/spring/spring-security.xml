@@ -7,13 +7,4 @@
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
-
-	<beans:bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<beans:property name="driverClassName" value="${db.driver}" />
-		<beans:property name="url" value="${db.database.url}" />
-		<beans:property name="username" value="${db.user}" />
-		<beans:property name="password" value="${db.password}" />
-	</beans:bean>
-
 </beans:beans>

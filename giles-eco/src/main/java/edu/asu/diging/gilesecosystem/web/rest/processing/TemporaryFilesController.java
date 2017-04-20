@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
@@ -31,7 +31,7 @@ public class TemporaryFilesController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalFileService filesService;
     
     @Autowired
     private IDistributedStorageManager storageManager;
@@ -45,7 +45,7 @@ public class TemporaryFilesController {
             HttpServletResponse response,
             HttpServletRequest request) {
 
-        IFile file = filesManager.getFile(fileId);
+        IFile file = filesService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

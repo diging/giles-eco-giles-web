@@ -1,6 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.service.processing;
 
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 
 public interface IDistributedStorageManager {
 

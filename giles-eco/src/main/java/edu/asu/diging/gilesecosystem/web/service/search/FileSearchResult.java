@@ -1,6 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.service.search;
 
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 
 public class FileSearchResult {
 

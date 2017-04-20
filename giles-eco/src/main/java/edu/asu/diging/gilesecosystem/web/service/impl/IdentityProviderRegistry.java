@@ -34,8 +34,18 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     /* (non-Javadoc)
      * @see edu.asu.giles.service.impl.IIdentityProviderRegistry#addProvider(java.lang.String)
      */
+    /**
+     * Method to register a new provider with a given authorization type.
+     * Internally, this method creates a key of the form providerId_authorizationType 
+     * (e.g. 'mitreidconnect_accessToken'), which should be used in the properties file
+     * when specifying the label for a provider in the drop down menu when registering new applications.
+     * Make sure not to have '_' in the passed provider id.
+     * @param providerId type of provider used for authentication (e.g. 'mitreidconnect')
+     * @param authorizationType type of authorization used, may be null (e.g. 'accessToken')
+     */
     @Override
-    public void addProvider(String providerId) {
+    public void addProvider(String providerId, String authorizationType) {
+        providerId = getProviderIdwithAuthType(providerId, authorizationType);
         String providerName = env.getProperty(providerId);
         if (providerName == null || providerName.trim().isEmpty()) {
             providerName = WordUtils.capitalize(providerId);
@@ -44,8 +54,8 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     }
     
     @Override
-    public void addProviderTokenChecker(String providerId, String checkerId) {
-        providerTokenChecker.put(providerId, checkerId);
+    public void addProviderTokenChecker(String providerId, String authorizationType, String checkerId) {
+        providerTokenChecker.put(getProviderIdwithAuthType(providerId, authorizationType), checkerId);
     }
     
     /* (non-Javadoc)
@@ -62,7 +72,14 @@ public class IdentityProviderRegistry implements IIdentityProviderRegistry {
     }
     
     @Override
-    public String getCheckerId(String providerId) {
-        return providerTokenChecker.get(providerId);
+    public String getCheckerId(String providerId, String authorizationType) {
+        return providerTokenChecker.get(getProviderIdwithAuthType(providerId, authorizationType));
+    }
+
+    private String getProviderIdwithAuthType(String providerId, String authorizationType) {
+        if (authorizationType != null && !authorizationType.trim().isEmpty()) {
+            return providerId + "_" + authorizationType;
+        }
+        return providerId;
     }
 }

@@ -10,16 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.impl.File;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.impl.File;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 
-@Transactional("txmanager_data")
 @Component
 public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFilesDatabaseClient {
 
-    @PersistenceContext(unitName = "DataPU")
+    @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
 
     /*

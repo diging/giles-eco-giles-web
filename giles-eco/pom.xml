@@ -16,13 +16,15 @@
         <org.springframework.social-google-version>1.0.0.RELEASE</org.springframework.social-google-version>
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
-        <geco.requests.version>0.4</geco.requests.version>
+
+        <geco.requests.version>0.5</geco.requests.version>
         <geco.util.version>0.4.2</geco.util.version>
+        <geco.september.util.version>0.1</geco.september.util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
         <tomcat.server.id>TomcatServer</tomcat.server.id>
-        
+
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
@@ -40,13 +42,12 @@
         <mitreid.secret></mitreid.secret>
         <mitreid.server.url></mitreid.server.url>
         <mitreid.show.login>true</mitreid.show.login>
+        <mitreid.introspect.clientId></mitreid.introspect.clientId>
+        <mitreid.introspect.secret></mitreid.introspect.secret>
+        <mitreid.introspect.url></mitreid.introspect.url>
         <jwt.signing.secret></jwt.signing.secret>
         <jwt.signing.secret.apps></jwt.signing.secret.apps>
         <geco.giles.db_files></geco.giles.db_files>
-        <db.driver>com.mysql.jdbc.Driver</db.driver>
-        <db.database.url></db.database.url>
-        <db.user></db.user>
-        <db.password></db.password>
         <giles.file.tmp.dir></giles.file.tmp.dir>
         <digilib.url></digilib.url>
         <jars.url>http://diging.asu.edu/jars</jars.url>
@@ -60,10 +61,18 @@
         <buildNumber></buildNumber>
         <log.level>debug</log.level>
         <iframing.hostname></iframing.hostname>
+        
+        <!-- DB config -->
+        <db.driver>com.mysql.jdbc.Driver</db.driver>
+        <db.database.url></db.database.url>
+        <db.user></db.user>
+        <db.password></db.password>
+        <hibernate.dialect>org.hibernate.dialect.MySQL5InnoDBDialect</hibernate.dialect>
+        <hibernate.log.sql>false</hibernate.log.sql>
 
         <!-- Kafka -->
         <giles.kafka.hosts>localhost:9092</giles.kafka.hosts>
-        
+
         <!-- Solr -->
         <giles.freddie.host></giles.freddie.host>
     </properties>
@@ -80,6 +89,11 @@
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>util</artifactId>
             <version>${geco.util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.asu.diging.giles-eco</groupId>
+            <artifactId>september-util</artifactId>
+            <version>${geco.september.util.version}</version>
         </dependency>
 
         <!-- Spring -->
@@ -415,6 +429,42 @@
             <artifactId>spring-kafka</artifactId>
             <version>1.1.1.RELEASE</version>
         </dependency>
+
+        <!-- DataSource (HikariCP) -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.6.1</version>
+        </dependency>
+
+        <!-- JPA Provider (Hibernate) -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>5.2.9.Final</version>
+        </dependency>
+
+        <!-- Spring Data JPA -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.11.1.RELEASE</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+
 
     </dependencies>
 

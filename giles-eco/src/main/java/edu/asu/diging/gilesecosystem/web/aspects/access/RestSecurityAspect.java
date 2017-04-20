@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.aspects.access;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -39,14 +41,15 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.Validation
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.AppTokenChecker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GilesChecker;
-import edu.asu.diging.gilesecosystem.web.core.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.AspectMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.IIdentityProviderRegistry;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 import edu.asu.diging.gilesecosystem.web.tokens.ITokenContents;
@@ -64,7 +67,10 @@ public class RestSecurityAspect {
     private IUserManager userManager;
 
     @Autowired
-    private IFilesManager filesManager;
+    private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
     
     @Autowired
     private IIdentityProviderRegistry identityProviderRegistry;
@@ -73,7 +79,7 @@ public class RestSecurityAspect {
     private List<IChecker> checkers;
     
     private Map<String, IChecker> tokenCheckers;
-    
+
     @PostConstruct
     public void init() {
         tokenCheckers = new HashMap<>();
@@ -123,7 +129,8 @@ public class RestSecurityAspect {
         }
         
         IAppToken appToken = ((IAppToken)holder.tokenContents);
-        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId());
+        String checkerId = identityProviderRegistry.getCheckerId(appToken.getProviderId(), appToken.getAuthorizationType());
+
         if (checkerId == null) {
             logger.warn("Token references non existing identity provider.");
             Map<String, String> msgs = new HashMap<String, String>();
@@ -201,7 +208,7 @@ public class RestSecurityAspect {
                     "User object is missing in method.");
         }
         
-        IDocument doc = filesManager.getDocument(docId);
+        IDocument doc = documentService.getDocument(docId);
         if (doc == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
@@ -262,12 +269,21 @@ public class RestSecurityAspect {
             if (imagePathParamIdx != -1) {
 
                 String imagePath = (String) arguments[imagePathParamIdx];
-                
-                IFile file = filesManager.getFileByPath(imagePath);
+
+                IFile file = fileService.getFileByPath(imagePath);
+
+                if (file == null) {
+                    imagePath = imagePath.startsWith(File.separator) ? imagePath.substring(1)
+                            : File.separator + imagePath;
+                    file = fileService.getFileByPath(imagePath);
+                }
+
                 if (file == null) {
                     return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
                 }
-                
+
+                arguments[imagePathParamIdx] = imagePath;
+
                 if (file.getAccess() == DocumentAccess.PUBLIC) {
                     return joinPoint.proceed(arguments);
                 }
@@ -303,7 +319,7 @@ public class RestSecurityAspect {
                     "User object is missing in method.");
         }
         
-        IFile file = filesManager.getFile(fileId);
+        IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }

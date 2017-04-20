@@ -43,6 +43,10 @@
     <logger name="org.springframework.security">
         <level value="${log.level}" />
     </logger>
+    
+    <logger name="org.hibernate">
+        <level value="debug" />
+    </logger>
 
 	<!-- Root Logger -->
 	<root>

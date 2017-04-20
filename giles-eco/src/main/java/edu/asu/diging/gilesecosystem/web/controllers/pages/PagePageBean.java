@@ -1,7 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
 
 public class PagePageBean implements IPage {
 
@@ -82,6 +83,15 @@ public class PagePageBean implements IPage {
         this.ocrFile = ocrFile;
     }
     
-    
+    @Override
+    public void setDocument(IDocument document) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public IDocument getDocument() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core.impl;
 
+import javax.jdo.annotations.Index;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,9 +20,9 @@ import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 public class ProcessingRequest implements IProcessingRequest {
 
     @Id private String id;
-    private String documentId;
-    private String fileId;
-    private String requestId;
+    @Index private String documentId;
+    @Index private String fileId;
+    @Index private String requestId;
     private RequestStatus requestStatus;
     @Basic(fetch = FetchType.EAGER) private IRequest sentRequest;
     @Basic(fetch = FetchType.EAGER) private IRequest completedRequest;

@@ -1,7 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.service;
 
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
 
 public interface IMetadataUrlService {
 

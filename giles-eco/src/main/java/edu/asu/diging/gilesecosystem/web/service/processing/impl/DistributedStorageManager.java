@@ -15,53 +15,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
-import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
+import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
-import edu.asu.diging.gilesecosystem.web.core.ProcessingStatus;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesFileStorageException;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.rest.processing.TemporaryFilesController;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
 import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
-@Transactional
 @Service
 public class DistributedStorageManager extends ProcessingPhase<StorageRequestProcessingInfo> implements IDistributedStorageManager, Observer {
     
     final Logger logger = LoggerFactory.getLogger(getClass());
     
-    public final static String REQUEST_PREFIX = "STREQ";
+    @Autowired
+    private ITransactionalFileService fileService;
 
     @Autowired
     @Qualifier("tmpStorageManager") 
     private IFileStorageManager storageManager;
-
-    @Autowired
-    private IFilesDatabaseClient filesDbClient;
-    
-    @Autowired 
-    private IDocumentDatabaseClient documentsDbClient; 
-    
-    @Autowired
-    private IRequestProducer requestProducer;
-    
+ 
     @Autowired
     private IPropertiesManager propertyManager;
     
@@ -125,7 +114,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         String username = requestHelper.getUsernameForStorage(storageInfo.getProvider(), storageInfo.getProviderUsername());
         file.setUsernameForStorage(username);
         // generate request id for file
-        file.setRequestId(filesDbClient.generateId(REQUEST_PREFIX, filesDbClient::getFileByRequestId));
+        file.setRequestId(fileService.generateRequestId());
         
         IUpload upload = storageInfo.getUpload();
         IDocument document = storageInfo.getDocument();
@@ -136,7 +125,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
             throw new GilesProcessingException(e1);
         }
         try {
-            filesDbClient.saveFile(file);
+            fileService.saveFile(file);
         } catch (UnstorableObjectException e) {
             throw new GilesProcessingException(e);
         }
@@ -178,6 +167,11 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         if (newDir != null) {
             storageManager.setBaseDirectory(newDir);
         }
+    }
+
+    @Override
+    public Class<? extends IRequest> getSupportedRequestType() {
+        return StorageRequest.class;
     }
     
 }

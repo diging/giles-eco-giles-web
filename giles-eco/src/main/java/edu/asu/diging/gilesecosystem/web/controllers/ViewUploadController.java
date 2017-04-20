@@ -1,11 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,15 +15,17 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAcce
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
-import edu.asu.diging.gilesecosystem.web.core.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.IFile;
-import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.core.IUpload;
+import edu.asu.diging.gilesecosystem.web.domain.IDocument;
+import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
 
 @Controller
@@ -34,6 +33,12 @@ public class ViewUploadController {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
+    
+    @Autowired
+    private ITransactionalFileService fileService;
     
     @Autowired
     private IMetadataUrlService metadataService;
@@ -50,7 +55,7 @@ public class ViewUploadController {
     @RequestMapping(value = "/uploads/{uploadId}")
     public String showUploadPage(@PathVariable("uploadId") String uploadId,
             Model model, Locale locale) throws GilesMappingException {
-        IUpload upload = filesManager.getUpload(uploadId);
+        IUpload upload = uploadService.getUpload(uploadId);
         List<IDocument> docs = filesManager.getDocumentsByUploadId(uploadId);
         
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
@@ -63,17 +68,15 @@ public class ViewUploadController {
             docBean.setFiles(new ArrayList<>());
             docBean.setTextFiles(new ArrayList<>());
             docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
-            docBean.setRequest(doc.getRequest());
-            docBean.setStatusLabel(statusHelper.getLabelText(doc.getRequest().getStatus(), locale));
             
-            IFile origFile = filesManager.getFile(doc.getUploadedFileId());  
+            IFile origFile = fileService.getFileById(doc.getUploadedFileId());  
             if (origFile != null) {
                 FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
                 bean.setMetadataLink(metadataService.getFileLink(origFile));
                 docBean.setUploadedFile(bean);
             }
             
-            IFile textFile = filesManager.getFile(doc.getExtractedTextFileId());
+            IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
             if (textFile != null) {
                 FilePageBean bean = fileMappingService.convertToT2(textFile, new FilePageBean());
                 bean.setMetadataLink(metadataService.getFileLink(textFile));
@@ -87,7 +90,7 @@ public class ViewUploadController {
             }
             if (doc.getTextFileIds() != null) {
                 for (String fileId : doc.getTextFileIds()) {
-                    IFile file = filesManager.getFile(fileId);
+                    IFile file = fileService.getFileById(fileId);
                     FilePageBean bean = fileMappingService.convertToT2(file, new FilePageBean());
                     bean.setMetadataLink(metadataService.getFileLink(file));
                     docBean.getTextFiles().add(bean);

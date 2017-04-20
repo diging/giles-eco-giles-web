@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class User implements Serializable {
@@ -26,7 +28,7 @@ public class User implements Serializable {
     private String email;
     private String provider;
     private String userIdOfProvider;
-    @Basic(fetch = FetchType.EAGER) private List<String> roles;
+    @ElementCollection(fetch=FetchType.EAGER) private List<String> roles;
     private String password;
     private AccountStatus accountStatus;
     

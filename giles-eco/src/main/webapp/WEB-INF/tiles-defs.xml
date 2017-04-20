@@ -89,6 +89,12 @@
     <definition name="admin/system/admins/password/change" extends="base.definition">
         <put-attribute name="content" value="/WEB-INF/views/admin/changeAdminPW.jsp" />
     </definition>
+    <definition name="admin/requests" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/requests.jsp" />
+    </definition>
+    <definition name="admin/requests/inProgress" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/requests_inprogress.jsp" />
+    </definition>
 	
 	<!--  apps -->
 	<definition name="admin/apps" extends="base.definition">
@@ -103,6 +109,14 @@
 	<definition name="admin/apps/delete" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/deleteApp.jsp" />
 	</definition>
+    
+    <!-- Migration -->
+    <definition name="admin/migrate" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/migrate/migrate.jsp" />
+    </definition>
+    <definition name="admin/migrate/running" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/migrate/running.jsp" />
+    </definition>
 	
 	<!--  user errors -->
 	<definition name="error/noSuchRole" extends="base.definition">
