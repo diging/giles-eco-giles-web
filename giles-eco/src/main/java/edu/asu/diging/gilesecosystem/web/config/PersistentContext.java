@@ -74,7 +74,7 @@ public class PersistentContext {
         );
  
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
-        entityManagerFactoryBean.setMappingResources("edu/asu/diging/gilesecosystem/web/domain/orm.xml");
+        entityManagerFactoryBean.setMappingResources("META-INF/hibernate/orm.xml");
  
         return entityManagerFactoryBean;
     }
