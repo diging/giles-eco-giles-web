@@ -17,7 +17,7 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.4</geco.requests.version>
+        <geco.requests.version>0.5</geco.requests.version>
         <geco.util.version>0.4.2</geco.util.version>
         <geco.september.util.version>0.1</geco.september.util.version>
         
