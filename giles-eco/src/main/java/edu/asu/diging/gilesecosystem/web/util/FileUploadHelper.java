@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -30,7 +30,7 @@ public class FileUploadHelper {
     private IFilesManager filesManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
  
     public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType,
             MultipartFile[] files, List<byte[]> fileBytes, User user,
@@ -56,8 +56,7 @@ public class FileUploadHelper {
                 
                 uploadedFiles.put(file, bytes);
             } catch (IOException e2) {
-                logger.error("Couldn't get file content.", e2);
-                tokenConfig.getMessageHandler().handleError("Couldn't get file content.", e2);
+                messageHandler.handleError("Couldn't get file content.", e2);
                 uploadedFiles.put(file, null);
             }
             

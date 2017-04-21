@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
@@ -30,7 +30,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     private EntityManager em;
     
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @Override
     public List<IProcessingRequest> getRequestByDocumentId(String docId) {
@@ -49,8 +49,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
             store(request);
         } catch (UnstorableObjectException e) {
             // should never happen
-            logger.error("Could not store element.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store element.", e);
+            messageHandler.handleError("Could not store element.", e);
         }
     }
     

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
@@ -24,7 +24,7 @@ public class FileContentHelper implements IFileContentHelper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.service.impl.IFileSystemHelper#getFileContent(edu.asu.giles.core.IFile, edu.asu.giles.files.IFileStorageManager)
@@ -36,8 +36,7 @@ public class FileContentHelper implements IFileContentHelper {
         try {
             return getFileContentFromUrl(fileObject.toURI().toURL());
         } catch (IOException e) {
-            logger.error("Could not read file.", e);
-            tokenConfig.getMessageHandler().handleError("Could not read file.", e);
+            messageHandler.handleError("Could not read file.", e);
             return null;
         }
     }

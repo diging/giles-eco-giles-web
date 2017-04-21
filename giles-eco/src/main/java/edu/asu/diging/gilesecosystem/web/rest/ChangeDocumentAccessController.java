@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -36,7 +36,7 @@ public class ChangeDocumentAccessController {
     private ITransactionalDocumentService documentService;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @TokenCheck
     @RequestMapping(value = GET_DOCUMENT_PATH
@@ -59,8 +59,7 @@ public class ChangeDocumentAccessController {
                 return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
             }
         } catch (IllegalArgumentException e) {
-            logger.error("Incorrect access type", e);
-            tokenConfig.getMessageHandler().handleError("Incorrect access type.", e);
+            messageHandler.handleError("Incorrect access type.", e);
             return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
         }
 
@@ -72,8 +71,7 @@ public class ChangeDocumentAccessController {
                         HttpStatus.OK);
             }
         } catch (UnstorableObjectException e) {
-            logger.error("Could not save updated access type", e);
-            tokenConfig.getMessageHandler().handleError("Could not save updated access type.", e);
+            messageHandler.handleError("Could not save updated access type.", e);
             return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
@@ -31,7 +31,7 @@ public class ChangeAccessController {
     private ITransactionalDocumentService documentService;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
@@ -78,8 +78,7 @@ public class ChangeAccessController {
 
         } catch (UnstorableObjectException e) {
             // this should not happen, since it's an existing object
-            logger.error("Could not store document.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store document.", e);
+            messageHandler.handleError("Could not store document.", e);
             redirectAttrs.addAttribute("show_alert", true);
             redirectAttrs.addAttribute("alert_type", "danger");
             redirectAttrs.addAttribute("alert_msg",

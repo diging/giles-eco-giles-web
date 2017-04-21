@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.PropertiesStorageException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.SignInProviderConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
@@ -32,7 +32,7 @@ public class SocialSigninUpdateController {
     private IPropertiesManager propertiesManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @RequestMapping(value="/admin/system/social")
     public String showUpdatePage(Model model) {
@@ -80,15 +80,13 @@ public class SocialSigninUpdateController {
         try {
             propertiesManager.updateProperties(githubConfig);
         } catch (PropertiesStorageException e) {
-            logger.error("Could not store properties.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store properties.", e);
+            messageHandler.handleError("Could not store properties.", e);
         }
         
         try {
             connFactoryService.updateFactory(IReloadService.GITHUB, config.getClientId(), config.getSecret());
         } catch (FactoryDoesNotExistException e) {
-            logger.error("Could not update factory.", e);
-            tokenConfig.getMessageHandler().handleError("Could not update factory.", e);
+            messageHandler.handleError("Could not update factory.", e);
         }
         
         return "redirect:/admin/system/social";
@@ -106,15 +104,13 @@ public class SocialSigninUpdateController {
         try {
             propertiesManager.updateProperties(googleConfig);
         } catch (PropertiesStorageException e) {
-            logger.error("Could not store properties.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store properties.", e);
+            messageHandler.handleError("Could not store properties.", e);
         }
         
         try {
             connFactoryService.updateFactory(IReloadService.GOOGLE, config.getClientId(), config.getSecret());
         } catch (FactoryDoesNotExistException e) {
-            logger.error("Could not update factory.", e);
-            tokenConfig.getMessageHandler().handleError("Could not update factory.", e);
+            messageHandler.handleError("Could not update factory.", e);
         }
         
         return "redirect:/admin/system/social";
@@ -133,16 +129,14 @@ public class SocialSigninUpdateController {
         try {
             propertiesManager.updateProperties(mitreidConfig);
         } catch (PropertiesStorageException e) {
-            logger.error("Could not store properties.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store properties.", e);
+            messageHandler.handleError("Could not store properties.", e);
         }
         
         try {
             
             connFactoryService.updateFactory(IReloadService.MITREID, config.getClientId(), config.getSecret(), config.getUrl());
         } catch (FactoryDoesNotExistException e) {
-            logger.error("Could not update factory.", e);
-            tokenConfig.getMessageHandler().handleError("Could not update factory.", e);
+            messageHandler.handleError("Could not update factory.", e);
         }
         
         return "redirect:/admin/system/social";

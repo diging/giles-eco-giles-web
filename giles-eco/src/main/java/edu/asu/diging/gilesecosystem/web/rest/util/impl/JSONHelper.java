@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -37,7 +37,7 @@ public class JSONHelper implements IJSONHelper {
     private ITransactionalFileService fileService;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.rest.util.IJSONHelper#createDocumentJson(edu.asu.giles.core.IDocument, com.fasterxml.jackson.databind.ObjectMapper, com.fasterxml.jackson.databind.node.ObjectNode)
@@ -97,8 +97,7 @@ public class JSONHelper implements IJSONHelper {
         try {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
-            logger.error("Could not write json.", e);
-            tokenConfig.getMessageHandler().handleError("Could not write json.", e);
+            messageHandler.handleError("Could not write json.", e);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);

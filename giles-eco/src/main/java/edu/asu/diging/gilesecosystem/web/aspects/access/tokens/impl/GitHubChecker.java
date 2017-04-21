@@ -11,11 +11,11 @@ import org.springframework.social.github.api.impl.GitHubTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.github.GitHubTemplateFactory;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.impl.ApiTokenContents;
@@ -31,7 +31,7 @@ public class GitHubChecker implements IChecker {
     private GitHubTemplateFactory templateFactory;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @Override
     public String getId() {
@@ -53,8 +53,7 @@ public class GitHubChecker implements IChecker {
             result.setPayload(contents);
             result.setResult(ValidationResult.VALID);
         } catch (RestClientException ex) {
-            logger.warn("Could not authenticate user with GitHub.", ex);
-            tokenConfig.getMessageHandler().handleError("Could not authenticate user with GitHub", ex);
+            messageHandler.handleWarning("Could not authenticate user with GitHub", ex);
             // validation result already set
         }
         

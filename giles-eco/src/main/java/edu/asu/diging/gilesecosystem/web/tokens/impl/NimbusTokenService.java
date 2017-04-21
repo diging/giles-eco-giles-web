@@ -24,9 +24,9 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.IdentityProviderMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
@@ -47,7 +47,7 @@ public class NimbusTokenService implements INimbusTokenService {
     private IRegisteredAppManager appsManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
     
     private String issuerUrl;
     
@@ -105,12 +105,10 @@ public class NimbusTokenService implements INimbusTokenService {
         try {
             claims = validator.validate(idToken, expectedNonce);
         } catch (BadJOSEException e) {
-            logger.warn("Token signature or claim is wrong.", e);
-            tokenConfig.getMessageHandler().handleError("Token signature or claim is wrong.", e);
+            messageHandler.handleWarning("Token signature or claim is wrong.", e);
             return null;
         } catch (JOSEException e) {
-            logger.error("Could not validate token.", e);
-            tokenConfig.getMessageHandler().handleError("Could not validate token.", e);
+            messageHandler.handleError("Could not validate token.", e);
             return null;
         }
 

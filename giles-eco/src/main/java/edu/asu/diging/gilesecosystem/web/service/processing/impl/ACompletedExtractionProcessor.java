@@ -9,8 +9,8 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
@@ -47,7 +47,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     private IUserManager userManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     protected void sendRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
@@ -56,8 +56,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         } catch (GilesProcessingException e) {
             // should not happen
             // FIXME: send to monitor app
-            logger.error("Could not create request.", e);
-            tokenConfig.getMessageHandler().handleError("Could not create request.", e);
+            messageHandler.handleError("Could not create request.", e);
             return;
         }
         
@@ -72,8 +71,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
         } catch (MessageCreationException e) {
             // FIXME: send to monitor app
-            logger.error("Could not send message.", e);
-            tokenConfig.getMessageHandler().handleError("Could not send message.", e);
+            messageHandler.handleError("Could not send message.", e);
         }
     }
     

@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
@@ -43,7 +43,7 @@ public class TokenService implements ITokenService {
     private IPropertiesManager propertiesManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.tokens.impl.ITokenService#generateToken(java.lang.String)
@@ -75,12 +75,10 @@ public class TokenService implements ITokenService {
                 contents.setExpired(expirationTime.before(new Date()));
             }
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            logger.info("Token is expired.", e);
-            tokenConfig.getMessageHandler().handleError("Token is expired.", e);
+            messageHandler.handleWarning("Token is expired.", e);
             contents.setExpired(true); 
         } catch (SignatureException e) {
-            logger.warn("Token signature not correct.", e);
-            tokenConfig.getMessageHandler().handleError("Token signature not correct.", e);
+            messageHandler.handleWarning("Token signature not correct.", e);
             return null;
         } 
         
@@ -123,10 +121,10 @@ public class TokenService implements ITokenService {
         
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             // currently app tokens don't expire, so we'll just return null
-            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
+            messageHandler.handleError(e.getMessage(), e);
             return null;
         } catch (SignatureException e) {
-            tokenConfig.getMessageHandler().handleError(e.getMessage(), e);
+            messageHandler.handleError(e.getMessage(), e);
             return null;
         } 
         

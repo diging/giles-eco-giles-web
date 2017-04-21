@@ -15,9 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -34,7 +34,7 @@ public class FileContentController {
     private ITransactionalFileService fileService;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
 
     @AccountCheck
     @FileAccessCheck
@@ -57,8 +57,7 @@ public class FileContentController {
             response.getOutputStream().write(content);
             response.getOutputStream().close();
         } catch (IOException e) {
-            logger.error("Could not write to output stream.", e);
-            tokenConfig.getMessageHandler().handleError("Could not write to output stream.", e);
+            messageHandler.handleError("Could not write to output stream.", e);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

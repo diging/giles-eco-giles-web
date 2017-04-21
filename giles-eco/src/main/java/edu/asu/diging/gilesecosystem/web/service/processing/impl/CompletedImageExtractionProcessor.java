@@ -10,9 +10,9 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
@@ -44,7 +44,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
     private IPropertiesManager propertiesManager;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
@@ -66,8 +66,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                     filesService.saveFile(pageText);
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
-                    logger.error("Could not store file.", e);
-                    tokenConfig.getMessageHandler().handleError("Could not store file.", e);
+                    messageHandler.handleError("Could not store file.", e);
                 }
                 
                 IPage documentPage = pages.get(page.getPageNr());
@@ -92,8 +91,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         try {
             filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
-            logger.error("Could not store file.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store file.", e);
+            messageHandler.handleError("Could not store file.", e);
             // fail silently...
             // this should never happen
         }
@@ -103,16 +101,14 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         } catch (UnstorableObjectException e) {
             // shoudl never happen
             // report to monitoring app
-            logger.error("Could not store document.", e);
-            tokenConfig.getMessageHandler().handleError("Could not store document.", e);
+            messageHandler.handleError("Could not store document.", e);
         }
         
         try {
             processCoordinator.processFile(file, null);
         } catch (GilesProcessingException e) {
             // FIXME: send to monitoring app
-            logger.error("Processing failed.", e);
-            tokenConfig.getMessageHandler().handleError("Processing failed.", e);
+            messageHandler.handleError("Processing failed.", e);
         }
     }
 

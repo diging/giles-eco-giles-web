@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 
@@ -20,7 +20,7 @@ public abstract class ACompletedRequestProcessor {
     private ITransactionalProcessingRequestService pReqDbClient;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
     
     protected void markRequestComplete(IRequest completeRequest) {
         List<IProcessingRequest> pRequests = pReqDbClient.getProcRequestsByRequestId(completeRequest.getRequestId());
@@ -32,8 +32,7 @@ public abstract class ACompletedRequestProcessor {
             } catch (UnstorableObjectException e) {
                 // should never happen
                 // FIXME send to monitoring app
-                logger.error("Could not store request.", e);
-                tokenConfig.getMessageHandler().handleError("Could not store request.", e);
+                messageHandler.handleError("Could not store request.", e);
             }
         }
     }

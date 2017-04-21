@@ -8,8 +8,8 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.config.GilesTokenConfig;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
@@ -43,7 +43,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
     private IProcessingCoordinator processCoordinator;
 
     @Autowired
-    private GilesTokenConfig tokenConfig;
+    private SystemMessageHandler messageHandler;
     
     public RequestStatus process(IFile file, IProcessingInfo info)
             throws GilesProcessingException {
@@ -52,8 +52,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         try {
             request = createRequest(file, info);
         } catch (GilesProcessingException ex) {
-            logger.error("Could not create request.", ex);
-            tokenConfig.getMessageHandler().handleError("Could not create request.", ex);
+            messageHandler.handleError("Could not create request.", ex);
             return RequestStatus.FAILED;
         }
         
@@ -70,8 +69,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
                 return status;
             } catch (GilesProcessingException e) {
                 //FIXME: this should go in a monitoring app
-                logger.error("Exception occured in next processing phase.", e);
-                tokenConfig.getMessageHandler().handleError("Exception occured in next processing phase.", e);
+                messageHandler.handleError("Exception occured in next processing phase.", e);
             }
         }
         

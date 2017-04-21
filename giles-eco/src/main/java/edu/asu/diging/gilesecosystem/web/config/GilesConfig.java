@@ -28,7 +28,7 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
  *
  */
 @Configuration
-public class GilesTokenConfig {
+public class GilesConfig {
 
     @Autowired
     private IPropertiesManager propertyManager;
