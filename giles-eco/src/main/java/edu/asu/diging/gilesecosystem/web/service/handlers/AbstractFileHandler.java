@@ -11,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
@@ -29,7 +30,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     protected IFileContentHelper fileContentHelper;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     protected byte[] getFileContentFromUrl(URL url) throws IOException {
         URLConnection con = url.openConnection();
@@ -60,7 +61,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
         try {
             return fileContentHelper.getFileContentFromUrl(new URL(file.getDownloadUrl()));
         } catch (IOException e) {
-            messageHandler.handleError("Could not download file.", e);
+            messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
             return null;
         }
     }

@@ -18,7 +18,8 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
@@ -29,7 +30,7 @@ public final class SimpleSignInAdapter implements SignInAdapter {
     private final Logger logger = LoggerFactory.getLogger(getClass());            
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
 
     private IUserManager userManager;
     private IUserHelper userHelper;
@@ -53,7 +54,7 @@ public final class SimpleSignInAdapter implements SignInAdapter {
             try {
                 userManager.addUser(user);
             } catch (UnstorableObjectException e) {
-                messageHandler.handleError("Could not add user.", e);
+                messageHandler.handleMessage("Could not add user.", e, MessageType.ERROR);
                 user = null;
             }
         } else {

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletionNotificationRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletionNotificationRequest;
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
@@ -31,7 +32,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
     private ITransactionalDocumentService documentService;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
    
     @Override
     public String getProcessedTopic() {
@@ -55,7 +56,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
             documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // should never happen
-            messageHandler.handleError("Could not store document.", e);
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
      }
 

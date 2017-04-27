@@ -9,7 +9,8 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -47,7 +48,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     private IUserManager userManager;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
 
     protected void sendRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
@@ -56,7 +57,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         } catch (GilesProcessingException e) {
             // should not happen
             // FIXME: send to monitor app
-            messageHandler.handleError("Could not create request.", e);
+            messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
             return;
         }
         
@@ -71,7 +72,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
         } catch (MessageCreationException e) {
             // FIXME: send to monitor app
-            messageHandler.handleError("Could not send message.", e);
+            messageHandler.handleMessage("Could not send message.", e, MessageType.ERROR);
         }
     }
     

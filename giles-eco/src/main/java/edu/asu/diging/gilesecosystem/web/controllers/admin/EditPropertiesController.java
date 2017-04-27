@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.PropertiesStorageException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.SystemConfigPage;
@@ -35,7 +36,7 @@ public class EditPropertiesController {
     private IPropertiesManager propertyManager;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     @InitBinder
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder, WebDataBinder validateBinder) {
@@ -97,7 +98,7 @@ public class EditPropertiesController {
         try {
             propertyManager.updateProperties(propertiesMap);
         } catch (PropertiesStorageException e) {
-            messageHandler.handleError("System Configuration could not be saved.", e);
+            messageHandler.handleMessage("System Configuration could not be saved.", e, MessageType.ERROR);
             model.addAttribute("show_alert", true);
             model.addAttribute("alert_type", "danger");
             model.addAttribute("alert_msg", "An unexpected error occurred. System Configuration could not be saved.");

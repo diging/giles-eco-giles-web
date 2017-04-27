@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -41,7 +42,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     private IPropertiesManager propertiesManager;
    
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedStorageRequestProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest)
@@ -65,7 +66,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         try {
             filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
-            messageHandler.handleError("Could not store file.", e);
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
         }
@@ -74,7 +75,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
             processCoordinator.processFile(file, null);
         } catch (GilesProcessingException e) {
             //FIXME: this should go in a monitoring app
-            messageHandler.handleError("Exception occured in next processing phase.", e);
+            messageHandler.handleMessage("Exception occured in next processing phase.", e, MessageType.ERROR);
         }
     }
 

@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
@@ -32,7 +33,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
     private ITokenService tokenService;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
 
     /*
      * (non-Javadoc)
@@ -58,7 +59,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         try {
             databaseClient.store(app);
         } catch (UnstorableObjectException e) {
-            messageHandler.handleError("Could not store app.", e);
+            messageHandler.handleMessage("Could not store app.", e, MessageType.ERROR);
             return null;
         }
         return app;

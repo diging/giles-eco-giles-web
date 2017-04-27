@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nimbusds.jose.util.Base64;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -55,7 +56,7 @@ public class GilesConfig {
     }
     
     @Bean
-    public SystemMessageHandler getMessageHandler() {
+    public ISystemMessageHandler getMessageHandler() {
         return new SystemMessageHandler(propertyManager.getProperty(Properties.APPLICATION_ID));
     }
 }

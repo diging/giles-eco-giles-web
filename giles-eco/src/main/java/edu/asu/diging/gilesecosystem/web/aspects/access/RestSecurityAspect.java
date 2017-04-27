@@ -29,7 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
@@ -80,7 +81,7 @@ public class RestSecurityAspect {
     private List<IChecker> checkers;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     private Map<String, IChecker> tokenCheckers;
 
@@ -397,28 +398,28 @@ public class RestSecurityAspect {
             tokenHolder.checkResult = validationResult;
             tokenHolder.tokenContents = validationResult.getPayload();
         } catch (GeneralSecurityException e) {
-            messageHandler.handleError("Security issue with token.", e);
+            messageHandler.handleMessage("Security issue with token.", e, MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
             
             return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
         } catch (IOException e) {
-            messageHandler.handleError("Network issue.", e);
+            messageHandler.handleMessage("Network issue.", e, MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
             
             return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (InvalidTokenException e) {
-            messageHandler.handleError("Token is invalid.", e);
+            messageHandler.handleMessage("Token is invalid.", e, MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
             
             return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
         } catch (ServerMisconfigurationException e) {
-            messageHandler.handleError("Server or apps are misconfigured.", e);
+            messageHandler.handleMessage("Server or apps are misconfigured.", e, MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", e.getLocalizedMessage());
             msgs.put("provider", provider);
@@ -495,7 +496,7 @@ public class RestSecurityAspect {
         try {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
-            messageHandler.handleError("Could not write json.", e);
+            messageHandler.handleMessage("Could not write json.", e, MessageType.ERROR);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);

@@ -2,11 +2,11 @@ package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -16,7 +16,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -42,7 +43,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
     private RestTemplate accessTokenRestTemplate;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
 
     public IApiTokenContents introspectAccessToken(String accessToken) throws ServerMisconfigurationException {
 
@@ -58,7 +59,7 @@ public class IntrospectTokenService implements IIntrospectTokenService {
         try {
             validatedToken = accessTokenRestTemplate.postForObject(introspectionUrl, form, String.class);
         } catch (RestClientException rce) {
-            messageHandler.handleError("introspect access token validation", rce);
+            messageHandler.handleMessage("introspect access token validation", rce, MessageType.ERROR);
             return null;
         }
 

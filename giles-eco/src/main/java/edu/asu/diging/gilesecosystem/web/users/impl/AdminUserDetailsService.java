@@ -24,7 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
 import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
 
@@ -40,7 +41,7 @@ public class AdminUserDetailsService implements IAdminUserDetailsService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
   
     private PropertiesPersister persister;
     private Properties users;
@@ -110,7 +111,7 @@ public class AdminUserDetailsService implements IAdminUserDetailsService {
         try {
             persister.store(users, customPropsResource.getOutputStream(), "");
         } catch (IOException e) {
-            messageHandler.handleError("Could not store properties.", e);
+            messageHandler.handleMessage("Could not store properties.", e, MessageType.ERROR);
             return false;
         }
 

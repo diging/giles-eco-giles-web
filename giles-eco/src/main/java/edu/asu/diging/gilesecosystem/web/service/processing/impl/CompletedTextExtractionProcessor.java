@@ -8,7 +8,8 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest;
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
@@ -42,7 +43,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
     private IPropertiesManager propertiesManager;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedTextExtractionProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest)
@@ -62,7 +63,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                 filesService.saveFile(completeText);
             } catch (UnstorableObjectException e) {
                 // should never happen, we're setting the id
-                messageHandler.handleError("Could not store file.", e);
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             }
             
             document.setExtractedTextFileId(completeText.getId());
@@ -80,7 +81,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                     filesService.saveFile(pageText);
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
-                    messageHandler.handleError("Could not store file.", e);
+                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
                 }
                 
                 IPage documentPage = new Page();
@@ -100,7 +101,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         try {
             filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
-            messageHandler.handleError("Could not store file.", e);
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
         }
@@ -110,14 +111,14 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         } catch (UnstorableObjectException e) {
             // shoudl never happen
             // report to monitoring app
-            messageHandler.handleError("Could not store document.", e);
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
         
         try {
             processCoordinator.processFile(file, null);
         } catch (GilesProcessingException e) {
             // FIXME: send to monitoring app
-            messageHandler.handleError("Processing failed.", e);
+            messageHandler.handleMessage("Processing failed.", e, MessageType.ERROR);
         }
     }
 

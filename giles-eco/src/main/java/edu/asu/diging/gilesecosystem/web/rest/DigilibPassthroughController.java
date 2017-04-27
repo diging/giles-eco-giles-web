@@ -22,7 +22,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
@@ -44,7 +45,7 @@ public class DigilibPassthroughController {
     private DigilibConnector digilibConnector;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     
     @ImageAccessCheck
     @RequestMapping(value = "/rest/digilib")
@@ -95,11 +96,11 @@ public class DigilibPassthroughController {
             }
 
         } catch (MalformedURLException e) {
-            messageHandler.handleError(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            messageHandler.handleError(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -109,7 +110,7 @@ public class DigilibPassthroughController {
         try {
             response.getOutputStream().close();
         } catch (IOException e) {
-            messageHandler.handleError(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -166,11 +167,11 @@ public class DigilibPassthroughController {
                 }
             }
         } catch (MalformedURLException e) {
-            messageHandler.handleError(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            messageHandler.handleError(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

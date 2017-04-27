@@ -14,6 +14,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
@@ -56,7 +58,7 @@ public class FilesManager implements IFilesManager {
     private IProcessingCoordinator processCoordinator;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
     /*
      * (non-Javadoc)
      * 
@@ -116,10 +118,10 @@ public class FilesManager implements IFilesManager {
                 RequestStatus requestStatus = processCoordinator.processFile(file, info);
                 statuses.add(new StorageStatus(document, file, null, requestStatus));
             } catch (GilesProcessingException e) {
-                messageHandler.handleError("Could not store uploaded files.", e);
+                messageHandler.handleMessage("Could not store uploaded files.", e, MessageType.ERROR);
                 statuses.add(new StorageStatus(document, file, e, RequestStatus.FAILED));
             } catch (UnstorableObjectException e) {
-                messageHandler.handleError("Object is not storable. Please review your code.", e);
+                messageHandler.handleMessage("Object is not storable. Please review your code.", e, MessageType.ERROR);
                 statuses.add(new StorageStatus(document, file, new GilesProcessingException(e), RequestStatus.FAILED));
             } 
         }
@@ -132,7 +134,7 @@ public class FilesManager implements IFilesManager {
             } catch (UnstorableObjectException e) {
                 // let's silently fail because this should never happen
                 // we set the id
-                messageHandler.handleError("Could not store upload.", e);
+                messageHandler.handleMessage("Could not store upload.", e, MessageType.ERROR);
             }
         }
 
@@ -236,7 +238,7 @@ public class FilesManager implements IFilesManager {
         try {
             fileService.saveFile(file);
         } catch (UnstorableObjectException e) {
-            messageHandler.handleError("Could not store file.", e);
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             return false;
         }
         return true;

@@ -11,7 +11,8 @@ import org.springframework.social.github.api.impl.GitHubTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.github.GitHubTemplateFactory;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
@@ -31,7 +32,7 @@ public class GitHubChecker implements IChecker {
     private GitHubTemplateFactory templateFactory;
 
     @Autowired
-    private SystemMessageHandler messageHandler;
+    private ISystemMessageHandler messageHandler;
 
     @Override
     public String getId() {
@@ -53,7 +54,7 @@ public class GitHubChecker implements IChecker {
             result.setPayload(contents);
             result.setResult(ValidationResult.VALID);
         } catch (RestClientException ex) {
-            messageHandler.handleWarning("Could not authenticate user with GitHub", ex);
+            messageHandler.handleMessage("Could not authenticate user with GitHub", ex, MessageType.WARNING);
             // validation result already set
         }
         
