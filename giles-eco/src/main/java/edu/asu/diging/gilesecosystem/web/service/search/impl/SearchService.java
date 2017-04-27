@@ -31,7 +31,10 @@ public class SearchService implements ISearchService {
         
         List<FileSearchResult> fileResults = new ArrayList<FileSearchResult>();
         for (SearchResult result : results) {
-            fileResults.add(fileResultFactory.createSearchResult(result.getFileId()));
+            FileSearchResult searchResult = fileResultFactory.createSearchResult(result.getFileId());
+            if (searchResult != null) {
+                fileResults.add(searchResult);
+            }
         }
         
         return fileResults;

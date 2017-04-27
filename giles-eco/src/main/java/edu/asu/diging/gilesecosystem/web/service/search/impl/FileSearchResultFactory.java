@@ -35,6 +35,10 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
     public FileSearchResult createSearchResult(String fileId) {
         IFile file = fileService.getFileById(fileId);
         
+        if (file == null) {
+            return null;
+        }
+        
         FileSearchResult result = new FileSearchResult();
         result.setAccess(file.getAccess());
         result.setContentType(file.getContentType());
