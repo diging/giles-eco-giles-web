@@ -19,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
@@ -43,6 +45,9 @@ public class ViewImageController {
     
     @Autowired
     private IMetadataUrlService metadataService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     
     @AccountCheck
     @FileAccessCheck
@@ -72,7 +77,7 @@ public class ViewImageController {
         try {
             parameterBuffer.append(URLEncoder.encode(file.getFilepath(), "UTF-8"));
         } catch (UnsupportedEncodingException e1) {
-            logger.error("Could not encode path.", e1);
+            messageHandler.handleMessage("Could not encode path.", e1, MessageType.ERROR);
             parameterBuffer.append(file.getFilepath());
         }
 
@@ -80,11 +85,11 @@ public class ViewImageController {
             digilibConnector.getDigilibImage(parameterBuffer.toString(),
                     response);
         } catch (MalformedURLException e) {
-            logger.error(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
@@ -33,6 +35,9 @@ public class ChangeDocumentAccessController {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @TokenCheck
     @RequestMapping(value = GET_DOCUMENT_PATH
@@ -55,7 +60,7 @@ public class ChangeDocumentAccessController {
                 return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
             }
         } catch (IllegalArgumentException e) {
-            logger.error("Incorrect access type", e);
+            messageHandler.handleMessage("Incorrect access type.", e, MessageType.ERROR);
             return new ResponseEntity<String>("{\"error\": \"Incorrect access type.\" }", HttpStatus.BAD_REQUEST);
         }
 
@@ -67,7 +72,7 @@ public class ChangeDocumentAccessController {
                         HttpStatus.OK);
             }
         } catch (UnstorableObjectException e) {
-            logger.error("Could not save updated access type", e);
+            messageHandler.handleMessage("Could not save updated access type.", e, MessageType.ERROR);
             return new ResponseEntity<String>("{\"error\": \"Could not save updated access type.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

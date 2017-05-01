@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
@@ -28,6 +30,9 @@ public class ChangeAccessController {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
@@ -74,7 +79,7 @@ public class ChangeAccessController {
 
         } catch (UnstorableObjectException e) {
             // this should not happen, since it's an existing object
-            logger.error("Could not store document.", e);
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
             redirectAttrs.addAttribute("show_alert", true);
             redirectAttrs.addAttribute("alert_type", "danger");
             redirectAttrs.addAttribute("alert_msg",

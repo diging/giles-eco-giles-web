@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.PropertiesStorageException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -27,6 +29,9 @@ public class SigningSecretController {
     
     @Autowired
     private IPropertiesManager propertiesManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @RequestMapping(value="/admin/system/auth")
     public String showPage(Model model) {
@@ -47,7 +52,7 @@ public class SigningSecretController {
         try {
             propertiesManager.updateProperties(props);
         } catch (PropertiesStorageException e) {
-            logger.error("Properties could not be stored.", e);
+            messageHandler.handleMessage("Properties could not be stored.", e, MessageType.ERROR);
         }
         
         return "admin/system/auth/done";

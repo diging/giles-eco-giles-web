@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.social.google.api.drive.DriveApp.AppIcon;
 
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.impl.RegisteredApp;
@@ -30,7 +31,8 @@ public class TokenServiceTest {
 
     @Mock
     private IPropertiesManager propertiesManager;
-
+    @Mock
+    private ISystemMessageHandler messageHandler;
     @InjectMocks
     private TokenService serviceToTest;
 

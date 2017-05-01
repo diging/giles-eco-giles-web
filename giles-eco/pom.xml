@@ -19,7 +19,7 @@
 
         <geco.requests.version>0.5</geco.requests.version>
         <geco.util.version>0.4.2</geco.util.version>
-        <geco.september.util.version>0.1</geco.september.util.version>
+        <geco.september.util.version>0.2-SNAPSHOT</geco.september.util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>

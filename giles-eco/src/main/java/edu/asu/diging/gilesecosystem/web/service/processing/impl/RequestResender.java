@@ -19,6 +19,8 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -41,6 +43,9 @@ public class RequestResender implements IRequestResender {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     
     private Map<Class<? extends IRequest>, ProcessingPhase<? extends IProcessingInfo>> phaseMap;
     
@@ -78,7 +83,7 @@ public class RequestResender implements IRequestResender {
                     counter++;
                 } catch (GilesProcessingException e) {
                     // FIXME: send to september
-                    logger.error("Could not send request.", e);
+                    messageHandler.handleMessage("Could not send request.", e, MessageType.ERROR);
                 }
             }
         }

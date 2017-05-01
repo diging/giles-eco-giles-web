@@ -9,9 +9,12 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
@@ -27,6 +30,9 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;
     
+    @Autowired
+    private ISystemMessageHandler messageHandler;
+
     @Override
     public List<IProcessingRequest> getRequestByDocumentId(String docId) {
         return searchByProperty("documentId", docId, ProcessingRequest.class);
@@ -44,7 +50,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
             store(request);
         } catch (UnstorableObjectException e) {
             // should never happen
-            logger.error("Could not store element.", e);
+            messageHandler.handleMessage("Could not store element.", e, MessageType.ERROR);
         }
     }
     

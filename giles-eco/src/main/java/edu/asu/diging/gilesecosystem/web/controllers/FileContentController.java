@@ -15,6 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -31,6 +34,9 @@ public class FileContentController {
     
     @Autowired
     private ITransactionalFileService fileService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @AccountCheck
     @FileAccessCheck
@@ -53,7 +59,7 @@ public class FileContentController {
             response.getOutputStream().write(content);
             response.getOutputStream().close();
         } catch (IOException e) {
-            logger.error("Could not write to output stream.", e);
+            messageHandler.handleMessage("Could not write to output stream.", e, MessageType.ERROR);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

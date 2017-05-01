@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -35,6 +37,9 @@ public class TemporaryFilesController {
     
     @Autowired
     private IDistributedStorageManager storageManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @AppTokenOnlyCheck
     @RequestMapping(value = GET_CONTENT_URL, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -58,7 +63,7 @@ public class TemporaryFilesController {
             response.getOutputStream().write(content);
             response.getOutputStream().close();
         } catch (IOException e) {
-            logger.error("Could not write to output stream.", e);
+            messageHandler.handleMessage("Could not write to output stream.", e, MessageType.ERROR);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
