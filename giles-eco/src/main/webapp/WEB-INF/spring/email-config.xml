@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value=""/>
-        <property name="port" value=""/>
-        <property name="username" value=""/>
-        <property name="password" value=""/>
+        <property name="host" value="${email.host}"/>
+        <property name="port" value="${email.port}"/>
+        <property name="username" value="${email.username}"/>
+        <property name="password" value="${email.pw}"/>
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.transport.protocol">smtp</prop>
@@ -17,8 +17,8 @@
     </bean>
    
     <bean id="emailNoficationSender" class="edu.asu.diging.gilesecosystem.web.email.impl.EmailNotificationSender">
-       <property name="enabled" value="true" />
-       <property name="fromAddress" value="" />
+       <property name="enabled" value="${email.enabled}" />
+       <property name="fromAddress" value="${email.from}" />
     </bean>
     
 </beans>

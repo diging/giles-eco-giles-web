@@ -75,6 +75,14 @@
 
         <!-- Solr -->
         <giles.freddie.host></giles.freddie.host>
+
+        <!-- Notification -->
+        <email.host></email.host>
+        <email.port>8080</email.port>
+        <email.username></email.username>
+        <email.pw></email.pw>
+        <email.from></email.from>
+        <email.enabled>true</email.enabled>
     </properties>
 
     <dependencies>
