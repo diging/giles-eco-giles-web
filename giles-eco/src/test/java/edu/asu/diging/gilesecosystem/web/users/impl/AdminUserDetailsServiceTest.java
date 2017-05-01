@@ -36,7 +36,8 @@ public class AdminUserDetailsServiceTest {
     private Properties users;
     @Mock
     private PathResource customPropsResource;
-
+    @Mock
+    private ISystemMessageHandler messageHandler;
     @InjectMocks
     private AdminUserDetailsService adminDetailsServiceToTest;
 
