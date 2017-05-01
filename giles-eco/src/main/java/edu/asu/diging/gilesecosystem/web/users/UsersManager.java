@@ -3,10 +3,15 @@ package edu.asu.diging.gilesecosystem.web.users;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
+import edu.asu.diging.gilesecosystem.web.email.IEmailNotificationManager;
 
 /**
  * Managing class for user management.
@@ -17,9 +22,16 @@ import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 @Service
 public class UsersManager implements IUserManager {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private UserDatabaseClient client;
 
+    @Autowired
+    private IEmailNotificationManager emailManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     /*
      * (non-Javadoc)
      * 
@@ -76,6 +88,16 @@ public class UsersManager implements IUserManager {
     @Override
     public User addUser(User user) throws UnstorableObjectException {
         client.addUser(user);
+        //send notification to all admins
+        List<User> adminList = client.searchByProperty("isAdmin", "1");
+        for(User admin : adminList) {
+            try {
+                emailManager.sendAccountCreatedEmail(user.getName(), user.getUsername(), admin.getFullname(), admin.getEmail());
+            } catch (Exception e) {
+                // let's log error but keep on going
+                messageHandler.handleMessage("Email to " + admin.getUsername() + " could not be sent.", e, MessageType.ERROR);
+            }
+        }
         return user;
     }
 
@@ -123,6 +145,9 @@ public class UsersManager implements IUserManager {
         if (!user.getRoles().contains(GilesRole.ROLE_USER.name())) {
             user.getRoles().add(GilesRole.ROLE_USER.name());
         }
+        if(user.getRoles().contains(GilesRole.ROLE_ADMIN.name())) {
+            user.setIsAdmin(true);
+        }
         client.update(user);
     }
     
@@ -138,6 +163,9 @@ public class UsersManager implements IUserManager {
     public void addRoleToUser(String username, GilesRole role) {
         User user = findUser(username);
         user.getRoles().add(role.name());
+        if(role == GilesRole.ROLE_ADMIN) {
+            user.setIsAdmin(true);
+        }
         client.update(user);
     }
     
@@ -145,6 +173,9 @@ public class UsersManager implements IUserManager {
     public void removeRoleFromUser(String username, GilesRole role) {
         User user = findUser(username);
         user.getRoles().remove(role.name());
+        if(role == GilesRole.ROLE_ADMIN) {
+            user.setIsAdmin(false);
+        }
         client.update(user);
     }
     

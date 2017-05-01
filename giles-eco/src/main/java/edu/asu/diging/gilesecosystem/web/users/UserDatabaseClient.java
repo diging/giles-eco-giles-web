@@ -100,7 +100,7 @@ public class UserDatabaseClient {
         User storedUser = findUserByProviderUserId(user.getUserIdOfProvider(), user.getProvider());
         
         storedUser.setAccountStatus(user.getAccountStatus());
-        storedUser.setAdmin(user.getIsAdmin());
+        storedUser.setIsAdmin(user.getIsAdmin());
         storedUser.setEmail(user.getEmail());
         storedUser.setFirstname(user.getFirstname());
         storedUser.setLastname(user.getLastname());

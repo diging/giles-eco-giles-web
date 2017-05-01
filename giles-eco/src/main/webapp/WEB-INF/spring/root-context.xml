@@ -19,6 +19,9 @@
 
     <import resource="spring-security.xml" />
 
+    <!-- Reference the email configuration -->
+    <import resource="email-config.xml"/>
+
     <bean id="tmpStorageManager"
         class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
         <property name="baseDirectory" value="${giles.file.tmp.dir}" />
@@ -28,6 +31,11 @@
         class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basename" value="classpath:locale/messages" />
         <property name="fallbackToSystemLocale" value="false" />
+    </bean>
+
+    <bean id="uiMessages"
+        class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="classpath:locale/messages.properties" />
     </bean>
 
     <aop:aspectj-autoproxy proxy-target-class="true" />
