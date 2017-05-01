@@ -30,7 +30,8 @@ public class TokenServiceTest {
 
     @Mock
     private IPropertiesManager propertiesManager;
-
+    @Mock
+    private ISystemMessageHandler messageHandler;
     @InjectMocks
     private TokenService serviceToTest;
 
