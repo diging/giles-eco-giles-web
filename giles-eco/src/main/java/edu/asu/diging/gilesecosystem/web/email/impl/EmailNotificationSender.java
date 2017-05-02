@@ -1,8 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.email.impl;
 
-import java.util.Properties;
-
-import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -10,13 +7,19 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.email.IEmailNotificationSender;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
-public class EmailNotificationSender {
+@Service
+public class EmailNotificationSender implements IEmailNotificationSender {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -24,32 +27,17 @@ public class EmailNotificationSender {
     private JavaMailSender mailSender;
 
     @Autowired
+    private IPropertiesManager propertyManager;
+
+    @Autowired
     private ISystemMessageHandler messageHandler;
 
-    private boolean enabled;
-
-    private String fromAddress;
-
-    public String getFromAddress() {
-        return fromAddress;
-    }
-
-    public void setFromAddress(String fromAddress) {
-        this.fromAddress = fromAddress;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Resource(name = "uiMessages")
-    private Properties emailMessages;
+    @Autowired
+    private MessageSource emailMessages;
 
     public void sendNotificationEmail(String emailaddress, String subject, String msgText) {
+        boolean enabled = (propertyManager.getProperty(Properties.EMAIL_ENABLED)).equals("true");
+        String fromAddress= propertyManager.getProperty(Properties.EMAIL_FROM);
         if (enabled) {
             try {
                 MimeMessage message = mailSender.createMimeMessage();
@@ -59,7 +47,7 @@ public class EmailNotificationSender {
                 helper.setFrom(new InternetAddress(fromAddress));
 
                 // Adding tail to the message text
-                msgText += emailMessages.getProperty("email.tail");
+                msgText += emailMessages.getMessage("email.tail", new String[]{}, null);
 
                 helper.setText(msgText);
                 mailSender.send(message);

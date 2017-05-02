@@ -2,15 +2,13 @@ package edu.asu.diging.gilesecosystem.web.email.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.Resource;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.web.email.IEmailNotificationManager;
@@ -28,8 +26,8 @@ public class EmailNotificationManager implements IEmailNotificationManager {
     @Autowired
     private IVelocityBuilder velocityBuilder;
 
-    @Resource(name = "uiMessages")
-    private Properties emailMessages;
+    @Autowired
+    private MessageSource emailMessages;
 
     @Override
     public void sendAccountCreatedEmail(String name, String username, String adminName, String adminEmail)
@@ -43,13 +41,14 @@ public class EmailNotificationManager implements IEmailNotificationManager {
         try {
             String msg = velocityBuilder.getRenderedTemplate("velocitytemplates/email/newAccount.vm",
                     contextProperties);
-            emailSender.sendNotificationEmail(adminEmail, emailMessages.getProperty("email.account_created.subject"),
+            emailSender.sendNotificationEmail(adminEmail, emailMessages.getMessage("email.account_created.subject", new String[]{}, null),
                     msg);
         } catch (ResourceNotFoundException e) {
             throw new GilesNotificationException(e);
         } catch (ParseErrorException e) {
             throw new GilesNotificationException(e);
         } catch (Exception e) {
+            //getTemplate method call under getRenderedTemplate can throw exception
             throw new GilesNotificationException(e);
         }
     }

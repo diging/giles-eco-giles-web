@@ -33,11 +33,6 @@
         <property name="fallbackToSystemLocale" value="false" />
     </bean>
 
-    <bean id="uiMessages"
-        class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="location" value="classpath:locale/messages.properties" />
-    </bean>
-
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
     <task:annotation-driven executor="myExecutor" />

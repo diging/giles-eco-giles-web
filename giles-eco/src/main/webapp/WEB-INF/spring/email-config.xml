@@ -15,10 +15,5 @@
             </props>
         </property>
     </bean>
-   
-    <bean id="emailNoficationSender" class="edu.asu.diging.gilesecosystem.web.email.impl.EmailNotificationSender">
-       <property name="enabled" value="${email.enabled}" />
-       <property name="fromAddress" value="${email.from}" />
-    </bean>
     
 </beans>

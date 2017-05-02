@@ -6,6 +6,10 @@ import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,6 +121,22 @@ public class UserDatabaseClient {
         return docs.getResultList();
     }
     
+    /**
+     * Find users based on role.
+     *
+     * @param role role of the user
+     * @return list of users with input role
+     */
+    protected List<User> getUsersByRole(String role) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
+        Root<User> user = criteriaQuery.from(User.class);
+        Predicate hasUserRole = builder.and(user.join("roles").in(role));
+        criteriaQuery.where(hasUserRole);
+        TypedQuery<User> userList = em.createQuery(criteriaQuery);
+        return userList.getResultList();
+    }
+
     /**
      * This methods generates a new 6 character long id. Note that this method
      * does not assure that the id isn't in use yet.
