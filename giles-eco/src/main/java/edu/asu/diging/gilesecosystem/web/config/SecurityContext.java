@@ -27,7 +27,6 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
 import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
-import edu.asu.diging.gilesecosystem.web.users.impl.AdminUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

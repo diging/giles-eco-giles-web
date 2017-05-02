@@ -5,6 +5,14 @@ import javax.persistence.Embeddable;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.core.ITask;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.impl.Task} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 @Embeddable
 public class Task implements ITask {
 

@@ -2,6 +2,14 @@ package edu.asu.diging.gilesecosystem.web.core;
 
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.IFile} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 public interface IFile extends IStorableObject {
 
     public abstract String getUploadId();

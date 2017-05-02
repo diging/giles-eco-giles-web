@@ -4,6 +4,14 @@ import javax.persistence.Embeddable;
 
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.impl.Page} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 @Embeddable
 public class Page implements IPage {
     

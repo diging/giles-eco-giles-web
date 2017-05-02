@@ -20,7 +20,7 @@
         <geco.requests.version>0.5</geco.requests.version>
         <geco.util.version>0.4.2</geco.util.version>
         <geco.september.util.version>0.2-SNAPSHOT</geco.september.util.version>
-        
+
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
         <tomcat.server.id>TomcatServer</tomcat.server.id>
@@ -61,7 +61,7 @@
         <buildNumber></buildNumber>
         <log.level>debug</log.level>
         <iframing.hostname></iframing.hostname>
-        
+
         <!-- DB config -->
         <db.driver>com.mysql.jdbc.Driver</db.driver>
         <db.database.url></db.database.url>
@@ -493,6 +493,14 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-tools</artifactId>
             <version>2.0</version>
+        </dependency>
+
+        <!-- Curator to connect to Zookeeper -->
+        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>2.12.0</version>
         </dependency>
 
     </dependencies>
