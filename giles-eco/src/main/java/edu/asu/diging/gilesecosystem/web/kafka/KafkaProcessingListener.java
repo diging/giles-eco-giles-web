@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -27,8 +25,6 @@ import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 
 @PropertySource("classpath:/config.properties")
 public class KafkaProcessingListener {
-    
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
     private ApplicationContext ctx;

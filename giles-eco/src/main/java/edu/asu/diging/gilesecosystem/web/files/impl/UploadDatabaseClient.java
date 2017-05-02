@@ -7,8 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +20,6 @@ import edu.asu.diging.gilesecosystem.web.files.IUploadDatabaseClient;
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @PersistenceContext(unitName="entityManagerFactory")
     private EntityManager em;

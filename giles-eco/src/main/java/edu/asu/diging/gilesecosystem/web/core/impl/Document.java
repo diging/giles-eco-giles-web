@@ -19,6 +19,14 @@ import edu.asu.diging.gilesecosystem.web.core.IFile;
 import edu.asu.diging.gilesecosystem.web.core.IPage;
 import edu.asu.diging.gilesecosystem.web.core.ITask;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.impl.Document} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 @Entity
 public class Document implements IDocument {
 

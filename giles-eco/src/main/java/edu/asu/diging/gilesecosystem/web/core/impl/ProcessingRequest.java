@@ -13,9 +13,14 @@ import edu.asu.diging.gilesecosystem.web.core.IProcessingRequest;
 /**
  * Storage class for request objects.
  * 
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest} instead. This
+ *      class is only kept for migration purposes.
+ * 
  * @author jdamerow
  *
  */
+@Deprecated
 @Entity
 public class ProcessingRequest implements IProcessingRequest {
 

@@ -10,8 +10,6 @@ import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
@@ -33,8 +31,6 @@ import edu.asu.diging.gilesecosystem.web.service.processing.IRequestResender;
 @Service
 public class RequestResender implements IRequestResender {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private ApplicationContext ctx;
     

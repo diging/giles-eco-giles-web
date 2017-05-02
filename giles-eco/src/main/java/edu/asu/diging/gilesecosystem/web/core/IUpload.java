@@ -2,7 +2,14 @@ package edu.asu.diging.gilesecosystem.web.core;
 
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
-
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.IUpload} instead. This
+ *      interface is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 public interface IUpload extends IStorableObject {
 
     public abstract String getId();

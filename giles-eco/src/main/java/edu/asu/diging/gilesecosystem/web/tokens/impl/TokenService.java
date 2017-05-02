@@ -3,8 +3,6 @@ package edu.asu.diging.gilesecosystem.web.tokens.impl;
 import java.util.Date;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +29,6 @@ import io.jsonwebtoken.SignatureException;
  */
 @Service
 public class TokenService implements ITokenService {
-    
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     /**
      * 4 hours

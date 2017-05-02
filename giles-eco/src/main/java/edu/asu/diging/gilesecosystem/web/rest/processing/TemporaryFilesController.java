@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +27,6 @@ public class TemporaryFilesController {
     
     public final static String FILE_ID_PLACEHOLDER = "{fileId}";
     public final static String GET_CONTENT_URL = "/rest/processing/files/" + FILE_ID_PLACEHOLDER + "/content";
-    
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
     private ITransactionalFileService filesService;

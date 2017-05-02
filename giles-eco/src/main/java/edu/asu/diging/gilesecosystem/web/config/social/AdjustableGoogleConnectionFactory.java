@@ -1,14 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.config.social;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
-import org.springframework.social.github.api.GitHub;
 import org.springframework.social.google.api.Google;
 import org.springframework.social.google.connect.GoogleAdapter;
 import org.springframework.social.google.connect.GoogleConnectionFactory;
@@ -20,8 +17,6 @@ import edu.asu.diging.gilesecosystem.web.config.IAdjustableConnectionFactory;
 
 
 public class AdjustableGoogleConnectionFactory extends OAuth2ConnectionFactory<Google> implements IAdjustableConnectionFactory<Google> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private GoogleConnectionFactory delegate;
     

@@ -1,7 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.zookeeper.impl;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -18,9 +17,10 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
 
 @Service
-public class NepomukServiceDiscoverer {
+public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

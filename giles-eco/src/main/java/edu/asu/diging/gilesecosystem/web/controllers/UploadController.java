@@ -4,8 +4,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,24 +23,13 @@ import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck
 import edu.asu.diging.gilesecosystem.web.controllers.util.StatusBadgeHelper;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.users.User;
-import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
 
 @Controller
 public class UploadController {
 
-    private static Logger logger = LoggerFactory
-            .getLogger(UploadController.class);
-
-    @Autowired
-    private IFilesManager filesManager;
-    
-    @Autowired
-    private FileUploadHelper uploadHelper;
-    
     @Autowired
     private StatusBadgeHelper statusHelper;
     

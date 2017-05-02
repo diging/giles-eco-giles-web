@@ -11,8 +11,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.PathResource;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,8 +35,6 @@ import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
  */
 @Service("adminDetailsService")
 public class AdminUserDetailsService implements IAdminUserDetailsService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private ISystemMessageHandler messageHandler;

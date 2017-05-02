@@ -6,7 +6,6 @@ import java.security.GeneralSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.Checker;
 import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
@@ -18,9 +17,6 @@ import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
 public class GoogleChecker implements IChecker {
     
     public final static String ID = "GOOGLE";
-    
-    @Autowired
-    private IPropertiesManager propertiesManager;
     
     @Autowired
     private IRegisteredAppManager appsManager;

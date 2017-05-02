@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +20,6 @@ import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 @Component
 public class FileContentHelper implements IFileContentHelper {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private ISystemMessageHandler messageHandler;
 

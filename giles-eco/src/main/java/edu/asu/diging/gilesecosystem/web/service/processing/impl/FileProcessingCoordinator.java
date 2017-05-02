@@ -15,7 +15,6 @@ import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
-import edu.asu.diging.gilesecosystem.web.service.processing.IDistributedStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingPhase;
@@ -27,9 +26,6 @@ public class FileProcessingCoordinator implements IProcessingCoordinator {
     @Autowired
     private ApplicationContext ctx;
 
-    @Autowired
-    private IDistributedStorageManager distributedStorageManager;
-    
     private Map<ProcessingPhaseName, IProcessingPhase<IProcessingInfo>> processingPhases;
     private Map<ProcessingStatus, ProcessingPhaseName> processChain;
     

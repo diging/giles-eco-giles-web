@@ -16,12 +16,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInController;
-import org.springframework.social.github.api.GitHub;
-import org.springframework.social.github.connect.GitHubConnectionFactory;
-import org.springframework.social.google.api.Google;
 import org.springframework.social.google.connect.GoogleConnectionFactory;
-import org.springframework.social.mitreidconnect.api.MitreidConnect;
-import org.springframework.social.mitreidconnect.connect.MitreidConnectConnectionFactory;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;

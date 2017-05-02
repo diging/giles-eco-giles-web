@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
@@ -20,8 +18,6 @@ import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 public abstract class AbstractFileHandler implements IFileTypeHandler {
-    
-    private Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
     protected IPropertiesManager propertyManager;
