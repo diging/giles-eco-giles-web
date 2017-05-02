@@ -95,8 +95,8 @@ public class UsersManager implements IUserManager {
             try {
                 emailManager.sendAccountCreatedEmail(user.getName(), user.getUsername(), admin.getFullname(), admin.getEmail());
             } catch (GilesNotificationException e) {
-                // let's log error but keep on going
-                messageHandler.handleMessage("Email to " + admin.getUsername() + " could not be sent.", e, MessageType.ERROR);
+                // let's log warning but keep on going
+                messageHandler.handleMessage("Email to " + admin.getUsername() + " could not be sent.", e, MessageType.WARNING);
             }
         }
         return user;

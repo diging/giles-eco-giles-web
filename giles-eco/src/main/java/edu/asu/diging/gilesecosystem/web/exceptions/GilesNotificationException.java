@@ -1,7 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.exceptions;
 
 /**
- * The purpose of this class is to manage all notification exceptions.
+ * Exception class for notification exceptions
  *
  * @author snilapwa
  */
