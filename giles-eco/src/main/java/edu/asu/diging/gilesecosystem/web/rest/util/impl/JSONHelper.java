@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
-import edu.asu.diging.gilesecosystem.septemberutil.service.impl.SystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -30,8 +27,6 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 @Component
 public class JSONHelper implements IJSONHelper {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private IFilesManager filesManager;
     

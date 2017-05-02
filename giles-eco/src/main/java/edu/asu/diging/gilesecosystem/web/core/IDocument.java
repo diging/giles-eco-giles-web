@@ -5,6 +5,14 @@ import java.util.List;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.IDocument} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 public interface IDocument extends IStorableObject {
 
     public abstract String getId();

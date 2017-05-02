@@ -6,6 +6,14 @@ import javax.persistence.Id;
 
 import edu.asu.diging.gilesecosystem.web.core.IUpload;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.impl.Upload} instead. This
+ *      class is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 @Entity
 public class Upload implements IUpload {
 

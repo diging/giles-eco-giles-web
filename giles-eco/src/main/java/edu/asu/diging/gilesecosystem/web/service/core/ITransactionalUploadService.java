@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.domain.IUpload;
-import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
 
 public interface ITransactionalUploadService {
 

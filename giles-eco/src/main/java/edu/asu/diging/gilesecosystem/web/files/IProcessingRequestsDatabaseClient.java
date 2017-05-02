@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 
 public interface IProcessingRequestsDatabaseClient extends IDatabaseClient<IProcessingRequest> {
 

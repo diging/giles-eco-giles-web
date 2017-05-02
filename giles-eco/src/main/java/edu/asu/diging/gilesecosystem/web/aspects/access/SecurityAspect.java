@@ -4,8 +4,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +28,6 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 @Aspect
 @Component
 public class SecurityAspect {
-
-    private Logger logger = LoggerFactory.getLogger(SecurityAspect.class);
 
     @Autowired
     private ITransactionalUploadService uploadService;

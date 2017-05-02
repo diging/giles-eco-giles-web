@@ -1,12 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.util;
 
-import java.util.List;
-
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 
 /**
  * Implementations of this interface provide support for calculating statuses of

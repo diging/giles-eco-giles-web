@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionSignUp;
@@ -14,8 +12,6 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 
 public class GilesConnectionSignUp implements ConnectionSignUp {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private ISystemMessageHandler messageHandler;
 

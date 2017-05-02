@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.service.core;
 
-import java.util.List;
-
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 
