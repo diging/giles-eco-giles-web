@@ -474,7 +474,7 @@ public class RestSecurityAspect {
     }
     
     private void fillUser(User filled, User toBeFilled) {
-        toBeFilled.setAdmin(filled.getIsAdmin());
+        toBeFilled.setIsAdmin(filled.getIsAdmin());
         toBeFilled.setEmail(filled.getEmail());
         toBeFilled.setFirstname(filled.getFirstname());
         toBeFilled.setLastname(filled.getLastname());

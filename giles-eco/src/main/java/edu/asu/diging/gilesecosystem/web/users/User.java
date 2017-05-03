@@ -97,10 +97,6 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-    public void setAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
-
     public String getFullname() {
         if (name != null && !name.isEmpty()) {
             return name;

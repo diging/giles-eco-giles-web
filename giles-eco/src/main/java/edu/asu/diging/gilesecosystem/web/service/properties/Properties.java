@@ -74,6 +74,9 @@ public interface Properties {
     
     public final static String EXTERNAL_BADGE_PREFIX = "processor_prefix";
     public final static String EXTERNAL_BADGE_COLOR_PREFIX = "processor_color_prefix";
+
+    public final static String EMAIL_ENABLED = "email_enabled";
+    public final static String EMAIL_FROM = "email_from";
     
     public final static String ZOOKEEPER_HOST = "zookeeper_host";
     public final static String ZOOKEEPER_PORT = "zookeeper_port";
