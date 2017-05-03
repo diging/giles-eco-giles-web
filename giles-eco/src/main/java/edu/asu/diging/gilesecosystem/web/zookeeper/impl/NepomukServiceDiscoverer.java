@@ -1,6 +1,10 @@
 package edu.asu.diging.gilesecosystem.web.zookeeper.impl;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.PostConstruct;
 
@@ -11,11 +15,13 @@ import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
 
@@ -59,5 +65,62 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
                 logger.debug("There was no URL registered with the ZNode.");
             }          
         }      
+    }
+    
+    @Override
+    public String getRandomNepomukInstance() throws NoNepomukFoundException {
+        // throws Exception
+        List<String> uris;
+        try {
+            uris = curatorFramework.getChildren().forPath(znode);
+        } catch (Exception e) {
+            throw new NoNepomukFoundException(e);
+        }
+        int randomInstance = ThreadLocalRandom.current().nextInt(0, uris.size());
+        for (int i = 0; i < uris.size(); i++) {
+            // get random Nepomuk instance
+            byte[] urlBytes;
+            try {
+                urlBytes = curatorFramework.getData().forPath(ZKPaths.makePath(znode, uris.get(randomInstance)));
+            } catch (Exception e) {
+                throw new NoNepomukFoundException(e);
+            }
+            if (urlBytes != null) {
+                String url = new String(urlBytes);
+                try {
+                    if (validateUrl(url)) {
+                        // if Nepomuk instance url specified and nepomuk responds with ok
+                        // return url
+                        return url;
+                    }
+                } catch (IOException e) {
+                    msgHandler.handleMessage("Nepomuk URL could not be validated.", e, MessageType.WARNING);
+                }
+            }
+            
+            // if there is no URL or URL is not valid, let's take the next instance
+            randomInstance++;
+            // if we're at the end of the list, start from its beginning
+            if (randomInstance >= uris.size()) {
+                randomInstance -= uris.size();
+            }
+        }
+        
+        return null;
+    }
+    
+    private boolean validateUrl(String url) throws IOException {
+        URL myURL = new URL(url);
+        HttpURLConnection myConnection = (HttpURLConnection) myURL.openConnection();
+        
+        try {
+            if (myConnection.getResponseCode()==HttpStatus.OK.value()) {
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            myConnection.disconnect();
+        }
     }
 }
