@@ -13,11 +13,10 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
+import edu.asu.diging.gilesecosystem.web.nepomuk.INepomukUrlService;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
 
 public abstract class AbstractFileHandler implements IFileTypeHandler {
     
@@ -28,7 +27,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     protected IFileContentHelper fileContentHelper;
     
     @Autowired
-    protected INepomukServiceDiscoverer nepomukDiscoverer;
+    protected INepomukUrlService nepomukService;
 
     @Autowired
     private ISystemMessageHandler messageHandler;
@@ -60,17 +59,16 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     @Override
     public byte[] getFileContent(IFile file) {
         try {
-            String nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
-            String downloadUrl = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replaceAll("{0}", file.getStorageId());
+            String downloadUrl = nepomukService.getFileDownloadPath(file);
+            if (downloadUrl == null) {
+                return null;
+            }
             
             return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
         } catch (IOException e) {
             messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
             return null;
-        } catch (NoNepomukFoundException e) {
-            messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e, MessageType.ERROR);
-            return null;
-        }
+        } 
     }
     
     @Override
