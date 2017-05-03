@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.nepomuk.INepomukUrlService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.service.processing.ProcessingPhaseName;
@@ -33,6 +34,9 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
     
     @Autowired
     private IPropertiesManager propertyManager;
+    
+    @Autowired
+    private INepomukUrlService nepomukService;
     
     @PostConstruct
     public void init() {
@@ -54,7 +58,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         }
           
         request.setDocumentId(file.getDocumentId());
-        request.setDownloadUrl(file.getDownloadUrl());
+        request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
         request.setStatus(RequestStatus.SUBMITTED);
         request.setFilename(file.getFilename());
         
