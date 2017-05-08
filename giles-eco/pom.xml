@@ -72,6 +72,10 @@
 
         <!-- Kafka -->
         <giles.kafka.hosts>localhost:9092</giles.kafka.hosts>
+        
+        <!-- Zookeeper -->
+        <zookeeper.host>localhost</zookeeper.host>
+        <zookeeper.port>2181</zookeeper.port>
 
         <!-- Solr -->
         <giles.freddie.host></giles.freddie.host>
@@ -83,6 +87,7 @@
         <email.pw></email.pw>
         <email.from></email.from>
         <email.enabled>true</email.enabled>
+
     </properties>
 
     <dependencies>
