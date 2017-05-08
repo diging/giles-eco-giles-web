@@ -2,13 +2,13 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 
 import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.ICompletionNotificationRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletionNotificationRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
@@ -21,13 +21,14 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 @Service
 public class CompletionNotificationProcessor implements RequestProcessor<ICompletionNotificationRequest> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
     private IPropertiesManager propertiesManager;
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
    
     @Override
     public String getProcessedTopic() {
@@ -51,7 +52,7 @@ public class CompletionNotificationProcessor implements RequestProcessor<IComple
             documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // should never happen
-            logger.error("Could not store document.", e);
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
      }
 

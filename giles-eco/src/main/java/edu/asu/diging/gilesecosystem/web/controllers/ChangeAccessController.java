@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
@@ -21,13 +21,14 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentServ
 @Controller
 public class ChangeAccessController {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private IFilesManager filesManager;
     
     @Autowired
     private ITransactionalDocumentService documentService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
@@ -74,7 +75,7 @@ public class ChangeAccessController {
 
         } catch (UnstorableObjectException e) {
             // this should not happen, since it's an existing object
-            logger.error("Could not store document.", e);
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
             redirectAttrs.addAttribute("show_alert", true);
             redirectAttrs.addAttribute("alert_type", "danger");
             redirectAttrs.addAttribute("alert_msg",

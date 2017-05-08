@@ -74,4 +74,15 @@ public interface Properties {
     
     public final static String EXTERNAL_BADGE_PREFIX = "processor_prefix";
     public final static String EXTERNAL_BADGE_COLOR_PREFIX = "processor_color_prefix";
+
+    public final static String EMAIL_ENABLED = "email_enabled";
+    public final static String EMAIL_FROM = "email_from";
+    
+    public final static String ZOOKEEPER_HOST = "zookeeper_host";
+    public final static String ZOOKEEPER_PORT = "zookeeper_port";
+    
+    public final static String ZOOKEEPER_NEPOMUK_SERVICE_NAME = "zookeeepr_service_nepomuk_name";
+    
+    public final static String NEPOMUK_PING_ENDPOINT = "nepomuk_ping_endpoint";
+    public final static String NEPOMUK_FILES_ENDPOINT = "nepomuk_files_endpoint";
 }

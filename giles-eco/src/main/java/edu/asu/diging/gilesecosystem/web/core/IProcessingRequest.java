@@ -4,6 +4,14 @@ import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
+/**
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest} instead. This
+ *      interface is only kept for migration purposes.
+ * @author jdamerow
+ *
+ */
+@Deprecated
 public interface IProcessingRequest extends IStorableObject {
 
     public abstract String getId();

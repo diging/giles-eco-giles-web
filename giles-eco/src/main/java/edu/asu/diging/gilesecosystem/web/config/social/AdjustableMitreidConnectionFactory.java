@@ -1,8 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.config.social;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
@@ -20,8 +18,6 @@ import edu.asu.diging.gilesecosystem.web.config.IAdjustableConnectionFactory;
 
 
 public class AdjustableMitreidConnectionFactory extends OAuth2ConnectionFactory<MitreidConnect> implements IAdjustableConnectionFactory<MitreidConnect> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MitreidConnectConnectionFactory delegate;
     private String providerUrl;

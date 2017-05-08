@@ -4,7 +4,7 @@
  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
  
 <hibernate-mapping>
-    <class name="edu.asu.diging.gilesecosystem.requests.impl.Request">
+    <class name="edu.asu.diging.gilesecosystem.requests.impl.Request" table="Request">
         <id name="id">
             <generator class="increment" />
         </id>
@@ -20,7 +20,7 @@
         </property>
         <property name="downloadUrl" type="string" />
         <property name="downloadPath" type="string" />
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" table="CompletedImageExtractionRequest">
             <key column="id" />
             <property name="extractionDate" type="string" />
             <property name="imageFilename" type="string" />
@@ -30,18 +30,18 @@
                 <many-to-many class="edu.asu.diging.gilesecosystem.requests.impl.Page" unique="true" />
             </list>
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedOCRRequest" table="CompletedOCRRequest">
             <key column="id" />
             <property name="ocrDate" type="string" />
             <property name="textFilename" type="string" />
             <property name="size" type="long" />
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest" table="CompletedStorageRequest">
             <key column="id" />
             <property name="storageDate" type="string" />
             <property name="storedFileId" type="string" />
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest" table="CompletedTextExtractionRequest">
             <key column="id" />
             <property name="extractionDate" type="string" />
             <property name="textFilename" type="string" />
@@ -52,16 +52,16 @@
                 <many-to-many class="edu.asu.diging.gilesecosystem.requests.impl.Page" unique="true" />
             </list>
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest" table="ImageExtractionRequest">
             <key column="id" />
             <property name="filename" type="string" />
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.OCRRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.OCRRequest" table="OCRRequest">
             <key column="id" />
             <property name="filename" type="string" />
             <property name="pagenr" type="int" />
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.StorageRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.StorageRequest" table="StorageRequest">
             <key column="id" />
             <property name="fileType">
                 <type name="org.hibernate.type.EnumType">
@@ -72,7 +72,7 @@
             <property name="uploadDate" type="string" />
             <property name="filename" type="string" />
         </joined-subclass>
-        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest">
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest" table="TextExtractionRequest">
             <key column="id" />
             <property name="filename" type="string" />
         </joined-subclass>

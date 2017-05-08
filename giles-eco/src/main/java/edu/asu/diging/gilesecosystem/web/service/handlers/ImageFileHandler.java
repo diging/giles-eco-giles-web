@@ -5,25 +5,22 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
-    private IFilesDatabaseClient filesDbClient;
+    private ISystemMessageHandler messageHandler;
 
     @Override
     public List<String> getHandledFileTypes() {
@@ -52,7 +49,7 @@ public class ImageFileHandler extends AbstractFileHandler implements IFileTypeHa
         try {
             return gilesUrl + gilesDigilibEndpoint + "?fn=" + URLEncoder.encode(relativePath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Could not encode path.", e);
+            messageHandler.handleMessage("Could not encode path.", e, MessageType.ERROR);
             return gilesUrl + gilesDigilibEndpoint + "?fn=" + relativePath;
         }
     }

@@ -3,8 +3,6 @@ package edu.asu.diging.gilesecosystem.web.controllers.admin;
 import java.security.Principal;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -18,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.controllers.admin.pages.AdminUser;
 import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
 import edu.asu.diging.gilesecosystem.web.exceptions.UnauthorizedException;
@@ -27,8 +27,6 @@ import edu.asu.diging.gilesecosystem.web.validators.AdminPasswordValidator;
 @Controller
 public class AdministratorPasswordController {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private MessageSource messageSource;
     
@@ -37,6 +35,9 @@ public class AdministratorPasswordController {
     
     @Autowired
     private IAdminUserManager adminManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @InitBinder
     public void init(WebDataBinder binder) {
@@ -75,7 +76,7 @@ public class AdministratorPasswordController {
             success = adminManager.updatePassword(adminUser.getUsername(), adminUser.getOldPassword(), adminUser.getNewPassword());
         } catch (BadPasswordException | UnauthorizedException e) {
             // this should never happen because it should be caught by the validator
-            logger.error("Could not update password.", e);
+            messageHandler.handleMessage("Could not update password.", e, MessageType.ERROR);
         }
 
         if (success) {

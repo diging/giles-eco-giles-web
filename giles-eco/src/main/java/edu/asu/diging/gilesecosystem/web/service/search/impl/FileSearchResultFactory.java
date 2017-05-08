@@ -35,6 +35,10 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
     public FileSearchResult createSearchResult(String fileId) {
         IFile file = fileService.getFileById(fileId);
         
+        if (file == null) {
+            return null;
+        }
+        
         FileSearchResult result = new FileSearchResult();
         result.setAccess(file.getAccess());
         result.setContentType(file.getContentType());
@@ -55,10 +59,12 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
             result.setPage(-1);
         } else {
             // if at any point not just text files get index, this should cover all cases 
-            Optional<IPage> optional = document.getPages().stream().filter(p -> p.getTextFileId().equals(fileId) || p.getOcrFileId().equals(fileId) || p.getImageFileId().equals(fileId)).findFirst();
-            if (optional.isPresent()) {
-                IPage page = optional.get();
-                result.setPage(page.getPageNr());
+            if (document.getPages() != null) {
+                Optional<IPage> optional = document.getPages().stream().filter(p -> p.getTextFileId().equals(fileId) || p.getOcrFileId().equals(fileId) || p.getImageFileId().equals(fileId)).findFirst();
+                if (optional.isPresent()) {
+                    IPage page = optional.get();
+                    result.setPage(page.getPageNr());
+                }
             }
         }
         

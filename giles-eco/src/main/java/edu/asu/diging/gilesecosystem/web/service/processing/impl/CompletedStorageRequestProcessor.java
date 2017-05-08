@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -9,6 +7,8 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -24,8 +24,6 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 @Service
 public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor implements RequestProcessor<ICompletedStorageRequest>, ICompletedStorageRequestProcessor {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     @Qualifier("tmpStorageManager") 
     private IFileStorageManager storageManager;
@@ -39,6 +37,8 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Autowired
     private IPropertiesManager propertiesManager;
    
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.service.processing.impl.ICompletedStorageRequestProcessor#processCompletedRequest(edu.asu.diging.gilesecosystem.requests.ICompletedStorageRequest)
@@ -62,7 +62,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         try {
             filesService.saveFile(file);
         } catch (UnstorableObjectException e) {
-            logger.error("Could not store file.", e);
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
         }
@@ -71,7 +71,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
             processCoordinator.processFile(file, null);
         } catch (GilesProcessingException e) {
             //FIXME: this should go in a monitoring app
-            logger.error("Exception occured in next processing phase.", e);
+            messageHandler.handleMessage("Exception occured in next processing phase.", e, MessageType.ERROR);
         }
     }
 

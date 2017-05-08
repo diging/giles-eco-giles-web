@@ -19,6 +19,9 @@
 
     <import resource="spring-security.xml" />
 
+    <!-- Reference the email configuration -->
+    <import resource="email-config.xml"/>
+
     <bean id="tmpStorageManager"
         class="edu.asu.diging.gilesecosystem.web.files.impl.FileStorageManager">
         <property name="baseDirectory" value="${giles.file.tmp.dir}" />

@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenOnlyCheck;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -28,13 +28,14 @@ public class TemporaryFilesController {
     public final static String FILE_ID_PLACEHOLDER = "{fileId}";
     public final static String GET_CONTENT_URL = "/rest/processing/files/" + FILE_ID_PLACEHOLDER + "/content";
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
     private ITransactionalFileService filesService;
     
     @Autowired
     private IDistributedStorageManager storageManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     @AppTokenOnlyCheck
     @RequestMapping(value = GET_CONTENT_URL, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -58,7 +59,7 @@ public class TemporaryFilesController {
             response.getOutputStream().write(content);
             response.getOutputStream().close();
         } catch (IOException e) {
-            logger.error("Could not write to output stream.", e);
+            messageHandler.handleMessage("Could not write to output stream.", e, MessageType.ERROR);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

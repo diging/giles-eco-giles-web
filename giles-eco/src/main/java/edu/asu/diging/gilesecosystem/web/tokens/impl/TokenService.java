@@ -1,19 +1,13 @@
 package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-
 import java.util.Date;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -21,6 +15,11 @@ import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
 import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
 import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
 import edu.asu.diging.gilesecosystem.web.users.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 
 /**
  * Class to create new user tokens for access to the REST api.
@@ -31,8 +30,6 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 @Service
 public class TokenService implements ITokenService {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     /**
      * 4 hours
      */
@@ -40,6 +37,9 @@ public class TokenService implements ITokenService {
     
     @Autowired
     private IPropertiesManager propertiesManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.tokens.impl.ITokenService#generateToken(java.lang.String)
@@ -71,10 +71,10 @@ public class TokenService implements ITokenService {
                 contents.setExpired(expirationTime.before(new Date()));
             }
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            logger.info("Token is expired.", e);
+            messageHandler.handleMessage("Token is expired.", e, MessageType.INFO);
             contents.setExpired(true); 
         } catch (SignatureException e) {
-            logger.warn("Token signature not correct.", e);
+            messageHandler.handleMessage("Token signature not correct.", e, MessageType.WARNING);
             return null;
         } 
         
@@ -117,8 +117,10 @@ public class TokenService implements ITokenService {
         
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             // currently app tokens don't expire, so we'll just return null
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return null;
         } catch (SignatureException e) {
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return null;
         } 
         

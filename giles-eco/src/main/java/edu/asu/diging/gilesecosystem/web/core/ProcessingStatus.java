@@ -12,8 +12,13 @@ package edu.asu.diging.gilesecosystem.web.core;
  *  <li>COMPLETE: process complete</li>
  * </ul>
  * @author jdamerow
+ * 
+ * @deprecated
+ *      Use {@link edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus} instead. This
+ *      enum is only kept for migration purposes.
  *
  */
+@Deprecated
 public enum ProcessingStatus {
     UNPROCESSED,
     AWAITING_STORAGE,

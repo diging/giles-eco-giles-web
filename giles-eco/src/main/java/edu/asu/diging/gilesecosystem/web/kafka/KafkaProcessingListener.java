@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -21,17 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 
 @PropertySource("classpath:/config.properties")
 public class KafkaProcessingListener {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
     private ApplicationContext ctx;
     
     private Map<String, RequestProcessor<? extends IRequest>> requestProcessors;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     
     @PostConstruct
     public void init() {
@@ -61,7 +62,7 @@ public class KafkaProcessingListener {
         try {
             request = mapper.readValue(message, processor.getRequestClass());
         } catch (IOException e) {
-            logger.error("Could not unmarshall request.", e);
+            messageHandler.handleMessage("Could not unmarshall request.", e, MessageType.ERROR);
             // FIXME: handle this case
             return;
         }

@@ -1,0 +1,7 @@
+Hi $admin:
+
+A new account for $createdUser ($createdUsername) has been created in Giles. Please review the account and approve or reject it here:
+$giles_url/users
+
+Your Giles Team
+

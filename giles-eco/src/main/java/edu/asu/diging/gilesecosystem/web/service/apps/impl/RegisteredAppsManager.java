@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
@@ -22,13 +22,14 @@ import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
 @Service
 public class RegisteredAppsManager implements IRegisteredAppManager {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private IRegisteredAppDatabaseClient databaseClient;
 
     @Autowired
     private ITokenService tokenService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     /*
      * (non-Javadoc)
@@ -54,7 +55,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         try {
             databaseClient.store(app);
         } catch (UnstorableObjectException e) {
-            logger.error("Could not store app.", e);
+            messageHandler.handleMessage("Could not store app.", e, MessageType.ERROR);
             return null;
         }
         return app;

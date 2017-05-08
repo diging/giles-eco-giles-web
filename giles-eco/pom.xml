@@ -19,8 +19,8 @@
 
         <geco.requests.version>0.5</geco.requests.version>
         <geco.util.version>0.4.2</geco.util.version>
-        <geco.september.util.version>0.1</geco.september.util.version>
-        
+        <geco.september.util.version>0.2</geco.september.util.version>
+
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
         <tomcat.server.id>TomcatServer</tomcat.server.id>
@@ -61,7 +61,7 @@
         <buildNumber></buildNumber>
         <log.level>debug</log.level>
         <iframing.hostname></iframing.hostname>
-        
+
         <!-- DB config -->
         <db.driver>com.mysql.jdbc.Driver</db.driver>
         <db.database.url></db.database.url>
@@ -72,9 +72,22 @@
 
         <!-- Kafka -->
         <giles.kafka.hosts>localhost:9092</giles.kafka.hosts>
+        
+        <!-- Zookeeper -->
+        <zookeeper.host>localhost</zookeeper.host>
+        <zookeeper.port>2181</zookeeper.port>
 
         <!-- Solr -->
         <giles.freddie.host></giles.freddie.host>
+
+        <!-- Notification -->
+        <email.host></email.host>
+        <email.port>8080</email.port>
+        <email.username></email.username>
+        <email.pw></email.pw>
+        <email.from></email.from>
+        <email.enabled>true</email.enabled>
+
     </properties>
 
     <dependencies>
@@ -465,6 +478,35 @@
             <version>${org.springframework-version}</version>
         </dependency>
 
+       <!-- Java mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.5.0-b01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <!-- Curator to connect to Zookeeper -->
+        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>2.12.0</version>
+        </dependency>
 
     </dependencies>
 

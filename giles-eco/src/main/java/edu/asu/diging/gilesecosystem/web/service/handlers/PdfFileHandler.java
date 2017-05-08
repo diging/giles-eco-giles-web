@@ -5,17 +5,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
-import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
-import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
-import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
-import edu.asu.diging.gilesecosystem.web.files.IDocumentDatabaseClient;
-import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
 
 @PropertySource("classpath:/config.properties")
@@ -24,15 +18,6 @@ public class PdfFileHandler extends AbstractFileHandler implements IFileTypeHand
 
     final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private IFilesDatabaseClient filesDbClient;
-    
-    @Autowired 
-    private IDocumentDatabaseClient documentsDbClient;
-    
-    @Autowired
-    private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
-    
     @Override
     public List<String> getHandledFileTypes() {
         List<String> types = new ArrayList<String>();

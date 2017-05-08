@@ -1,17 +1,19 @@
 package edu.asu.diging.gilesecosystem.web.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionSignUp;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 public class GilesConnectionSignUp implements ConnectionSignUp {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     private IUserManager userManager;
     private IUserHelper userHelper;
@@ -28,7 +30,7 @@ public class GilesConnectionSignUp implements ConnectionSignUp {
         try {
             userManager.addUser(user);
         } catch (UnstorableObjectException e) {
-            logger.error("Could not store user.", e);
+            messageHandler.handleMessage("Could not store user.", e, MessageType.ERROR);
             return null;
         }
         return user.getUsername();

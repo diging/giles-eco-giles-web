@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -23,10 +23,11 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 @Service
 public class FileUploadHelper {
     
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
     private IFilesManager filesManager;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
  
     public List<StorageStatus> processUpload(DocumentAccess access, DocumentType docType,
             MultipartFile[] files, List<byte[]> fileBytes, User user,
@@ -52,7 +53,7 @@ public class FileUploadHelper {
                 
                 uploadedFiles.put(file, bytes);
             } catch (IOException e2) {
-                logger.error("Couldn't get file content.", e2);
+                messageHandler.handleMessage("Couldn't get file content.", e2, MessageType.ERROR);
                 uploadedFiles.put(file, null);
             }
             

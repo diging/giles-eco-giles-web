@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
@@ -19,7 +20,8 @@ import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 @Component
 public class FileContentHelper implements IFileContentHelper {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.service.impl.IFileSystemHelper#getFileContent(edu.asu.giles.core.IFile, edu.asu.giles.files.IFileStorageManager)
@@ -31,7 +33,7 @@ public class FileContentHelper implements IFileContentHelper {
         try {
             return getFileContentFromUrl(fileObject.toURI().toURL());
         } catch (IOException e) {
-            logger.error("Could not read file.", e);
+            messageHandler.handleMessage("Could not read file.", e, MessageType.ERROR);
             return null;
         }
     }

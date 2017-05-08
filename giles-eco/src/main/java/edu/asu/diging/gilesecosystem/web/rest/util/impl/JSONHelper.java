@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -27,13 +27,14 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 @Component
 public class JSONHelper implements IJSONHelper {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private IFilesManager filesManager;
     
     @Autowired
     private ITransactionalFileService fileService;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.rest.util.IJSONHelper#createDocumentJson(edu.asu.giles.core.IDocument, com.fasterxml.jackson.databind.ObjectMapper, com.fasterxml.jackson.databind.node.ObjectNode)
@@ -93,7 +94,7 @@ public class JSONHelper implements IJSONHelper {
         try {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
-            logger.error("Could not write json.", e);
+            messageHandler.handleMessage("Could not write json.", e, MessageType.ERROR);
             return new ResponseEntity<String>(
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);

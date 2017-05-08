@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.controllers.admin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
+import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.apps.impl.RegisteredApp;
 import edu.asu.diging.gilesecosystem.web.exceptions.TokenGenerationErrorException;
@@ -25,13 +25,14 @@ import edu.asu.diging.gilesecosystem.web.validators.RegisteredAppValidator;
 @Controller
 public class AddRegisteredAppController {
     
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     @Autowired
     private IRegisteredAppManager appManager;
     
     @Autowired
     private IIdentityProviderRegistry providerRegistry;
+
+    @Autowired
+    private ISystemMessageHandler messageHandler;
     
     @InitBinder("app")
     public void init(WebDataBinder binder) {
@@ -61,7 +62,7 @@ public class AddRegisteredAppController {
         try {
             token = appManager.createToken(newApp);
         } catch (TokenGenerationErrorException e) {
-            logger.error("Token generation failed.", e);
+            messageHandler.handleMessage("Token generation failed.", e, MessageType.ERROR);
             redirectAttrs.addFlashAttribute("show_alert", true);
             redirectAttrs.addFlashAttribute("alert_type", "danger");
             redirectAttrs.addFlashAttribute("alert_msg", "You app has been registered, but token generation failed.");   

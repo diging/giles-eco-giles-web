@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -39,10 +40,19 @@ public class Document implements IDocument {
     private transient List<IFile> files;
     private DocumentType documentType;
     private int pageCount;
-    @ElementCollection @LazyCollection(LazyCollectionOption.FALSE) private List<String> textFileIds;
-    @OneToMany(cascade=CascadeType.ALL, targetEntity=Page.class, mappedBy="document") @LazyCollection(LazyCollectionOption.FALSE) private List<IPage> pages;
+    
+    @ElementCollection 
+    @LazyCollection(LazyCollectionOption.FALSE) 
+    private List<String> textFileIds;
+    
+    @OneToMany(cascade=CascadeType.ALL, targetEntity=Page.class, mappedBy="document") 
+    @LazyCollection(LazyCollectionOption.FALSE) 
+    private List<IPage> pages;
 
-    @OneToMany(cascade=CascadeType.ALL, targetEntity=Task.class) @LazyCollection(LazyCollectionOption.FALSE) private List<ITask> tasks;
+    @OneToMany(cascade=CascadeType.ALL, targetEntity=Task.class) 
+    @LazyCollection(LazyCollectionOption.FALSE) 
+    @JoinTable(name="Document_Task")
+    private List<ITask> tasks;
 
     /*
      * (non-Javadoc)
