@@ -51,10 +51,11 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         file.setDownloadUrl(request.getDownloadUrl());
         if (request.getDownloadUrl() != null && !request.getDownloadUrl().isEmpty()) {
             request.setStatus(RequestStatus.COMPLETE);
+            file.setProcessingStatus(ProcessingStatus.STORED);
         } else {
             request.setStatus(RequestStatus.FAILED);
+            file.setProcessingStatus(ProcessingStatus.FAILED);
         }
-        file.setProcessingStatus(ProcessingStatus.STORED);
         file.setFilepath(request.getDownloadPath());
         
         markRequestComplete(request);

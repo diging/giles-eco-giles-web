@@ -21,5 +21,6 @@ public enum ProcessingStatus {
     TEXT_EXTRACTION_COMPLETE,
     IMAGE_EXTRACTION_COMPLETE,
     OCR_COMPLETE,
-    COMPLETE
+    COMPLETE,
+    FAILED
 }

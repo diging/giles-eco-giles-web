@@ -38,7 +38,7 @@
   <dt>Uploaded file: </dt>
   <dd>
   	<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${document.uploadedFile}" type="object" /></tiles:insertTemplate>
-  	<a href="<c:url value="/files/${document.uploadedFile.id}" />" >
+  	<c:if test="${document.uploadedFile.storedStatus == 'FAILED'}"> <span class="label label-danger">Storage Failed</span></c:if> <a href="<c:url value="/files/${document.uploadedFile.id}" />" >
   	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
   	<a href="${page.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
   </dd>
