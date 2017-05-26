@@ -41,7 +41,7 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
     private ISystemMessageHandler msgHandler;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         curatorFramework = CuratorFrameworkFactory
                 .newClient(propertiesManager.getProperty(Properties.ZOOKEEPER_HOST) 
                         + ":" 
@@ -52,11 +52,25 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
         checkServices();
     }
     
-    private void checkServices() throws Exception {
-        List<String> uris = curatorFramework.getChildren().forPath(znode);
+    private void checkServices() {
+        List<String> uris;
+        try {
+            uris = curatorFramework.getChildren().forPath(znode);
+        } catch (Exception e) {
+            // this is actually throwing Exception
+            msgHandler.handleMessage("Could not get Nepomuk entries in Zookeeper.", e, MessageType.WARNING);
+            return;
+        }
         for (String uri : uris) {
             logger.debug("Found: " + uri);
-            byte[] url = curatorFramework.getData().forPath(ZKPaths.makePath(znode, uri));
+            byte[] url;
+            try {
+                url = curatorFramework.getData().forPath(ZKPaths.makePath(znode, uri));
+            } catch (Exception e) {
+                // method is actually throwing exception
+                msgHandler.handleMessage("Could not get Nepomuk URL from Zookeeper.", e, MessageType.ERROR);
+                return;
+            }
             if (url != null) {
                 logger.debug("with URL: " + new String(url));
                 msgHandler.handleMessage("Nepomuk instance found.", "Giles found a Nepomuk instance at ZNode " + uri + " with URL " + new String(url), MessageType.INFO);
