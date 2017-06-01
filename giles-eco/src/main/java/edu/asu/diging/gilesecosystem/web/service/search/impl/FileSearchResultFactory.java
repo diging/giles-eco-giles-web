@@ -53,6 +53,9 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
         result.setUrl(propertiesManager.getProperty(Properties.GILES_URL) + FilesController.DOWNLOAD_FILE_URL.replace(FilesController.FILE_ID_PLACEHOLDER, file.getId()));
         
         IDocument document = documentService.getDocument(file.getDocumentId());
+        if (document == null) {
+            return result;
+        }
         
         if (document.getExtractedTextFileId().equals(fileId)) {
             // if it's found in the extracted text
