@@ -63,7 +63,7 @@ public class FileSearchResultFactory implements IFileSearchResultFactory {
         } else {
             // if at any point not just text files get index, this should cover all cases 
             if (document.getPages() != null) {
-                Optional<IPage> optional = document.getPages().stream().filter(p -> p.getTextFileId().equals(fileId) || p.getOcrFileId().equals(fileId) || p.getImageFileId().equals(fileId)).findFirst();
+                Optional<IPage> optional = document.getPages().stream().filter(p -> p != null && (p.getTextFileId().equals(fileId) || p.getOcrFileId().equals(fileId) || p.getImageFileId().equals(fileId))).findFirst();
                 if (optional.isPresent()) {
                     IPage page = optional.get();
                     result.setPage(page.getPageNr());
