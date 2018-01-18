@@ -15,7 +15,8 @@ import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
         @Index(columnList="username", name="IDX_USERNAME"),
         @Index(columnList="documentId", name="IDX_USERNAME"),
         @Index(columnList="filepath", name="IDX_FILEPATH"),
-        @Index(columnList="usernameForStorage", name="IDX_USERNAME_STORAGE")
+        @Index(columnList="usernameForStorage", name="IDX_USERNAME_STORAGE"),
+        @Index(columnList="requestId", name="IDX_REQUEST_ID")
 })
 public class File implements IFile {
 

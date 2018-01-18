@@ -74,15 +74,14 @@ public class TransactionalUploadService implements ITransactionalUploadService {
     }
     
     @Override
-    public int getUploadsOfUserCount(String username) {
-        List<IUpload> uploads = uploadDatabaseClient.getUploadsForUser(username);
-        return uploads.size();
+    public long getUploadsOfUserCount(String username) {
+        return uploadDatabaseClient.getUploadCountForUser(username);
     }
     
     @Override
     public int getUploadsOfUserPageCount(String username) {
         int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
-        int totalUploads = getUploadsOfUserCount(username);
+        long totalUploads = getUploadsOfUserCount(username);
         return (int) Math.ceil(new Double(totalUploads) / new Double(defaultPageSize));
     }
     
