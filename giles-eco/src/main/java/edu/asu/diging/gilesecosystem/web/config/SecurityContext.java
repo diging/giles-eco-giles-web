@@ -1,5 +1,10 @@
 package edu.asu.diging.gilesecosystem.web.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,10 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.social.security.SpringSocialConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
@@ -49,7 +58,7 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        HeadersConfigurer<HttpSecurity> config = http.antMatcher("**").csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
+        HeadersConfigurer<HttpSecurity> config = http.cors().and().antMatcher("**").csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
             
             @Override
             public boolean matches(HttpServletRequest arg0) {
@@ -111,7 +120,21 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
                 .anyRequest().hasRole("USER")
                 // Adds the SocialAuthenticationFilter to Spring Security's
                 // filter chain.
-                .and().apply(new SpringSocialConfigurer());
+                .and()
+                .apply(new SpringSocialConfigurer());
+    }
+    
+    @Bean
+    protected CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        List<String> allowOrigins = Arrays.asList(propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM).split(","));
+        allowOrigins = allowOrigins.stream().map(o -> o.trim()).collect(Collectors.toList());
+        configuration.setAllowedOrigins(allowOrigins);
+        configuration.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/rest/**", configuration);
+        return source;
     }
 
     @Override
@@ -142,4 +165,5 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
     public UserDetailsService userDetailsService() {
         return new LocalUserDetailsService();
     }
+ 
 }

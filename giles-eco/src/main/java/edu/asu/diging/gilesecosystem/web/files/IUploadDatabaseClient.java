@@ -22,4 +22,6 @@ public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
 
     public abstract IUpload getUploadsByProgressId(String progressId);
 
+    long getUploadCountForUser(String username);
+
 }

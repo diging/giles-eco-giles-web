@@ -63,6 +63,12 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
     
     @Override
+    public long getUploadCountForUser(String username) {
+        TypedQuery<Long> query = getClient().createQuery("SELECT count(t) FROM Upload t WHERE t.username = '" + username + "'", Long.class);
+        return query.getSingleResult();
+    }
+    
+    @Override
     public IUpload getUploadsByProgressId(String progressId) {
         List<IUpload> uploads = new ArrayList<IUpload>();
         searchByProperty("uploadProgressId", progressId, Upload.class).forEach(x -> uploads.add(x));
