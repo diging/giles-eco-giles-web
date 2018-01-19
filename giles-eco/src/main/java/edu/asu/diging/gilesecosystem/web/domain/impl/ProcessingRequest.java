@@ -23,7 +23,8 @@ import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 @Entity
 @Table(indexes={
         @Index(columnList="documentId", name="IDX_DOCUMENT_ID"),
-        @Index(columnList="fileId", name="IDX_FILE_ID")
+        @Index(columnList="fileId", name="IDX_FILE_ID"),
+        @Index(columnList="requestId", name="IDX_REQUEST_ID"),
 })
 public class ProcessingRequest implements IProcessingRequest {
 
