@@ -6,6 +6,43 @@
 You have ${totalUploads} uploads.
 </p>
 
+<script type="text/javascript" src="<c:url value="/resources/jquery-pagination/jquery.simplePagination.js"/>"></script>
+<script>
+jQuery(document).ready(function($) {
+    $(".link-row").click(function() {
+        window.document.location = $(this).data("href");
+    });
+    
+    $('.pagination').pagination({
+        items: ${count},
+        itemOnPage: 20,
+        currentPage: ${page},
+        cssStyle: '',
+        prevText: '<span aria-hidden="true">&laquo;</span>',
+        nextText: '<span aria-hidden="true">&raquo;</span>',
+        onInit: function () {
+            // fire first page loading
+        },
+        onPageClick: function (page, evt) {
+            window.document.location = "<c:url value="/uploads" />" + "?page=" + page + "&sortDir=${sortDir}";
+        }
+    });
+    $('.pagination').show();
+});
+
+$(".link-row").css("cursor", "pointer");
+ </script>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination" style="display: none">
+    
+<c:forEach begin="1" end="${count}" var="val">
+    <li <c:if test="${val == page}">class="active"</c:if>><a href="<c:url value="/uploads?page=${val}&sortDir=${sortDir}" />"><c:out value="${val}"/></a></li>
+</c:forEach>
+    
+  </ul>
+</nav>
+
 <table class="table table-striped">
 	<thead>
 	<tr>
@@ -37,29 +74,14 @@ You have ${totalUploads} uploads.
 </table>
 
 <nav aria-label="Page navigation">
-  <ul class="pagination">
-    <li <c:if test="${page == 1}">class="disabled"</c:if>>
-      <a <c:if test="${page > 1}">href="<c:url value="/uploads?page=${page - 1}&sortDir=${sortDir}" />"</c:if> aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
+  <ul class="pagination" style="display: none">
+    
 <c:forEach begin="1" end="${count}" var="val">
     <li <c:if test="${val == page}">class="active"</c:if>><a href="<c:url value="/uploads?page=${val}&sortDir=${sortDir}" />"><c:out value="${val}"/></a></li>
 </c:forEach>
-    <li <c:if test="${page == count}">class="disabled"</c:if>>
-      <a <c:if test="${page < count}">href="<c:url value="/uploads?page=${page + 1}&sortDir=${sortDir}" />"</c:if> aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
+    
   </ul>
 </nav>
 
-<script>
-jQuery(document).ready(function($) {
-    $(".link-row").click(function() {
-        window.document.location = $(this).data("href");
-    });
-});
 
-$(".link-row").css("cursor", "pointer");
-</script>
+    
