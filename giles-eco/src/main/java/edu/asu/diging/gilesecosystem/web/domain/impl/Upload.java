@@ -10,7 +10,8 @@ import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 @Entity
 @Table(indexes={
         @Index(columnList="uploadProgressId", name="IDX_PROGRESS_ID"),
-        @Index(columnList="username", name="IDX_USERNAME")
+        @Index(columnList="username", name="IDX_USERNAME"),
+        @Index(columnList="createdDate", name="IDX_CREATED_DATE")
 })
 public class Upload implements IUpload {
 

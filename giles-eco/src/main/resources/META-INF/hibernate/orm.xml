@@ -6,7 +6,7 @@
 <hibernate-mapping>
     <class name="edu.asu.diging.gilesecosystem.requests.impl.Request" table="Request">
         <id name="id">
-            <generator class="increment" />
+            <generator class="sequence" />
         </id>
         <property name="requestId" type="string" />
         <property name="requestType" type="string" />
