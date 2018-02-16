@@ -50,7 +50,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     @Autowired
     private ISystemMessageHandler messageHandler;
 
-    protected void sendRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
+    protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
         try {
             storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX));

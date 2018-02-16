@@ -17,7 +17,7 @@
   <dt>Username:</dt>
   <dd>${ user.username }
   <br>
-  <a href="<c:url value="/profile/username/change" />"><i class="fa fa-pencil" aria-hidden="true"></i> Change</a>
+  <a href="<c:url value="/profile/username/change" />"><i class="fas fa-pencil-alt" aria-hidden="true"></i> Change</a>
   </dd>
 </dl>
 

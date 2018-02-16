@@ -23,4 +23,28 @@ public interface IPage {
 
     IDocument getDocument();
 
+    void setOcrFileStatus(PageStatus ocrFileStatus);
+
+    PageStatus getOcrFileStatus();
+
+    void setTextFileStatus(PageStatus textFileStatus);
+
+    PageStatus getTextFileStatus();
+
+    void setImageFileStatus(PageStatus imageFileStatus);
+
+    PageStatus getImageFileStatus();
+
+    void setTextFileErrorMsg(String textFileErrorMsg);
+
+    String getTextFileErrorMsg();
+
+    void setOcrFileErrorMsg(String ocrFileErrorMsg);
+
+    String getOcrFileErrorMsg();
+
+    void setImageFileErrorMsg(String imageFileErrorMsg);
+
+    String getImageFileErrorMsg();
+
 }

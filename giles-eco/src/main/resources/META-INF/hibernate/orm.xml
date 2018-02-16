@@ -20,6 +20,7 @@
         </property>
         <property name="downloadUrl" type="string" />
         <property name="downloadPath" type="string" />
+        <property name="errorMsg" type="string" />
         <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" table="CompletedImageExtractionRequest">
             <key column="id" />
             <property name="extractionDate" type="string" />
@@ -77,7 +78,7 @@
             <property name="filename" type="string" />
         </joined-subclass>
     </class>
-    <class name="edu.asu.diging.gilesecosystem.requests.impl.Page" table="RequestPage">
+    <class name="edu.asu.diging.gilesecosystem.requests.impl.Page" table="RequestPage" >
         <id name="id" column="pageId">
             <generator class="increment" />
         </id>

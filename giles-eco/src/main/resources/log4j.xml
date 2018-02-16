@@ -45,7 +45,7 @@
     </logger>
     
     <logger name="org.hibernate">
-        <level value="${log.level}" />
+        <level value="info" />
     </logger>
 
 	<!-- Root Logger -->

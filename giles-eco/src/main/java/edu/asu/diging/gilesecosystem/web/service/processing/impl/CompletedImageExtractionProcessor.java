@@ -17,6 +17,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.PageStatus;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.domain.impl.Page;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -78,9 +79,14 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                     documentPage.setDocument(document);
                 }
                 documentPage.setImageFileId(pageText.getId());
+                // this is a hack, ideally we would map the statuses somewhere, but well...
+                documentPage.setImageFileStatus(PageStatus.valueOf(page.getStatus().toString()));
+                documentPage.setImageFileErrorMsg(page.getErrorMsg());
                 
-                sendRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
-            }
+                if (page.getStatus() == edu.asu.diging.gilesecosystem.requests.PageStatus.COMPLETE) {
+                    sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
+                }
+           }
         } else {
             request.setStatus(RequestStatus.FAILED);
         }
