@@ -18,7 +18,7 @@
   	
   	<td>${app.id}</td>
   	
-  	<td><a href="<c:url value="/admin/apps/${app.id}/delete" />"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete App</a>
+  	<td><a href="<c:url value="/admin/apps/${app.id}/delete" />"><i class="far fa-trash-alt" aria-hidden="true"></i> Delete App</a>
   </tr>
   
   </c:forEach>

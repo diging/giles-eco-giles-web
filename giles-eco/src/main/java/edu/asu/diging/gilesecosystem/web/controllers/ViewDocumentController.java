@@ -139,6 +139,9 @@ public class ViewDocumentController {
     
     private void setRequestStatus(FilePageBean bean, Map<String, List<IProcessingRequest>> requestsByFileId) {
         List<IProcessingRequest> fileReqs = requestsByFileId.get(bean.getId());
+        if (fileReqs == null) {
+            return;
+        }
         for (IProcessingRequest req : fileReqs) {
             if (req.getSentRequest() instanceof StorageRequest) {
                 bean.setStoredStatus(req.getRequestStatus());

@@ -35,14 +35,14 @@
   		<c:if test="${user.accountStatus != 'APPROVED'}">
   		<form action="<c:url value="/users/user/${user.username}/approve" />" method="POST">
   		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-  		<button style="padding: 0px;" class="btn-link" type="submit" title="Approve user account"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></button>
+  		<button style="padding: 0px;" class="btn-link" type="submit" title="Approve user account"><i class="far fa-thumbs-up" aria-hidden="true"></i></button>
   		</form>
   		</c:if>
   		
   		<c:if test="${user.accountStatus == 'APPROVED'}">
   		<form class="pull-right" class="form-inline" action="<c:url value="/users/user/${user.username}/revoke" />" method="POST">
   		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-  		<button style="padding: 0px;" class="btn-link" type="submit" title="Revoke user account"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></button>
+  		<button style="padding: 0px;" class="btn-link" type="submit" title="Revoke user account"><i class="far fa-thumbs-down" aria-hidden="true"></i></button>
   		</form>
   		</c:if>
   		

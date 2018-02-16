@@ -34,7 +34,7 @@
 	<br> <br>
 	<!-- The global progress bar -->
 	<div id="progress" class="hidden">
-		<i class="fa fa-refresh spinner-animate" aria-hidden="true"></i>
+		<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
 		Uploading your files. Please wait...
 	</div>
 	<div id="uploadDoneSuccess" class="hidden">
