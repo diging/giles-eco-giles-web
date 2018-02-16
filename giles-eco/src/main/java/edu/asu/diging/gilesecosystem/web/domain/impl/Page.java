@@ -1,6 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.domain.impl;
 
-import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,8 +11,8 @@ import javax.persistence.ManyToOne;
 
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.PageStatus;
 
-@Entity
 public class Page implements IPage {
     
     @Id @GeneratedValue(strategy=GenerationType.SEQUENCE) private Integer id;
@@ -19,6 +20,18 @@ public class Page implements IPage {
     private String imageFileId;
     private String textFileId;
     private String ocrFileId;
+    
+    @Enumerated(EnumType.STRING)
+    private PageStatus imageFileStatus;
+    private String imageFileErrorMsg;
+    
+    @Enumerated(EnumType.STRING)
+    private PageStatus textFileStatus;
+    private String textFileErrorMsg;
+    
+    @Enumerated(EnumType.STRING)
+    private PageStatus ocrFileStatus;
+    private String ocrFileErrorMsg;
     
     @ManyToOne(fetch = FetchType.LAZY, targetEntity=Document.class)
     @JoinColumn(name = "document_id", nullable = false)
@@ -87,5 +100,53 @@ public class Page implements IPage {
     @Override
     public void setDocument(IDocument document) {
         this.document = document;
+    }
+    @Override
+    public PageStatus getImageFileStatus() {
+        return imageFileStatus;
+    }
+    @Override
+    public void setImageFileStatus(PageStatus imageFileStatus) {
+        this.imageFileStatus = imageFileStatus;
+    }
+    @Override
+    public PageStatus getTextFileStatus() {
+        return textFileStatus;
+    }
+    @Override
+    public void setTextFileStatus(PageStatus textFileStatus) {
+        this.textFileStatus = textFileStatus;
+    }
+    @Override
+    public PageStatus getOcrFileStatus() {
+        return ocrFileStatus;
+    }
+    @Override
+    public void setOcrFileStatus(PageStatus ocrFileStatus) {
+        this.ocrFileStatus = ocrFileStatus;
+    }
+    @Override
+    public String getImageFileErrorMsg() {
+        return imageFileErrorMsg;
+    }
+    @Override
+    public void setImageFileErrorMsg(String imageFileErrorMsg) {
+        this.imageFileErrorMsg = imageFileErrorMsg;
+    }
+    @Override
+    public String getOcrFileErrorMsg() {
+        return ocrFileErrorMsg;
+    }
+    @Override
+    public void setOcrFileErrorMsg(String ocrFileErrorMsg) {
+        this.ocrFileErrorMsg = ocrFileErrorMsg;
+    }
+    @Override
+    public String getTextFileErrorMsg() {
+        return textFileErrorMsg;
+    }
+    @Override
+    public void setTextFileErrorMsg(String textFileErrorMsg) {
+        this.textFileErrorMsg = textFileErrorMsg;
     }
 }

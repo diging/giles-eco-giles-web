@@ -14,7 +14,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <link rel="stylesheet" href="<c:url value="/resources/font-awesome-4.6.3/css/font-awesome.min.css" />" />
+    <script defer src="<c:url value="/resources/font-awesome-5.0.6/js/fontawesome-all.js" />"></script>
     <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
     
     <title>Giles</title>

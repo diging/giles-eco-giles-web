@@ -19,6 +19,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.PageStatus;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.domain.impl.Page;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -76,11 +77,17 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             documentPage.setDocument(document);
         }
         documentPage.setOcrFileId(pageText.getId());
+        if (request.getStatus() != null) {
+            documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+        } else {
+            documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+        }
+        documentPage.setOcrFileErrorMsg(request.getErrorMsg());
         
         if (request.getDownloadPath() != null && !request.getDownloadPath().isEmpty()
-                && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty()) {
+                && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty() && request.getStatus() != RequestStatus.FAILED) {
             request.setStatus(RequestStatus.COMPLETE);
-            sendRequest(pageText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+            sendStorageRequest(pageText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } else {
             request.setStatus(RequestStatus.FAILED);
         }

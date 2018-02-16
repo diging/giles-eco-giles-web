@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.controllers.pages;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.PageStatus;
 
 public class PagePageBean implements IPage {
 
@@ -10,6 +11,32 @@ public class PagePageBean implements IPage {
     private String imageFileId;
     private String textFileId;
     private String ocrFileId;
+    
+    private PageStatus imageFileStatus;
+    private PageStatus textFileStatus;
+    private PageStatus ocrFileStatus;
+    
+    private String imageFileErrorMsg;
+    public String getImageFileErrorMsg() {
+        return imageFileErrorMsg;
+    }
+    public void setImageFileErrorMsg(String imageFileErrorMsg) {
+        this.imageFileErrorMsg = imageFileErrorMsg;
+    }
+    public String getTextFileErrorMsg() {
+        return textFileErrorMsg;
+    }
+    public void setTextFileErrorMsg(String textFileErrorMsg) {
+        this.textFileErrorMsg = textFileErrorMsg;
+    }
+    public String getOcrFileErrorMsg() {
+        return ocrFileErrorMsg;
+    }
+    public void setOcrFileErrorMsg(String ocrFileErrorMsg) {
+        this.ocrFileErrorMsg = ocrFileErrorMsg;
+    }
+    private String textFileErrorMsg;
+    private String ocrFileErrorMsg;
     
     private IFile imageFile;
     private IFile textFile;
@@ -92,6 +119,24 @@ public class PagePageBean implements IPage {
     public IDocument getDocument() {
         // TODO Auto-generated method stub
         return null;
+    }
+    public PageStatus getImageFileStatus() {
+        return imageFileStatus;
+    }
+    public void setImageFileStatus(PageStatus imageFileStatus) {
+        this.imageFileStatus = imageFileStatus;
+    }
+    public PageStatus getTextFileStatus() {
+        return textFileStatus;
+    }
+    public void setTextFileStatus(PageStatus textFileStatus) {
+        this.textFileStatus = textFileStatus;
+    }
+    public PageStatus getOcrFileStatus() {
+        return ocrFileStatus;
+    }
+    public void setOcrFileStatus(PageStatus ocrFileStatus) {
+        this.ocrFileStatus = ocrFileStatus;
     }
 
 }

@@ -61,28 +61,40 @@
 <dl class="dl-horizontal clearfix">
 	<dt><span class="label label-default">Page ${page.pageNr}</span>&nbsp; &nbsp; Image: </dt>
 	<dd>
-		<c:if test="${not empty page.imageFile}">
+	    <c:if test="${page.imageFileStatus == 'FAILED' }">
+	       There was an error creating the image file. <span class="fas fa-info-circle" title="${page.imageFileErrorMsg}" />
+	    </c:if>
+		<c:if test="${not empty page.imageFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.imageFile}" type="object" /></tiles:insertTemplate>
-		</c:if>
 		<a href="<c:url value="/files/${page.imageFile.id}" />" >${page.imageFile.filename}</a>
-		&nbsp; &nbsp; <a href="${page.imageFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        &nbsp; &nbsp; <a href="${page.imageFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+		</c:if>
+		
 	</dd>
 	
 	<dt> Text: </dt>
 	<dd>
-		<c:if test="${not empty page.textFile}">
+	    <c:if test="${page.textFileStatus == 'FAILED' }">
+           There was an error extracting the embedded text. <span class="fas fa-info-circle" title="${page.textFileErrorMsg}" />
+        </c:if>
+		<c:if test="${not empty page.textFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.textFile}" type="object" /></tiles:insertTemplate>
-		</c:if>
 		<a href="<c:url value="/files/${page.textFile.id}" />" >${page.textFile.filename}</a>&nbsp; &nbsp; 
-		<a href="${page.textFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        <a href="${page.textFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+		</c:if>
+		
 	</dd>
 	<dt> OCR Result: </dt>
 	<dd>
-		<c:if test="${not empty page.ocrFile}">
+	    <c:if test="${page.ocrFileStatus == 'FAILED' }">
+           There was an error running OCR on the image. <span class="fas fa-info-circle" title="${page.ocrFileErrorMsg}" />
+        </c:if>
+		<c:if test="${not empty page.ocrFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.ocrFile}" type="object" /></tiles:insertTemplate>
-		</c:if>
 		<a href="<c:url value="/files/${page.ocrFile.id}" />" >${page.ocrFile.filename}</a>&nbsp; &nbsp; 
-		<a href="${page.ocrFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        <a href="${page.ocrFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+		</c:if>
+		
 	</dd>
 </dl>
 </c:forEach>
