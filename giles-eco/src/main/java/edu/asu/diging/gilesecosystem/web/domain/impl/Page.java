@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.domain.impl;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.domain.PageStatus;
 
+@Entity
 public class Page implements IPage {
     
     @Id @GeneratedValue(strategy=GenerationType.SEQUENCE) private Integer id;

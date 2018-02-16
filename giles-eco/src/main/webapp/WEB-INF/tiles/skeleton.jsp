@@ -55,7 +55,7 @@
             	<form action="<c:url value="/signin/google" />" method="POST">
             	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             		<button class="btn btn-link" type="submit">
-            			<i class="fa fa-google-plus" aria-hidden="true"></i> Login
+            			<i class="fab fa-google-plus-g" aria-hidden="true"></i> Login
             		</button>
             	</form>
            </li>
@@ -65,7 +65,7 @@
             	<form action="<c:url value="/signin/github" />" method="POST">
             	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             		<button class="btn btn-link" type="submit">
-            			<i class="fa fa-github" aria-hidden="true"></i> Login
+            			<i class="fab fa-github" aria-hidden="true"></i> Login
             		</button>
             	</form>
            </li>
@@ -74,7 +74,7 @@
             <li role="presentation">
             	<form action="<c:url value="/signin/mitreidconnect" />" method="POST">
             		<button class="btn btn-link" type="submit">
-            			<i class="fa fa-openid" aria-hidden="true"></i> Login
+            			<i class="fab fa-openid" aria-hidden="true"></i> Login
             		</button>
             	</form>
            </li>
@@ -122,7 +122,7 @@
          	 <li role="presentation">
          	 	<form action="<c:url value="/logout" />" method="POST">
          	 	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-  				<button class="btn-link" type="submit" title="Logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</button>
+  				<button class="btn-link" type="submit" title="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</button>
          	 	</form>
          	 </li>
           </sec:authorize>

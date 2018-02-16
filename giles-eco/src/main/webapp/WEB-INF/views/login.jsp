@@ -20,7 +20,7 @@ that are then accessible through Digilib. Metadata of uploaded images  managed w
 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 	<button class="btn btn-primary btn-lg" type="submit">
-		<i class="fa fa-google-plus" aria-hidden="true"></i> Login with Google+
+		<i class="fab fa-google-plus-g" aria-hidden="true"></i> Login with Google+
 	</button>
 </form>
 </div>
@@ -32,7 +32,7 @@ that are then accessible through Digilib. Metadata of uploaded images  managed w
 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 	<button class="btn btn-primary btn-lg" type="submit">
-		<i class="fa fa-github" aria-hidden="true"></i> Login with GitHub
+		<i class="fab fa-github" aria-hidden="true"></i> Login with GitHub
 	</button>
 </form>
 </div>
@@ -42,7 +42,7 @@ that are then accessible through Digilib. Metadata of uploaded images  managed w
 <div class="col-md-3">
 <form action="<c:url value="/signin/mitreidconnect" />" method="POST">
 	<button class="btn btn-primary btn-lg" type="submit">
-		<i class="fa fa-openid" aria-hidden="true"></i> Login with OpenId Connect Server
+		<i class="fab fa-openid" aria-hidden="true"></i> Login with OpenId Connect Server
 	</button>
 </form>
 </div>
