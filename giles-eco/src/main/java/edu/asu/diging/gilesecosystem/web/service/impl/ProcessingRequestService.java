@@ -16,6 +16,15 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.service.IProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
+/**
+ * Not thread-safe implementation of {@link IProcessingRequestService} using a {@link Queue}.
+ * 
+ * The number of maximum requests in the queue can be defined using the 
+ * property: current_requests_max_number.
+ * 
+ * @author jdamerow
+ *
+ */
 @Service
 public class ProcessingRequestService implements IProcessingRequestService {
     
