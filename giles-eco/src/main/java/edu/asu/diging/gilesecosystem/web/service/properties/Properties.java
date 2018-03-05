@@ -85,4 +85,6 @@ public interface Properties {
     
     public final static String NEPOMUK_PING_ENDPOINT = "nepomuk_ping_endpoint";
     public final static String NEPOMUK_FILES_ENDPOINT = "nepomuk_files_endpoint";
+    
+    public final static String CURRENT_REQUESTS_MAX = "current_requests_max_number";
 }

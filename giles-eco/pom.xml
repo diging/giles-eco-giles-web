@@ -79,7 +79,10 @@
 
         <!-- Solr -->
         <giles.freddie.host></giles.freddie.host>
-
+        
+        <!-- current requests -->
+        <current.requests.max.number>20</current.requests.max.number>
+    
         <!-- Notification -->
         <email.host></email.host>
         <email.port>8080</email.port>

@@ -111,9 +111,13 @@
           	<li role="presentation">
           		<a href="<c:url value="/admin/apps" />" >Apps</a>
           	</li>
-          	<li role="presentation">
-                <a href="<c:url value="/admin/requests" />">Requests</a>
-            </li>
+          	<li role="dropdown">
+          	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Requests<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                <li><a href="<c:url value="/admin/requests" />">Resend Requests</a></li>
+                <li><a href="<c:url value="/admin/requests/current" />">Monitor Requests</a></li>
+              </ul>
+          	</li>
           </sec:authorize>
           <sec:authorize access="isAuthenticated()">
           	<li role="presentation">
