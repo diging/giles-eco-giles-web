@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.service.IProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
@@ -41,6 +42,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
 
     @Autowired
     private ISystemMessageHandler messageHandler;
+    
+    @Autowired
+    private IProcessingRequestService requestService;
     
     public RequestStatus process(IFile file, IProcessingInfo info)
             throws GilesProcessingException {
@@ -100,6 +104,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
 
     public void sendRequest(IRequest request, IDocument document)
             throws GilesProcessingException {
+        requestService.addSentRequest(request);
         try {
             requestProducer.sendRequest(request, getTopic());
         } catch (MessageCreationException e) {

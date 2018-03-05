@@ -19,6 +19,7 @@ import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.domain.impl.File;
 import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.service.IProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.processing.helpers.RequestHelper;
@@ -49,6 +50,9 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
 
     @Autowired
     private ISystemMessageHandler messageHandler;
+    
+    @Autowired
+    private IProcessingRequestService requestService;
 
     protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
@@ -68,6 +72,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         procReq.setRequestId(storageRequest.getRequestId());
         processingRequestService.saveNewProcessingRequest(procReq);
         
+        requestService.addSentRequest(storageRequest);
         try {
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
         } catch (MessageCreationException e) {

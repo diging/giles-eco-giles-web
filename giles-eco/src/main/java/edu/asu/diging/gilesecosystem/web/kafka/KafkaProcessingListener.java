@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.web.service.IProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.processing.RequestProcessor;
 
 @PropertySource("classpath:/config.properties")
@@ -28,6 +29,9 @@ public class KafkaProcessingListener {
     
     @Autowired
     private ApplicationContext ctx;
+    
+    @Autowired
+    private IProcessingRequestService processingRequestService;
     
     private Map<String, RequestProcessor<? extends IRequest>> requestProcessors;
 
@@ -67,6 +71,7 @@ public class KafkaProcessingListener {
             return;
         }
         
+        processingRequestService.addReceivedRequest(request);
         processor.handleRequest(request);
     }
 }

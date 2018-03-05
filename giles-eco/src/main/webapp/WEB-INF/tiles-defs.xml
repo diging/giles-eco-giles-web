@@ -110,6 +110,11 @@
 		<put-attribute name="content" value="/WEB-INF/views/admin/deleteApp.jsp" />
 	</definition>
     
+    <!-- Requests -->
+    <definition name="admin/requests/current" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/currentRequests.jsp" />
+    </definition>
+    
     <!-- Migration -->
     <definition name="admin/migrate" extends="base.definition">
         <put-attribute name="content" value="/WEB-INF/views/admin/migrate/migrate.jsp" />

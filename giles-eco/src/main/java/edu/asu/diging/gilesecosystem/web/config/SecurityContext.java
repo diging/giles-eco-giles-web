@@ -155,11 +155,6 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
     public SocialUserDetailsService socialUserDetailsService() {
         return new SimpleSocialUserDetailsService(userDetailsService());
     }
-
-//    @Bean(name = "adminDetailsService")
-//    public UserDetailsService adminDetailsService() {
-//        return new AdminUserDetailsService();
-//    }
     
     @Bean
     public UserDetailsService userDetailsService() {
