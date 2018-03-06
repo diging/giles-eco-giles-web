@@ -98,10 +98,11 @@ public class StatusBadgeHelper {
     public void createExternalBadges(DocumentPageBean docBean) {
         for(ITask task : docBean.getTasks()) {
             docBean.getExternalBadges().add(new Badge(
-                    propertiesManager.getProperty(Properties.EXTERNAL_BADGE_PREFIX + task.getTaskHandlerId()),
+                    propertiesManager.getProperty(propertiesManager.getProperty(Properties.EXTERNAL_BADGE_PREFIX) + task.getTaskHandlerId()),
                     propertiesManager.getProperty(Properties.BADGE_STATUS_PREFIX + task.getStatus().name().toLowerCase()),
-                    propertiesManager.getProperty(Properties.EXTERNAL_BADGE_COLOR_PREFIX + task.getTaskHandlerId()),
-                    1
+                    propertiesManager.getProperty(propertiesManager.getProperty(Properties.EXTERNAL_BADGE_COLOR_PREFIX) + task.getTaskHandlerId()),
+                    1,
+                    task.getFileId()
                     ));
         }
     }

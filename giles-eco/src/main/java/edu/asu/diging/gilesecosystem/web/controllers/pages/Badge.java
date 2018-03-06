@@ -6,6 +6,7 @@ public class Badge {
     private String status;
     private String color;
     private int order;
+    private String fileId;
     
     public Badge(String subject, String status, String color, int order) {
         super();
@@ -15,6 +16,15 @@ public class Badge {
         this.order = order;
     }
     
+    public Badge(String subject, String status, String color, int order, String fileId) {
+        super();
+        this.subject = subject;
+        this.status = status;
+        this.color = color;
+        this.order = order;
+        this.fileId = fileId;
+    }
+
     public String getSubject() {
         return subject;
     }
@@ -40,5 +50,13 @@ public class Badge {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 }

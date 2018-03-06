@@ -1,5 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
@@ -17,31 +20,12 @@ public class PagePageBean implements IPage {
     private PageStatus ocrFileStatus;
     
     private String imageFileErrorMsg;
-    public String getImageFileErrorMsg() {
-        return imageFileErrorMsg;
-    }
-    public void setImageFileErrorMsg(String imageFileErrorMsg) {
-        this.imageFileErrorMsg = imageFileErrorMsg;
-    }
-    public String getTextFileErrorMsg() {
-        return textFileErrorMsg;
-    }
-    public void setTextFileErrorMsg(String textFileErrorMsg) {
-        this.textFileErrorMsg = textFileErrorMsg;
-    }
-    public String getOcrFileErrorMsg() {
-        return ocrFileErrorMsg;
-    }
-    public void setOcrFileErrorMsg(String ocrFileErrorMsg) {
-        this.ocrFileErrorMsg = ocrFileErrorMsg;
-    }
     private String textFileErrorMsg;
     private String ocrFileErrorMsg;
     
     private IFile imageFile;
     private IFile textFile;
     private IFile ocrFile;
-    
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -138,5 +122,22 @@ public class PagePageBean implements IPage {
     public void setOcrFileStatus(PageStatus ocrFileStatus) {
         this.ocrFileStatus = ocrFileStatus;
     }
-
+    public String getImageFileErrorMsg() {
+        return imageFileErrorMsg;
+    }
+    public void setImageFileErrorMsg(String imageFileErrorMsg) {
+        this.imageFileErrorMsg = imageFileErrorMsg;
+    }
+    public String getTextFileErrorMsg() {
+        return textFileErrorMsg;
+    }
+    public void setTextFileErrorMsg(String textFileErrorMsg) {
+        this.textFileErrorMsg = textFileErrorMsg;
+    }
+    public String getOcrFileErrorMsg() {
+        return ocrFileErrorMsg;
+    }
+    public void setOcrFileErrorMsg(String ocrFileErrorMsg) {
+        this.ocrFileErrorMsg = ocrFileErrorMsg;
+    } 
 }

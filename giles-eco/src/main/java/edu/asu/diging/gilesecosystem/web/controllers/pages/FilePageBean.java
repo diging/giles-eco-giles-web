@@ -1,5 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.NotImplementedException;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
@@ -27,6 +30,8 @@ public class FilePageBean implements IFile {
     private RequestStatus imageExtractionStatus;
     private RequestStatus storedStatus;
     private RequestStatus ocrStatus;
+    
+    private List<Badge> badges = new ArrayList<>();
     
     public String getUploadId() {
         return uploadId;
@@ -156,5 +161,11 @@ public class FilePageBean implements IFile {
     }
     public void setOcrStatus(RequestStatus ocrStatus) {
         this.ocrStatus = ocrStatus;
+    }
+    public List<Badge> getBadges() {
+        return badges;
+    }
+    public void setBadges(List<Badge> badges) {
+        this.badges = badges;
     }
 }

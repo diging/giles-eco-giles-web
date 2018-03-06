@@ -20,6 +20,7 @@ import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
+import edu.asu.diging.gilesecosystem.web.controllers.pages.Badge;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.PagePageBean;
@@ -80,7 +81,15 @@ public class ViewDocumentController {
         });
         
         statusHelper.createBadges(docBean, procRequests);
-        //statusHelper.createExternalBadges(docBean);
+        statusHelper.createExternalBadges(docBean);
+        
+        Map<String, List<Badge>> badgesByFile = new HashMap<>();
+        docBean.getExternalBadges().forEach(b -> {
+            if (badgesByFile.get(b.getFileId()) == null) {
+                badgesByFile.put(b.getFileId(), new ArrayList<>());
+            }
+            badgesByFile.get(b.getFileId()).add(b);
+        });
         
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());
@@ -93,6 +102,7 @@ public class ViewDocumentController {
             FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
             bean.setMetadataLink(metadataService.getFileLink(origFile));
             docBean.setUploadedFile(bean);
+            bean.setBadges(badgesByFile.get(bean.getId()));
             
             setRequestStatus(bean, requestsByFileId);
         }
@@ -103,6 +113,8 @@ public class ViewDocumentController {
             bean.setMetadataLink(metadataService.getFileLink(textFile));
             docBean.setExtractedTextFile(bean);
             setRequestStatus(bean, requestsByFileId);
+            bean.setBadges(badgesByFile.get(bean.getId()));
+            
         }
         
         for (IPage page : doc.getPages()) {
@@ -115,6 +127,7 @@ public class ViewDocumentController {
                 imageBean.setMetadataLink(metadataService.getFileLink(imageFile));
                 bean.setImageFile(imageBean);
                 setRequestStatus(imageBean, requestsByFileId);
+                imageBean.setBadges(badgesByFile.get(imageBean.getId()));
             }
             
             IFile pageTextFile = fileService.getFileById(page.getTextFileId());
@@ -123,6 +136,7 @@ public class ViewDocumentController {
                 textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
                 bean.setTextFile(textBean);
                 setRequestStatus(textBean, requestsByFileId);
+                textBean.setBadges(badgesByFile.get(textBean.getId()));
             }
             
             IFile ocrFile = fileService.getFileById(page.getOcrFileId());
@@ -131,6 +145,7 @@ public class ViewDocumentController {
                 ocrBean.setMetadataLink(metadataService.getFileLink(ocrFile));
                 bean.setOcrFile(ocrBean);
                 setRequestStatus(ocrBean, requestsByFileId);
+                ocrBean.setBadges(badgesByFile.get(ocrBean.getId()));
             }
         }
         
