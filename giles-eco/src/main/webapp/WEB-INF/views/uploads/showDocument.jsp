@@ -12,9 +12,6 @@
    <c:forEach items="${document.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"> </c:forEach>
 </p>
 
-<p>
-    <c:forEach items="${document.tasks}" var="task">${task.taskHandlerId }${task.status } </c:forEach>
-</p>
 
 <div class="row">
 <div class="col-md-9">
@@ -26,7 +23,7 @@
 		<span class="label label-danger">Private</span>
 	</c:if>
 
-	&nbsp; &nbsp; <a href="${document.metadataUrl}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
 
 </p>
 
@@ -40,7 +37,8 @@
   	<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${document.uploadedFile}" type="object" /></tiles:insertTemplate>
   	<c:if test="${document.uploadedFile.storedStatus == 'FAILED'}"> <span class="label label-danger">Storage Failed</span></c:if> <a href="<c:url value="/files/${document.uploadedFile.id}" />" >
   	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
-  	<a href="${page.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+  	
+  	<c:forEach items="${page.uploadedFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
   </dd>
   <dt>Embedded text: </dt>
   <dd>
@@ -48,7 +46,8 @@
   	<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${document.extractedTextFile}" type="object" /></tiles:insertTemplate>
   	
   	<a href="<c:url value="/files/${document.extractedTextFile.id}" />" >${document.extractedTextFile.filename}</a> &nbsp; &nbsp; 
-  	<a href="${page.extractedTextFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+  	<c:forEach items="${document.extractedTextFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
+  	
   </c:if>
   </dd>
 </dl>
@@ -67,7 +66,7 @@
 		<c:if test="${not empty page.imageFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.imageFile}" type="object" /></tiles:insertTemplate>
 		<a href="<c:url value="/files/${page.imageFile.id}" />" >${page.imageFile.filename}</a>
-        &nbsp; &nbsp; <a href="${page.imageFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        &nbsp; &nbsp; <c:forEach items="${page.imageFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
 		
 	</dd>
@@ -80,7 +79,7 @@
 		<c:if test="${not empty page.textFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.textFile}" type="object" /></tiles:insertTemplate>
 		<a href="<c:url value="/files/${page.textFile.id}" />" >${page.textFile.filename}</a>&nbsp; &nbsp; 
-        <a href="${page.textFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        <c:forEach items="${page.textFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
 		
 	</dd>
@@ -92,7 +91,7 @@
 		<c:if test="${not empty page.ocrFile.filename}">
 		<tiles:insertTemplate template="fileProcessing.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.ocrFile}" type="object" /></tiles:insertTemplate>
 		<a href="<c:url value="/files/${page.ocrFile.id}" />" >${page.ocrFile.filename}</a>&nbsp; &nbsp; 
-        <a href="${page.ocrFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
+        <c:forEach items="${page.ocrFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
 		
 	</dd>

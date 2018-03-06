@@ -50,7 +50,7 @@
         <geco.giles.db_files></geco.giles.db_files>
         <giles.file.tmp.dir></giles.file.tmp.dir>
         <digilib.url></digilib.url>
-        <jars.url>http://diging.asu.edu/jars</jars.url>
+        <jars.url>http://amphora.asu.edu/amphora</jars.url>
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
         <metadata.service.doc.url></metadata.service.doc.url>
