@@ -68,4 +68,9 @@ public class TransactionalFileService implements ITransactionalFileService {
     public IFile getFileByRequestId(String requestId) {
         return filesDbClient.getFileByRequestId(requestId);
     }
+    
+    @Override
+    public List<IFile> getFilesByDerivedFrom(String derivedFromId) {
+        return filesDbClient.getFilesByDerivedFrom(derivedFromId);
+    }
 }

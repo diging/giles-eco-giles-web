@@ -16,4 +16,8 @@ public interface ITask {
 
     public abstract String getFileId();
 
+    void setResultFileId(String resultFileId);
+
+    String getResultFileId();
+
 }

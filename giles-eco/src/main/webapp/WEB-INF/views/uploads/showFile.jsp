@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <ol class="breadcrumb">
   <li>Upload</li>
@@ -40,15 +41,16 @@
   <div class="panel-body" style="min-height: 350px">
 	<c:choose>
 		<c:when
-			test="${file.contentType == 'application/pdf' or file.contentType == 'text/plain'}">
+			test="${fn:startsWith(file.contentType, 'image/')}">
+			<img src="<c:url value="/files/${file.id}/img?dw=600" /> ">
 			
-			<a style="margin-top: 40px;" class="btn btn-primary btn-md"
-				href="<c:url value="/files/${file.id}/content" />"><i class="fa fa-download" aria-hidden="true"></i> Download
-				${file.filename}</a>
+			
 		</c:when>
 		<c:otherwise>
 			
-				<img src="<c:url value="/files/${file.id}/img?dw=600" /> ">
+			<a style="margin-top: 40px;" class="btn btn-primary btn-md"
+                href="<c:url value="/files/${file.id}/content" />"><i class="fa fa-download" aria-hidden="true"></i> Download
+                ${file.filename}</a>
 			
 		</c:otherwise>
 	</c:choose>

@@ -2,8 +2,6 @@ package edu.asu.diging.gilesecosystem.web.service.processing.impl;
 
 import java.util.ArrayList;
 
-import javax.print.attribute.standard.Media;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -51,8 +49,9 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         IFile file = filesService.getFileById(document.getUploadedFileId());
         String fileDownloadUrl = request.getDownloadUrl();
         // if there was a new file created
+        IFile additionalFile = null;
         if (fileDownloadUrl != null && !fileDownloadUrl.isEmpty()) {
-            IFile additionalFile = createFile(file, document, request.getContentType(), request.getSize(), request.getFilename(), REQUEST_PREFIX);
+            additionalFile = createFile(file, document, request.getContentType(), request.getSize(), request.getFilename(), REQUEST_PREFIX);
             
             try {
                 filesService.saveFile(additionalFile);
@@ -61,15 +60,15 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                 messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             }
             
-            document.setExtractedTextFileId(additionalFile.getId());
-            
             FileType fileType = FileType.OTHER;
-            if (request.getContentType().equals(MediaType.TEXT_PLAIN_VALUE)) {
-                fileType = FileType.TEXT;
-            } else if (request.getContentType().startsWith("image/")) {
-                fileType = FileType.IMAGE;
-            } else if (request.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
-                fileType = FileType.PDF;
+            if (request.getContentType() != null) {
+                if (request.getContentType().equals(MediaType.TEXT_PLAIN_VALUE)) {
+                    fileType = FileType.TEXT;
+                } else if (request.getContentType().startsWith("image/")) {
+                    fileType = FileType.IMAGE;
+                } else if (request.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
+                    fileType = FileType.PDF;
+                }
             }
             sendStorageRequest(additionalFile, request.getDownloadPath(), request.getDownloadUrl(), fileType);
         } 
@@ -78,6 +77,9 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         task.setFileId(request.getFileId());
         task.setStatus(request.getStatus());
         task.setTaskHandlerId(request.getNotifier());
+        if (additionalFile != null) {
+            task.setResultFileId(additionalFile.getId());
+        }
         
         if (document.getTasks() == null) {
             document.setTasks(new ArrayList<ITask>());

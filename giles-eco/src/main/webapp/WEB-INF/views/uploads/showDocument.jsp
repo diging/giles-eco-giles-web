@@ -38,7 +38,13 @@
   	<c:if test="${document.uploadedFile.storedStatus == 'FAILED'}"> <span class="label label-danger">Storage Failed</span></c:if> <a href="<c:url value="/files/${document.uploadedFile.id}" />" >
   	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
   	
-  	<c:forEach items="${page.uploadedFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
+  	<c:forEach items="${document.uploadedFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
+    <c:if test="${not empty document.uploadedFile.additionalFiles}">
+        <ul>
+        <c:forEach items="${document.uploadedFile.additionalFiles}" var="entry" ><li>${entry.value.processor}: <a href="<c:url value="/files/${entry.value.fileId}" />" >${entry.value.filename}</a></li></c:forEach>
+        </ul>
+    
+    </c:if>
   </dd>
   <dt>Embedded text: </dt>
   <dd>
@@ -48,6 +54,9 @@
   	<a href="<c:url value="/files/${document.extractedTextFile.id}" />" >${document.extractedTextFile.filename}</a> &nbsp; &nbsp; 
   	<c:forEach items="${document.extractedTextFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
   	
+  	<c:if test="${not empty document.extractedTextFile.additionalFiles}">
+  	${document.extractedTextFile.additionalFiles}
+  	</c:if>
   </c:if>
   </dd>
 </dl>

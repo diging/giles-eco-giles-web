@@ -15,6 +15,7 @@ public class Task implements ITask {
     private String taskHandlerId;
     private RequestStatus status;
     private String fileId;
+    private String resultFileId;
     
     /* (non-Javadoc)
      * @see edu.asu.diging.gilesecosystem.web.core.impl.ITask#getTaskHandlerId()
@@ -57,5 +58,13 @@ public class Task implements ITask {
     }
     public void setId(Integer id) {
         this.id = id;
+    }
+    @Override
+    public String getResultFileId() {
+        return resultFileId;
+    }
+    @Override
+    public void setResultFileId(String resultFileId) {
+        this.resultFileId = resultFileId;
     }
 }
