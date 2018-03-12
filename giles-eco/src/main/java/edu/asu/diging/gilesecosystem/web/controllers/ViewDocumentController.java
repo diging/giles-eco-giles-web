@@ -106,7 +106,6 @@ public class ViewDocumentController {
         docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
         docBean.setPages(new ArrayList<>());
 
-        List<ITask> tasks = docBean.getTasks();
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
@@ -160,20 +159,31 @@ public class ViewDocumentController {
         pageBean.setMetadataLink(metadataService.getFileLink(file));
         setRequestStatus(pageBean, requestsByFileId);
         pageBean.setBadges(badgesByFile.get(pageBean.getId()));
-        addAdditionalFiles(pageBean, tasks);
+        addAdditionalFiles(pageBean, tasks, requestsByFileId);
         return pageBean;
     }
 
-    private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks) {
+    private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, Map<String, List<IProcessingRequest>> requestsByFileId) {
         tasks.forEach(t -> {
             IFile additionalFile = fileService.getFileById(t.getResultFileId());
             if (bean.getId().equals(additionalFile.getDerivedFrom())) {
-                bean.getAdditionalFiles().put(t.getTaskHandlerId(),
-                        new AdditionalFilePageBean(t.getResultFileId(),
-                                additionalFile.getFilename(),
-                                propertiesManager.getProperty(propertiesManager
-                                        .getProperty(Properties.EXTERNAL_BADGE_PREFIX)
-                                        + t.getTaskHandlerId())));
+                AdditionalFilePageBean additionalFileBean = new AdditionalFilePageBean(t.getResultFileId(),
+                        additionalFile.getFilename(),
+                        propertiesManager.getProperty(propertiesManager
+                                .getProperty(Properties.EXTERNAL_BADGE_PREFIX)
+                                + t.getTaskHandlerId()));
+                        
+                
+                List<IProcessingRequest> reqs = requestsByFileId.get(additionalFileBean.getFileId());
+                // for now we are going to assume additional files are only being stored
+                for (IProcessingRequest req : reqs) {
+                    if (req.getSentRequest() instanceof StorageRequest) {
+                        additionalFileBean.setStatus(req.getRequestStatus());
+                    }
+                }
+                
+                
+                bean.getAdditionalFiles().put(t.getTaskHandlerId(), additionalFileBean);
             }
         });
     }

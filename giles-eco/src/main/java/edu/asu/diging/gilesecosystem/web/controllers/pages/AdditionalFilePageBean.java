@@ -1,10 +1,13 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
+
 public class AdditionalFilePageBean {
 
     private String fileId;
     private String filename;
     private String processor;
+    private RequestStatus status;
     
     public AdditionalFilePageBean(String fileId) {
         this.fileId = fileId;
@@ -36,6 +39,14 @@ public class AdditionalFilePageBean {
     }
     public void setProcessor(String processor) {
         this.processor = processor;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
     }
     
 }

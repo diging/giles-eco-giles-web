@@ -46,7 +46,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
     public void processRequest(ICompletionNotificationRequest request) {
         IDocument document = documentService.getDocument(request.getDocumentId());
         
-        IFile file = filesService.getFileById(document.getUploadedFileId());
+        IFile file = filesService.getFileById(request.getFileId());
         String fileDownloadUrl = request.getDownloadUrl();
         // if there was a new file created
         IFile additionalFile = null;
