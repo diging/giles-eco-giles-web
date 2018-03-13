@@ -113,7 +113,9 @@ public class JSONHelper implements IJSONHelper {
         tasksByDerivedFrom.get(derivedFrom.getId()).forEach(t -> {
             IFile file = fileService.getFileById(t.getResultFileId());
             if (file != null) {
-                additionalFiles.add(createFileJsonObject(mapper, file));
+                ObjectNode fileNode = createFileJsonObject(mapper, file);
+                fileNode.put("processor", t.getTaskHandlerId());
+                additionalFiles.add(fileNode);
             }
         });
     }
