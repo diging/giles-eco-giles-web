@@ -17,7 +17,7 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.6</geco.requests.version>
+        <geco.requests.version>0.7</geco.requests.version>
         <geco.util.version>0.4.3</geco.util.version>
         <geco.september.util.version>0.2</geco.september.util.version>
 
@@ -50,7 +50,7 @@
         <geco.giles.db_files></geco.giles.db_files>
         <giles.file.tmp.dir></giles.file.tmp.dir>
         <digilib.url></digilib.url>
-        <jars.url>http://diging.asu.edu/jars</jars.url>
+        <jars.url>http://amphora.asu.edu/amphora</jars.url>
         <jars.file.url>/resource/get/?uri={giles}/rest/files/{fileId}/content</jars.file.url>
         <metadata.upload.add>/resource/create/giles/callback/</metadata.upload.add>
         <metadata.service.doc.url></metadata.service.doc.url>
