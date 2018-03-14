@@ -107,7 +107,7 @@ public class JSONHelper implements IJSONHelper {
     public void addFiletoArray(ObjectMapper mapper,
             Map<String, List<ITask>> tasksByDerivedFrom, IFile derivedFrom,
             ArrayNode additionalFiles) {
-        if (tasksByDerivedFrom.get(derivedFrom.getId()) == null || derivedFrom == null) {
+        if (derivedFrom == null || tasksByDerivedFrom.get(derivedFrom.getId()) == null) {
             return;
         }
         tasksByDerivedFrom.get(derivedFrom.getId()).forEach(t -> {
