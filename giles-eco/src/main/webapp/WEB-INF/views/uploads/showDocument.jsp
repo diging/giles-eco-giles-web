@@ -38,7 +38,7 @@
   	<c:if test="${document.uploadedFile.storedStatus == 'FAILED'}"> <span class="label label-danger">Storage Failed</span></c:if> <a href="<c:url value="/files/${document.uploadedFile.id}" />" >
   	${document.uploadedFile.filename}</a>&nbsp; &nbsp; 
   	
-  	<c:forEach items="${page.uploadedFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
+  	<c:forEach items="${document.uploadedFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
   </dd>
   <dt>Embedded text: </dt>
   <dd>
@@ -47,8 +47,16 @@
   	
   	<a href="<c:url value="/files/${document.extractedTextFile.id}" />" >${document.extractedTextFile.filename}</a> &nbsp; &nbsp; 
   	<c:forEach items="${document.extractedTextFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
-  	
   </c:if>
+  </dd>
+  <dt>Additional Files: </dt>
+  <dd>
+    <c:if test="${not empty document.uploadedFile.additionalFiles}">
+        <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${document.uploadedFile}" type="object" /></tiles:insertTemplate>
+    </c:if>
+    <c:if test="${not empty document.extractedTextFile.additionalFiles}">
+        <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${document.extractedTextFile}" type="object" /></tiles:insertTemplate>
+    </c:if>
   </dd>
 </dl>
 
@@ -68,7 +76,6 @@
 		<a href="<c:url value="/files/${page.imageFile.id}" />" >${page.imageFile.filename}</a>
         &nbsp; &nbsp; <c:forEach items="${page.imageFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
-		
 	</dd>
 	
 	<dt> Text: </dt>
@@ -81,7 +88,6 @@
 		<a href="<c:url value="/files/${page.textFile.id}" />" >${page.textFile.filename}</a>&nbsp; &nbsp; 
         <c:forEach items="${page.textFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
-		
 	</dd>
 	<dt> OCR Result: </dt>
 	<dd>
@@ -93,8 +99,19 @@
 		<a href="<c:url value="/files/${page.ocrFile.id}" />" >${page.ocrFile.filename}</a>&nbsp; &nbsp; 
         <c:forEach items="${page.ocrFile.badges}" var="badge"><img src="https://img.shields.io/badge/${badge.subject}-${badge.status}-${badge.color}.svg"></c:forEach>
 		</c:if>
-		
 	</dd>
+	<dt> Additional Files: </dt>
+    <dd>
+        <c:if test="${not empty page.imageFile.additionalFiles}">
+            <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.imageFile}" type="object" /></tiles:insertTemplate>
+        </c:if>
+        <c:if test="${not empty page.textFile.additionalFiles}">
+            <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.textFile}" type="object" /></tiles:insertTemplate>
+        </c:if>
+        <c:if test="${not empty page.ocrFile.additionalFiles}">
+            <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.ocrFile}" type="object" /></tiles:insertTemplate>
+        </c:if>
+    </dd>
 </dl>
 </c:forEach>
 </c:if>

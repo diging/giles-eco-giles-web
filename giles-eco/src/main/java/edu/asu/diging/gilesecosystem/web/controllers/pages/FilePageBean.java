@@ -1,7 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.controllers.pages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -30,6 +32,8 @@ public class FilePageBean implements IFile {
     private RequestStatus imageExtractionStatus;
     private RequestStatus storedStatus;
     private RequestStatus ocrStatus;
+    
+    private Map<String, AdditionalFilePageBean> additionalFiles = new HashMap<>();  
     
     private List<Badge> badges = new ArrayList<>();
     
@@ -167,5 +171,11 @@ public class FilePageBean implements IFile {
     }
     public void setBadges(List<Badge> badges) {
         this.badges = badges;
+    }
+    public Map<String, AdditionalFilePageBean> getAdditionalFiles() {
+        return additionalFiles;
+    }
+    public void setAdditionalFiles(Map<String, AdditionalFilePageBean> additionalFiles) {
+        this.additionalFiles = additionalFiles;
     }
 }

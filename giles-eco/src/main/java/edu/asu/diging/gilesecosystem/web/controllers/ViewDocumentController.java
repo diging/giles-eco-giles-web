@@ -18,8 +18,10 @@ import edu.asu.diging.gilesecosystem.requests.impl.ImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.OCRRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentIdAccessCheck;
+import edu.asu.diging.gilesecosystem.web.controllers.pages.AdditionalFilePageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.Badge;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.DocumentPageBean;
 import edu.asu.diging.gilesecosystem.web.controllers.pages.FilePageBean;
@@ -29,6 +31,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.domain.ITask;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesMappingException;
 import edu.asu.diging.gilesecosystem.web.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.IGilesMappingService;
@@ -36,39 +39,46 @@ import edu.asu.diging.gilesecosystem.web.service.IMetadataUrlService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.impl.GilesMappingService;
+import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Controller
 public class ViewDocumentController {
-    
+
     @Autowired
     private ITransactionalDocumentService documentService;
-    
+
     @Autowired
     private ITransactionalFileService fileService;
-    
+
     @Autowired
-    private IMetadataUrlService metadataService;  
-    
+    private IMetadataUrlService metadataService;
+
     @Autowired
     private StatusBadgeHelper statusHelper;
-    
+
     @Autowired
     private IProcessingRequestsDatabaseClient procReqDbClient;
+
+    @Autowired
+    private IPropertiesManager propertiesManager;
 
     @AccountCheck
     @DocumentIdAccessCheck
     @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
-    public String showDocument(@PathVariable String docId, Model model, Locale locale) throws GilesMappingException {
+    public String showDocument(@PathVariable String docId, Model model, Locale locale)
+            throws GilesMappingException {
         IDocument doc = documentService.getDocument(docId);
-        
+
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
         IGilesMappingService<IDocument, DocumentPageBean> docMappingService = new GilesMappingService<>();
         IGilesMappingService<IPage, PagePageBean> pageMappingService = new GilesMappingService<>();
-        
-        DocumentPageBean docBean = docMappingService.convertToT2(doc, new DocumentPageBean());
+
+        DocumentPageBean docBean = docMappingService.convertToT2(doc,
+                new DocumentPageBean());
         model.addAttribute("document", docBean);
-        
-        List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getId());
+
+        List<IProcessingRequest> procRequests = procReqDbClient
+                .getRequestByDocumentId(doc.getId());
         Map<String, List<IProcessingRequest>> requestsByFileId = new HashMap<String, List<IProcessingRequest>>();
         procRequests.forEach(new Consumer<IProcessingRequest>() {
             @Override
@@ -79,10 +89,10 @@ public class ViewDocumentController {
                 requestsByFileId.get(t.getFileId()).add(t);
             }
         });
-        
+
         statusHelper.createBadges(docBean, procRequests);
         statusHelper.createExternalBadges(docBean);
-        
+
         Map<String, List<Badge>> badgesByFile = new HashMap<>();
         docBean.getExternalBadges().forEach(b -> {
             if (badgesByFile.get(b.getFileId()) == null) {
@@ -90,69 +100,96 @@ public class ViewDocumentController {
             }
             badgesByFile.get(b.getFileId()).add(b);
         });
-        
+
         docBean.setFiles(new ArrayList<>());
         docBean.setTextFiles(new ArrayList<>());
         docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
         docBean.setPages(new ArrayList<>());
-        
-        IFile origFile = fileService.getFileById(doc.getUploadedFileId());  
+
+        IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
-            
-            FilePageBean bean = fileMappingService.convertToT2(origFile, new FilePageBean());
-            bean.setMetadataLink(metadataService.getFileLink(origFile));
+            FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
+                    badgesByFile, origFile, docBean.getTasks());
             docBean.setUploadedFile(bean);
-            bean.setBadges(badgesByFile.get(bean.getId()));
-            
-            setRequestStatus(bean, requestsByFileId);
         }
-        
+
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
-            FilePageBean bean = fileMappingService.convertToT2(textFile, new FilePageBean());
-            bean.setMetadataLink(metadataService.getFileLink(textFile));
+            FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
+                    badgesByFile, textFile, docBean.getTasks());
             docBean.setExtractedTextFile(bean);
-            setRequestStatus(bean, requestsByFileId);
-            bean.setBadges(badgesByFile.get(bean.getId()));
-            
         }
-        
+
         for (IPage page : doc.getPages()) {
             PagePageBean bean = pageMappingService.convertToT2(page, new PagePageBean());
             docBean.getPages().add(bean);
-            
+
             IFile imageFile = fileService.getFileById(page.getImageFileId());
             if (imageFile != null) {
-                FilePageBean imageBean = fileMappingService.convertToT2(imageFile, new FilePageBean());
-                imageBean.setMetadataLink(metadataService.getFileLink(imageFile));
-                bean.setImageFile(imageBean);
-                setRequestStatus(imageBean, requestsByFileId);
-                imageBean.setBadges(badgesByFile.get(imageBean.getId()));
+                FilePageBean pageBean = createFilePageBean(fileMappingService,
+                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks());
+                bean.setImageFile(pageBean);
+
             }
-            
+
             IFile pageTextFile = fileService.getFileById(page.getTextFileId());
             if (pageTextFile != null) {
-                FilePageBean textBean = fileMappingService.convertToT2(pageTextFile, new FilePageBean());
-                textBean.setMetadataLink(metadataService.getFileLink(pageTextFile));
+                FilePageBean textBean = createFilePageBean(fileMappingService,
+                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks());
                 bean.setTextFile(textBean);
-                setRequestStatus(textBean, requestsByFileId);
-                textBean.setBadges(badgesByFile.get(textBean.getId()));
             }
-            
+
             IFile ocrFile = fileService.getFileById(page.getOcrFileId());
             if (ocrFile != null) {
-                FilePageBean ocrBean = fileMappingService.convertToT2(ocrFile, new FilePageBean());
-                ocrBean.setMetadataLink(metadataService.getFileLink(ocrFile));
+                FilePageBean ocrBean = createFilePageBean(fileMappingService,
+                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks());
                 bean.setOcrFile(ocrBean);
-                setRequestStatus(ocrBean, requestsByFileId);
-                ocrBean.setBadges(badgesByFile.get(ocrBean.getId()));
             }
         }
-        
+
         return "documents/document";
     }
-    
-    private void setRequestStatus(FilePageBean bean, Map<String, List<IProcessingRequest>> requestsByFileId) {
+
+    private FilePageBean createFilePageBean(
+            IGilesMappingService<IFile, FilePageBean> fileMappingService,
+            Map<String, List<IProcessingRequest>> requestsByFileId,
+            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks)
+            throws GilesMappingException {
+        FilePageBean pageBean = fileMappingService.convertToT2(file, new FilePageBean());
+        pageBean.setMetadataLink(metadataService.getFileLink(file));
+        setRequestStatus(pageBean, requestsByFileId);
+        pageBean.setBadges(badgesByFile.get(pageBean.getId()));
+        addAdditionalFiles(pageBean, tasks, requestsByFileId);
+        return pageBean;
+    }
+
+    private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, Map<String, List<IProcessingRequest>> requestsByFileId) {
+        tasks.forEach(t -> {
+            IFile additionalFile = fileService.getFileById(t.getResultFileId());
+            if (bean.getId().equals(additionalFile.getDerivedFrom())) {
+                AdditionalFilePageBean additionalFileBean = new AdditionalFilePageBean(t.getResultFileId(),
+                        additionalFile.getFilename(),
+                        propertiesManager.getProperty(propertiesManager
+                                .getProperty(Properties.EXTERNAL_BADGE_PREFIX)
+                                + t.getTaskHandlerId()));
+                        
+                
+                List<IProcessingRequest> reqs = requestsByFileId.get(additionalFileBean.getFileId());
+                // for now we are going to assume additional files are only being stored
+                for (IProcessingRequest req : reqs) {
+                    if (req.getSentRequest() instanceof StorageRequest) {
+                        additionalFileBean.setStatus(req.getRequestStatus());
+                    }
+                }
+                
+                
+                bean.getAdditionalFiles().put(t.getTaskHandlerId(), additionalFileBean);
+            }
+        });
+    }
+
+    private void setRequestStatus(FilePageBean bean,
+            Map<String, List<IProcessingRequest>> requestsByFileId) {
         List<IProcessingRequest> fileReqs = requestsByFileId.get(bean.getId());
         if (fileReqs == null) {
             return;

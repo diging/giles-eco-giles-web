@@ -56,6 +56,11 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     public List<IFile> getFilesByPath(String path) {
         return searchByProperty("filepath", path, File.class);
     }
+    
+    @Override
+    public List<IFile> getFilesByDerivedFrom(String derivedFromId) {
+        return searchByProperty("derivedFrom", derivedFromId, File.class);
+    }
 
     /*
      * (non-Javadoc)

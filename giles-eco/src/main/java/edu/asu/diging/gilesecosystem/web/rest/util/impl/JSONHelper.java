@@ -2,6 +2,9 @@ package edu.asu.diging.gilesecosystem.web.rest.util.impl;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IPage;
+import edu.asu.diging.gilesecosystem.web.domain.ITask;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -42,6 +46,14 @@ public class JSONHelper implements IJSONHelper {
     @Override
     public void createDocumentJson(IDocument doc, ObjectMapper mapper, ObjectNode docNode) {
         
+        Map<String, List<ITask>> tasksByDerivedFrom = new HashMap<>();
+        doc.getTasks().forEach(t -> {
+            if (tasksByDerivedFrom.get(t.getFileId()) == null) {
+                tasksByDerivedFrom.put(t.getFileId(), new ArrayList<>());
+            }
+            tasksByDerivedFrom.get(t.getFileId()).add(t);
+        });
+        
         IFile uploadedFile = fileService.getFileById(doc.getUploadedFileId());
         docNode.put("documentId", doc.getId());
         docNode.put("documentStatus", uploadedFile.getProcessingStatus().toString());
@@ -55,30 +67,57 @@ public class JSONHelper implements IJSONHelper {
             docNode.set("uploadedFile", uploadedFileNode);
         }
         
+        IFile extractedTextFile = null;
         if (doc.getExtractedTextFileId() != null) {
-            IFile extractedTextFile = fileService.getFileById(doc.getExtractedTextFileId());
+            extractedTextFile = fileService.getFileById(doc.getExtractedTextFileId());
             docNode.set("extractedText", createFileJsonObject(mapper, extractedTextFile));
         }
+        
+        ArrayNode additionalFiles = docNode.putArray("additionalFiles");
+        addFiletoArray(mapper, tasksByDerivedFrom, uploadedFile, additionalFiles);
+        addFiletoArray(mapper, tasksByDerivedFrom, extractedTextFile,
+                    additionalFiles);
         
         if (!doc.getPages().isEmpty()) {
             ArrayNode pagesArray = docNode.putArray("pages");
             for (IPage page : doc.getPages()) {
                 ObjectNode pageNode = pagesArray.addObject();
                 pageNode.put("nr", page.getPageNr());
+                ArrayNode additionalPageFiles = mapper.createArrayNode();
                 if (page.getImageFileId() != null) {
                     IFile imageFile = fileService.getFileById(page.getImageFileId());
                     pageNode.set("image", createFileJsonObject(mapper, imageFile));
+                    addFiletoArray(mapper, tasksByDerivedFrom, imageFile, additionalPageFiles);
                 }
                 if (page.getTextFileId() != null) {
                     IFile textFile = fileService.getFileById(page.getTextFileId());
                     pageNode.set("text", createFileJsonObject(mapper, textFile));
+                    addFiletoArray(mapper, tasksByDerivedFrom, textFile, additionalPageFiles);
                 }
                 if (page.getOcrFileId() != null) {
                     IFile ocrFile = fileService.getFileById(page.getOcrFileId());
                     pageNode.set("ocr", createFileJsonObject(mapper, ocrFile));
+                    addFiletoArray(mapper, tasksByDerivedFrom, ocrFile, additionalPageFiles);
                 }
+                pageNode.set("additionalFiles", additionalPageFiles);
             }
         }
+    }
+
+    public void addFiletoArray(ObjectMapper mapper,
+            Map<String, List<ITask>> tasksByDerivedFrom, IFile derivedFrom,
+            ArrayNode additionalFiles) {
+        if (tasksByDerivedFrom.get(derivedFrom.getId()) == null || derivedFrom == null) {
+            return;
+        }
+        tasksByDerivedFrom.get(derivedFrom.getId()).forEach(t -> {
+            IFile file = fileService.getFileById(t.getResultFileId());
+            if (file != null) {
+                ObjectNode fileNode = createFileJsonObject(mapper, file);
+                fileNode.put("processor", t.getTaskHandlerId());
+                additionalFiles.add(fileNode);
+            }
+        });
     }
     
     @Override
