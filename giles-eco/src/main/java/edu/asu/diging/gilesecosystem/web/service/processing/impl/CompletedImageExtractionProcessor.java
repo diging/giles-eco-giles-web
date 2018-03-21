@@ -60,7 +60,6 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         document.getPages().forEach(page -> pages.put(page.getPageNr(), page));
         
         if (request.getPages() != null ) {
-            request.setStatus(RequestStatus.COMPLETE);
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
                
@@ -87,9 +86,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                     sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
                 }
            }
-        } else {
-            request.setStatus(RequestStatus.FAILED);
-        }
+        } 
         
         markRequestComplete(request);
         
