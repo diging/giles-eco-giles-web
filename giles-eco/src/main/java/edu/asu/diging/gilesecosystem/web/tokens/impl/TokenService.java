@@ -122,7 +122,6 @@ public class TokenService implements ITokenService {
             }
         
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            // currently app tokens don't expire, so we'll just return null
             messageHandler.handleMessage(e.getMessage(), e, MessageType.INFO);
             contents.setExpired(true);
         } catch (SignatureException e) {
