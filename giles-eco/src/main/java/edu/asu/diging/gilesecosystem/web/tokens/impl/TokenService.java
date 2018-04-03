@@ -105,7 +105,8 @@ public class TokenService implements ITokenService {
     @Override
     public IAppToken getAppTokenContents(String token) {
         IAppToken appToken = new AppToken();
-        
+        IApiTokenContents contents = new ApiTokenContents();
+        contents.setExpired(true);
         try {
             Jws<Claims> jws = Jwts.parser().setSigningKey(propertiesManager.getProperty(Properties.SIGNING_KEY_APPS)).parseClaimsJws(token);
             Claims claims = jws.getBody(); 
@@ -114,11 +115,15 @@ public class TokenService implements ITokenService {
             appToken.setId(claims.get("tokenId", String.class));
             appToken.setProviderId(claims.get("providerId", String.class));
             appToken.setAuthorizationType(claims.get("authorizationType", String.class));
+            contents.setUsername(claims.getSubject());
+            Date expirationTime = claims.getExpiration();
+            if (expirationTime != null) {
+                contents.setExpired(expirationTime.before(new Date()));
+            }
         
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            // currently app tokens don't expire, so we'll just return null
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return null;
+            messageHandler.handleMessage(e.getMessage(), e, MessageType.INFO);
+            contents.setExpired(true);
         } catch (SignatureException e) {
             messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
             return null;
