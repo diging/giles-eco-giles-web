@@ -15,90 +15,101 @@
 		<put-attribute name="currentPage" value="home" />
 		<put-attribute name="currentURL" value="" />
 	</definition>
-	
+
 	<definition name="login" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/login.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/login.jsp" />
 	</definition>
-	
+
 	<definition name="files/upload" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/files/upload.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/files/upload.jsp" />
 	</definition>
-	
+
 	<definition name="files/file" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/uploads/showFile.jsp" />	
+		<put-attribute name="content"
+			value="/WEB-INF/views/uploads/showFile.jsp" />
 	</definition>
-	
+
 	<definition name="uploads/upload" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/uploads/show.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/uploads/show.jsp" />
 	</definition>
-	
+
 	<definition name="uploads" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/uploads/all.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/uploads/all.jsp" />
 	</definition>
-	
+
 	<definition name="documents/document" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/uploads/showDocument.jsp" />	
+		<put-attribute name="content"
+			value="/WEB-INF/views/uploads/showDocument.jsp" />
 	</definition>
-	
+
 	<!-- profile -->
 	<definition name="profile" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/profile/profile.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/profile/profile.jsp" />
 	</definition>
 	<definition name="profile/username/change" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/profile/changeUsername.jsp" />	
+		<put-attribute name="content"
+			value="/WEB-INF/views/profile/changeUsername.jsp" />
 	</definition>
-	
+
 	<!-- error pages -->
 	<definition name="notFound" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/notFound.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/notFound.jsp" />
 	</definition>
-	
+
 	<definition name="forbidden" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/forbidden.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/forbidden.jsp" />
 	</definition>
-	
+
 	<definition name="signin" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/error/signin.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/error/signin.jsp" />
 	</definition>
-	
+
 	<definition name="403" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/error/403.jsp" />	
+		<put-attribute name="content" value="/WEB-INF/views/error/403.jsp" />
 	</definition>
-	
-	<!--  users -->
+
+	<!-- users -->
 	<definition name="users" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/users/users.jsp" />
 	</definition>
-	
-	<!--  admin -->
+
+	<!-- admin -->
 	<definition name="admin/system/config" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/admin/system_config.jsp" />
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/system_config.jsp" />
 	</definition>
 	<definition name="admin/system/auth" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secret.jsp" />
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/generate_secret.jsp" />
 	</definition>
 	<definition name="admin/system/auth/done" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/admin/generate_secrets_done.jsp" />
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/generate_secrets_done.jsp" />
 	</definition>
 	<definition name="admin/system/social" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/admin/update_social_signin.jsp" />
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/update_social_signin.jsp" />
 	</definition>
-    <definition name="admin/system/admins" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/admins.jsp" />
-    </definition>
-    <definition name="admin/system/admins/password/change" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/changeAdminPW.jsp" />
-    </definition>
-    <definition name="admin/requests" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/requests.jsp" />
-    </definition>
-    <definition name="admin/requests/inProgress" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/requests_inprogress.jsp" />
-    </definition>
+	<definition name="admin/system/admins" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/admins.jsp" />
+	</definition>
+	<definition name="admin/system/admins/password/change"
+		extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/changeAdminPW.jsp" />
+	</definition>
+	<definition name="admin/requests" extends="base.definition">
+		<put-attribute name="content" value="/WEB-INF/views/admin/requests.jsp" />
+	</definition>
+	<definition name="admin/requests/inProgress" extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/requests_inprogress.jsp" />
+	</definition>
 	<definition name="admin/kafka/listeners" extends="base.definition">
-       <put-attribute name="content" value="/WEB-INF/views/admin/manage_listeners.jsp" />
-    </definition>
-	<!--  apps -->
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/manage_listeners.jsp" />
+	</definition>
+	<!-- apps -->
 	<definition name="admin/apps" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/apps.jsp" />
 	</definition>
@@ -111,23 +122,27 @@
 	<definition name="admin/apps/delete" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/deleteApp.jsp" />
 	</definition>
-    
-    <!-- Requests -->
-    <definition name="admin/requests/current" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/currentRequests.jsp" />
-    </definition>
-    
-    <!-- Migration -->
-    <definition name="admin/migrate" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/migrate/migrate.jsp" />
-    </definition>
-    <definition name="admin/migrate/running" extends="base.definition">
-        <put-attribute name="content" value="/WEB-INF/views/admin/migrate/running.jsp" />
-    </definition>
-	
-	<!--  user errors -->
-	<definition name="error/noSuchRole" extends="base.definition">
-		<put-attribute name="content" value="/WEB-INF/views/error/noSuchRole.jsp" />
+
+	<!-- Requests -->
+	<definition name="admin/requests/current" extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/currentRequests.jsp" />
 	</definition>
-	
+
+	<!-- Migration -->
+	<definition name="admin/migrate" extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/migrate/migrate.jsp" />
+	</definition>
+	<definition name="admin/migrate/running" extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/admin/migrate/running.jsp" />
+	</definition>
+
+	<!-- user errors -->
+	<definition name="error/noSuchRole" extends="base.definition">
+		<put-attribute name="content"
+			value="/WEB-INF/views/error/noSuchRole.jsp" />
+	</definition>
+
 </tiles-definitions>

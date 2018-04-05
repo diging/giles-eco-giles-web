@@ -15,29 +15,33 @@
 		</c:if>
 	</h3>
 
-    <div style="margin-top: 70px;"><center>
-	<c:if test="${listenerStatus}">
-		<form:form
-			action="${pageContext.request.contextPath}/admin/kafka/listeners/stop"
-			method="POST">
-			<input type="submit" value="Stop Kafka Listeners"
-				class="btn btn-lg btn-danger" />
-		</form:form>
-		<p><br>
-        Once Kafka listeners have been stopped, Giles will no longer process image extraction requests.
-        </p>
-	</c:if>
+	<div style="margin-top: 70px;">
+		<center>
+			<c:if test="${listenerStatus}">
+				<form:form
+					action="${pageContext.request.contextPath}/admin/kafka/listeners/stop"
+					method="POST">
+					<input type="submit" value="Stop Kafka Listeners"
+						class="btn btn-lg btn-danger" />
+				</form:form>
+				<p>
+					<br> Once Kafka listeners have been stopped, Giles will no
+					longer process image extraction requests.
+				</p>
+			</c:if>
 
-	<c:if test="${not listenerStatus}">
-		<form:form
-			action="${pageContext.request.contextPath}/admin/kafka/listeners/start"
-			method="POST">
-			<input type="submit" value="Start Kafka Listeners"
-				class="btn btn-lg btn-success" />
-		</form:form>
-		<p><br>
-		Once Kafka listeners have been started, Giles will proceed processing image extraction requests.
-	    </p>
-	</c:if>
-	</center></div>
+			<c:if test="${not listenerStatus}">
+				<form:form
+					action="${pageContext.request.contextPath}/admin/kafka/listeners/start"
+					method="POST">
+					<input type="submit" value="Start Kafka Listeners"
+						class="btn btn-lg btn-success" />
+				</form:form>
+				<p>
+					<br> Once Kafka listeners have been started, Giles will
+					proceed processing image extraction requests.
+				</p>
+			</c:if>
+		</center>
+	</div>
 </div>
