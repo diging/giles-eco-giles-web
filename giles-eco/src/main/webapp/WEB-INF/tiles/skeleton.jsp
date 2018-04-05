@@ -111,6 +111,9 @@
           	<li role="presentation">
           		<a href="<c:url value="/admin/apps" />" >Apps</a>
           	</li>
+          	<li role="presentation">
+          	<a href="<c:url value="/admin/kafka/listeners" />">Kafka</a>
+            </li>
           	<li role="dropdown">
           	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Requests<span class="caret"></span></a>
                 <ul class="dropdown-menu">
