@@ -24,7 +24,7 @@
 				class="btn btn-lg btn-danger" />
 		</form:form>
 		<p><br>
-        Once Kafka listeners have been stopped, Giles will no longer process image extraction requests.
+        Kafka listeners have been started!!!
         </p>
 	</c:if>
 
@@ -36,7 +36,7 @@
 				class="btn btn-lg btn-success" />
 		</form:form>
 		<p><br>
-		Once Kafka listeners have been started, Giles will proceed processing image extraction requests.
+		Kafka listeners have been stopped!!!
 	    </p>
 	</c:if>
 	</center></div>

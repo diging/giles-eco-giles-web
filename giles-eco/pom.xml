@@ -20,7 +20,7 @@
         <geco.requests.version>0.7</geco.requests.version>
         <geco.util.version>0.4.3</geco.util.version>
         <geco.september.util.version>0.2</geco.september.util.version>
-		<geco.kafka-util.version>0.1</geco.kafka-util.version>
+        <geco.kafka-util.version>0.1</geco.kafka-util.version>
         <geco.september.util.version>0.2</geco.september.util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
