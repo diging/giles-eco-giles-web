@@ -24,7 +24,7 @@
 				class="btn btn-lg btn-danger" />
 		</form:form>
 		<p><br>
-        Kafka listeners have been started !
+        Kafka listeners have been started!
         </p>
 	</c:if>
 
@@ -36,7 +36,7 @@
 				class="btn btn-lg btn-success" />
 		</form:form>
 		<p><br>
-		Kafka listeners have been stopped !
+		Kafka listeners have been stopped!
 	    </p>
 	</c:if>
 	</center></div>
