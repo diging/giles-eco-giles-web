@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.ImageAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.InjectImagePath;
+import edu.asu.diging.gilesecosystem.web.controllers.util.DigilibHelper;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -35,17 +37,11 @@ import edu.asu.diging.gilesecosystem.web.util.DigilibConnector;
 @Controller
 public class DigilibPassthroughController {
 
-    private static Logger logger = LoggerFactory
-            .getLogger(DigilibPassthroughController.class);
-
     @Autowired
     private ITransactionalFileService filesService;
 
     @Autowired
-    private DigilibConnector digilibConnector;
-
-    @Autowired
-    private ISystemMessageHandler messageHandler;
+    private DigilibHelper digilibHelper;
     
     @ImageAccessCheck
     @RequestMapping(value = "/rest/digilib")
@@ -68,53 +64,10 @@ public class DigilibPassthroughController {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
 
-        MultiValueMap<String, String> headers = new HttpHeaders();        
-        Map<String, String[]> parameters = request.getParameterMap();
-
-        StringBuffer parameterBuffer = new StringBuffer();
-        for (String key : parameters.keySet()) {
-            if (key.equals("accessToken")) {
-                continue;
-            }
-            for (String value : parameters.get(key)) {
-                parameterBuffer.append(key);
-                parameterBuffer.append("=");
-
-                parameterBuffer.append(URLEncoder.encode(value, "UTF-8"));
-                parameterBuffer.append("&");
-            }
-        }
-
-        try {
-            Map<String, List<String>> digilibHeaders = digilibConnector
-                    .getDigilibImage(parameterBuffer.toString(),
-                            response);
-            for (String key : digilibHeaders.keySet()) {
-                if (key != null) {
-                    headers.put(key, digilibHeaders.get(key));
-                }
-            }
-
-        } catch (MalformedURLException e) {
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        logger.debug("Setting headers: " + headers);
-        logger.debug("Response headers: " + response.getContentType());
-        try {
-            response.getOutputStream().close();
-        } catch (IOException e) {
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        Map<String, String[]> parameters = new HashMap<>(request.getParameterMap());
+        parameters.remove("accessToken");
+        
+        return digilibHelper.getDigilibResponse(parameters, response);
     }
     
     @RequestMapping(value = "/rest/digilib/public")
@@ -122,23 +75,18 @@ public class DigilibPassthroughController {
             HttpServletRequest request, HttpServletResponse response,
             User user)
             throws UnsupportedEncodingException {
-        Map<String, String[]> parameters = request.getParameterMap();
-        // remove accessToken since Github doesn't care about
-
+        Map<String, String[]> parameters = new HashMap<>(request.getParameterMap());
+        parameters.remove("accessToken");
+        
+        String[] fnParameter = parameters.get("fn");
         String fn = null;
-        StringBuffer parameterBuffer = new StringBuffer();
-        for (String key : parameters.keySet()) {
-            for (String value : parameters.get(key)) {
-                parameterBuffer.append(key);
-                parameterBuffer.append("=");
-
-                parameterBuffer.append(URLEncoder.encode(value, "UTF-8"));
-                parameterBuffer.append("&");
-
-                if (key.equals("fn")) {
-                    fn = value;
-                }
-            }
+        // get the first entry for fn
+        if (fnParameter != null && fnParameter.length > 0) {
+            fn = fnParameter[0];
+        }
+        
+        if (fn == null) {
+            return new ResponseEntity<String>("{ 'error': 'Please provide fn parameter' }", HttpStatus.BAD_REQUEST);
         }
         
         IFile file = filesService.getFileByPath(fn);
@@ -156,26 +104,6 @@ public class DigilibPassthroughController {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
         
-        MultiValueMap<String, String> headers = new HttpHeaders();
-        try {
-            Map<String, List<String>> digilibHeaders = digilibConnector
-                    .getDigilibImage(parameterBuffer.toString(),
-                            response);
-            for (String key : digilibHeaders.keySet()) {
-                if (key != null) {
-                    headers.put(key, digilibHeaders.get(key));
-                }
-            }
-        } catch (MalformedURLException e) {
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        return digilibHelper.getDigilibResponse(parameters, response);
     }
 }
