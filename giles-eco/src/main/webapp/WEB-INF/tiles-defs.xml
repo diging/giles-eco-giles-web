@@ -95,7 +95,9 @@
     <definition name="admin/requests/inProgress" extends="base.definition">
         <put-attribute name="content" value="/WEB-INF/views/admin/requests_inprogress.jsp" />
     </definition>
-	
+    <definition name="admin/kafka/listeners" extends="base.definition">
+    	<put-attribute name="content" value="/WEB-INF/views/admin/manage_listeners.jsp" />
+    </definition>
 	<!--  apps -->
 	<definition name="admin/apps" extends="base.definition">
 		<put-attribute name="content" value="/WEB-INF/views/admin/apps.jsp" />
@@ -113,6 +115,11 @@
     <!-- Requests -->
     <definition name="admin/requests/current" extends="base.definition">
         <put-attribute name="content" value="/WEB-INF/views/admin/currentRequests.jsp" />
+    </definition>
+    
+    <!-- Recent uploads -->
+    <definition name="admin/uploads" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/uploads.jsp" />
     </definition>
     
     <!-- Migration -->

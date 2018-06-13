@@ -54,6 +54,10 @@ public class SecurityAspect {
         Authentication auth = SecurityContextHolder.getContext()
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
+        
+        if (user.getIsAdmin()) {
+            return joinPoint.proceed();
+        }
 
         IUpload upload = uploadService.getUpload(uploadId);
         if (upload == null) {
@@ -74,6 +78,10 @@ public class SecurityAspect {
         Authentication auth = SecurityContextHolder.getContext()
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
+        
+        if (user.getIsAdmin()) {
+            return joinPoint.proceed();
+        }
 
         IDocument doc = documentService.getDocument(docId);
         if (doc == null) {
@@ -97,6 +105,10 @@ public class SecurityAspect {
         Authentication auth = SecurityContextHolder.getContext()
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
+        
+        if (user.getIsAdmin()) {
+            return joinPoint.proceed();
+        }
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {

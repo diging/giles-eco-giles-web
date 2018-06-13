@@ -52,7 +52,7 @@ public class ViewUploadController {
     
     @AccountCheck
     @UploadIdAccessCheck
-    @RequestMapping(value = "/uploads/{uploadId}")
+    @RequestMapping(value = {"/uploads/{uploadId}"})
     public String showUploadPage(@PathVariable("uploadId") String uploadId,
             Model model, Locale locale) throws GilesMappingException {
         IUpload upload = uploadService.getUpload(uploadId);

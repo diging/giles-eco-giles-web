@@ -1,7 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.rest;
 
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +33,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.DocumentAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileTokenAccessCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.controllers.util.DigilibHelper;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -71,6 +76,9 @@ public class FilesController {
 
     @Autowired
     private ISystemMessageHandler messageHandler;
+    
+    @Autowired
+    private DigilibHelper digilibHelper;
     
     @TokenCheck
     @RequestMapping(value = "/rest/files/uploads", produces = "application/json;charset=UTF-8")
@@ -189,7 +197,7 @@ public class FilesController {
             @RequestParam(defaultValue="") String accessToken, 
             User user,
             HttpServletResponse response,
-            HttpServletRequest request) {
+            HttpServletRequest request) throws UnsupportedEncodingException {
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {
@@ -200,6 +208,17 @@ public class FilesController {
                 && !file.getUsername().equals(user.getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
+        Map<String,String[]> allParameters = new HashMap<>(request.getParameterMap());
+        // if we have an image and have parameters, pass this on to digilib
+        if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
+            
+            allParameters.remove("accessToken");
+            if (!allParameters.isEmpty()) {
+                allParameters.put("fn", new String[] { file.getFilepath()});
+                digilibHelper.getDigilibResponse(allParameters, response);
+            }
+        }
+        
 
         byte[] content = filesManager.getFileContent(file);
         if (content == null) {

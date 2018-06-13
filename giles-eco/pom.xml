@@ -20,7 +20,8 @@
         <geco.requests.version>0.7</geco.requests.version>
         <geco.util.version>0.4.3</geco.util.version>
         <geco.september.util.version>0.2</geco.september.util.version>
-
+        <geco.kafka-util.version>0.1</geco.kafka-util.version>
+        
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
         <tomcat.server.id>TomcatServer</tomcat.server.id>
@@ -96,6 +97,17 @@
     <dependencies>
 
         <!-- Giles Ecosystem -->
+        
+        <dependency>
+            <groupId>edu.asu.diging.giles-eco</groupId>
+            <artifactId>kafka-util</artifactId>
+            <version>${geco.kafka-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.asu.diging.giles-eco</groupId>
+            <artifactId>september-util</artifactId>
+            <version>${geco.september.util.version}</version>
+        </dependency>
         <dependency>
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>requests</artifactId>
