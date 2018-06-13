@@ -117,6 +117,11 @@
         <put-attribute name="content" value="/WEB-INF/views/admin/currentRequests.jsp" />
     </definition>
     
+    <!-- Recent uploads -->
+    <definition name="admin/uploads" extends="base.definition">
+        <put-attribute name="content" value="/WEB-INF/views/admin/uploads.jsp" />
+    </definition>
+    
     <!-- Migration -->
     <definition name="admin/migrate" extends="base.definition">
         <put-attribute name="content" value="/WEB-INF/views/admin/migrate/migrate.jsp" />

@@ -64,7 +64,7 @@ public class ViewDocumentController {
 
     @AccountCheck
     @DocumentIdAccessCheck
-    @RequestMapping(value = "/documents/{docId}", method = RequestMethod.GET)
+    @RequestMapping(value = {"/documents/{docId}"}, method = RequestMethod.GET)
     public String showDocument(@PathVariable String docId, Model model, Locale locale)
             throws GilesMappingException {
         IDocument doc = documentService.getDocument(docId);

@@ -117,6 +117,7 @@
                 <li><a href="<c:url value="/admin/requests" />">Resend Requests</a></li>
                 <li><a href="<c:url value="/admin/requests/current" />">Monitor Requests</a></li>
                 <li><a href="<c:url value="/admin/kafka/listeners" />">Start/Stop Kafka Listeners</a></li>
+                <li><a href="<c:url value="/admin/uploads" />">Recent Uploads</a></li>
               </ul>
           	</li>
           </sec:authorize>
