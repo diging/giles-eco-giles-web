@@ -34,4 +34,10 @@ public interface ITransactionalUploadService {
 
     IUpload createUpload(String username, String uploadId, String uploadDate, String uploadProgressId);
 
+    int getUploadsPageCount();
+
+    List<IUpload> getUploads(int page, int pageSize, String sortBy, int sortDirection);
+
+    long getUploadsCount();
+
 }

@@ -24,4 +24,10 @@ public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
 
     long getUploadCountForUser(String username);
 
+    long getUploadCount();
+
+    List<IUpload> getUploads();
+
+    List<IUpload> getUploads(int page, int pageSize, String sortBy, int sortDirection);
+
 }

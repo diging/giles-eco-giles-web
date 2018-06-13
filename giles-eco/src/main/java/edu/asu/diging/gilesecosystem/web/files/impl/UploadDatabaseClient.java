@@ -63,8 +63,22 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
     
     @Override
+    public List<IUpload> getUploads() {
+        List<IUpload> results = new ArrayList<IUpload>();
+        TypedQuery<Upload> query = getClient().createQuery("SELECT t FROM Upload t", Upload.class);
+        query.getResultList().forEach(x -> results.add(x));
+        return results;
+    }
+    
+    @Override
     public long getUploadCountForUser(String username) {
         TypedQuery<Long> query = getClient().createQuery("SELECT count(t) FROM Upload t WHERE t.username = '" + username + "'", Long.class);
+        return query.getSingleResult();
+    }
+    
+    @Override
+    public long getUploadCount() {
+        TypedQuery<Long> query = getClient().createQuery("SELECT count(t) FROM Upload t", Long.class);
         return query.getSingleResult();
     }
     
@@ -92,6 +106,21 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         
         TypedQuery<IUpload> query = em.createQuery("SELECT u FROM Upload u WHERE u.username=:username ORDER BY u." + sortBy + " " + order, IUpload.class);
         query.setParameter("username", username).setFirstResult((page-1)*pageSize).setMaxResults(pageSize);
+
+        return query.getResultList(); 
+    }
+    
+    @Override
+    public List<IUpload> getUploads(int page,
+            int pageSize, String sortBy, int sortDirection) {
+        
+        String order = "DESC";
+        if (sortDirection == IUploadDatabaseClient.ASCENDING) {
+            order = "ASC";
+        }
+        
+        TypedQuery<IUpload> query = em.createQuery("SELECT u FROM Upload u ORDER BY u." + sortBy + " " + order, IUpload.class);
+        query.setFirstResult((page-1)*pageSize).setMaxResults(pageSize);
 
         return query.getResultList(); 
     }

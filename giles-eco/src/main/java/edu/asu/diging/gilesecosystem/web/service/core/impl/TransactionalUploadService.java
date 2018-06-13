@@ -74,14 +74,43 @@ public class TransactionalUploadService implements ITransactionalUploadService {
     }
     
     @Override
+    public List<IUpload> getUploads(int page, int pageSize, String sortBy, int sortDirection) {
+        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
+        if (pageSize == -1) {
+            pageSize = defaultPageSize;
+        }
+        if (page < 1) {
+            page = 1;
+        }
+        int pageCount = getUploadsPageCount();
+        pageCount = pageCount > 0 ? pageCount : 1;
+        if (page > pageCount) {
+            page = pageCount;
+        }
+        return uploadDatabaseClient.getUploads(page, pageSize, sortBy, sortDirection);
+    }
+    
+    @Override
     public long getUploadsOfUserCount(String username) {
         return uploadDatabaseClient.getUploadCountForUser(username);
+    }
+    
+    @Override
+    public long getUploadsCount() {
+        return uploadDatabaseClient.getUploadCount();
     }
     
     @Override
     public int getUploadsOfUserPageCount(String username) {
         int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
         long totalUploads = getUploadsOfUserCount(username);
+        return (int) Math.ceil(new Double(totalUploads) / new Double(defaultPageSize));
+    }
+    
+    @Override
+    public int getUploadsPageCount() {
+        int defaultPageSize = new Integer(propertyManager.getProperty(Properties.DEFAULT_PAGE_SIZE));
+        long totalUploads = getUploadsCount();
         return (int) Math.ceil(new Double(totalUploads) / new Double(defaultPageSize));
     }
     
