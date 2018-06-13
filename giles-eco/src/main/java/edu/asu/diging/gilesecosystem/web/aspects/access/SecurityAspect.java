@@ -23,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentServ
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Aspect
@@ -55,7 +56,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
         
-        if (user.getIsAdmin()) {
+        if (user.getRoles().contains(GilesGrantedAuthority.ROLE_ADMIN)) {
             return joinPoint.proceed();
         }
 
@@ -79,7 +80,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
         
-        if (user.getIsAdmin()) {
+        if (user.getRoles().contains(GilesGrantedAuthority.ROLE_ADMIN)) {
             return joinPoint.proceed();
         }
 
@@ -106,7 +107,7 @@ public class SecurityAspect {
                 .getAuthentication();
         User user = (User) auth.getPrincipal();
         
-        if (user.getIsAdmin()) {
+        if (user.getRoles().contains(GilesGrantedAuthority.ROLE_ADMIN)) {
             return joinPoint.proceed();
         }
 
