@@ -57,9 +57,9 @@ $(".link-row").css("cursor", "pointer");
     
     <tbody>
     <c:forEach items="${uploads}" var="upload">
-    <tr class='link-row' data-href='<c:url value="/admin/uploads/${upload.id}" />'>
+    <tr class='link-row' data-href='<c:url value="/uploads/${upload.id}" />'>
         <td><span class="date">${upload.createdDate}</span></td>
-        <td><a href="<c:url value="/admin/uploads/${upload.id}" />">${upload.id}</a></td>
+        <td><a href="<c:url value="/uploads/${upload.id}" />">${upload.id}</a></td>
         <td>${upload.nrOfDocuments} uploaded document<c:if test="${upload.nrOfDocuments>1}">s</c:if></td>
         <td>
             <img src="https://img.shields.io/badge/${upload.status.subject}-${upload.status.status}-${upload.status.color}.svg">
