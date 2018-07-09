@@ -107,7 +107,11 @@ public class ViewDocumentController {
         docBean.setPages(new ArrayList<>());
         
         List<String> ids = new ArrayList<>();
-        docBean.getTasks().forEach(t -> ids.add(t.getResultFileId()));
+        docBean.getTasks().forEach(t -> {
+            if (t.getResultFileId() != null) {
+                ids.add(t.getResultFileId());
+            }
+        });
         Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
         
         
