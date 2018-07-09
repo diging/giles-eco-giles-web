@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.service.core.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -57,14 +58,26 @@ public class TransactionalFileService implements ITransactionalFileService {
     
     @Override
     public Map<String, IFile> getFilesForPage(IPage page) {
-        List<String> ids = Arrays.asList(page.getImageFileId(), page.getOcrFileId(), page.getTextFileId());
+        List<String> ids = new ArrayList<>();
+        if (page.getImageFileId() != null) {
+            ids.add(page.getImageFileId());
+        }
+        if (page.getOcrFileId() != null) {
+            ids.add(page.getOcrFileId());
+        }
+        if (page.getTextFileId() != null) {
+            ids.add(page.getTextFileId());
+        }
         return getFilesForIds(ids);
     }
     
     @Override
     public Map<String, IFile> getFilesForIds(List<String> ids) {
-        List<IFile> files = filesDbClient.getFilesForIds(ids);
         Map<String, IFile> fileMap = new HashMap<>();
+        if (ids == null || ids.isEmpty()) {
+            return fileMap;
+        }
+        List<IFile> files = filesDbClient.getFilesForIds(ids);
         files.forEach(f -> fileMap.put(f.getId(), f));
         return fileMap;
     }
