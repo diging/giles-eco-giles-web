@@ -58,6 +58,11 @@ public class TransactionalFileService implements ITransactionalFileService {
     @Override
     public Map<String, IFile> getFilesForPage(IPage page) {
         List<String> ids = Arrays.asList(page.getImageFileId(), page.getOcrFileId(), page.getTextFileId());
+        return getFilesForIds(ids);
+    }
+    
+    @Override
+    public Map<String, IFile> getFilesForIds(List<String> ids) {
         List<IFile> files = filesDbClient.getFilesForIds(ids);
         Map<String, IFile> fileMap = new HashMap<>();
         files.forEach(f -> fileMap.put(f.getId(), f));

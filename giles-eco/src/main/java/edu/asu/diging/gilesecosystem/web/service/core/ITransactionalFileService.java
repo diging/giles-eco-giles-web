@@ -27,4 +27,6 @@ public interface ITransactionalFileService {
 
     Map<String, IFile> getFilesForPage(IPage page);
 
+    Map<String, IFile> getFilesForIds(List<String> ids);
+
 }
