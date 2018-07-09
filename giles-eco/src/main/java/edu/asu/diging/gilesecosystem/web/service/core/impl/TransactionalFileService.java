@@ -1,6 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.service.core.impl;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
@@ -49,6 +53,15 @@ public class TransactionalFileService implements ITransactionalFileService {
             return null;
         }
         return filesDbClient.getFileById(id);
+    }
+    
+    @Override
+    public Map<String, IFile> getFilesForPage(IPage page) {
+        List<String> ids = Arrays.asList(page.getImageFileId(), page.getOcrFileId(), page.getTextFileId());
+        List<IFile> files = filesDbClient.getFilesForIds(ids);
+        Map<String, IFile> fileMap = new HashMap<>();
+        files.forEach(f -> fileMap.put(f.getId(), f));
+        return fileMap;
     }
     
     @Override
