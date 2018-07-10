@@ -105,44 +105,55 @@ public class ViewDocumentController {
         docBean.setTextFiles(new ArrayList<>());
         docBean.setMetadataUrl(metadataService.getDocumentLink(doc));
         docBean.setPages(new ArrayList<>());
-
+        
+        List<String> ids = new ArrayList<>();
+        docBean.getTasks().forEach(t -> {
+            if (t.getResultFileId() != null) {
+                ids.add(t.getResultFileId());
+            }
+        });
+        Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
+        
+        
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, origFile, docBean.getTasks());
+                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap);
             docBean.setUploadedFile(bean);
         }
 
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, textFile, docBean.getTasks());
+                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap);
             docBean.setExtractedTextFile(bean);
         }
-
+        
         for (IPage page : doc.getPages()) {
             PagePageBean bean = pageMappingService.convertToT2(page, new PagePageBean());
             docBean.getPages().add(bean);
+            
+            Map<String, IFile> pageFiles = fileService.getFilesForPage(page);
 
-            IFile imageFile = fileService.getFileById(page.getImageFileId());
+            IFile imageFile = pageFiles.get(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean pageBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks());
+                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks(), additionalFilesMap);
                 bean.setImageFile(pageBean);
 
             }
 
-            IFile pageTextFile = fileService.getFileById(page.getTextFileId());
+            IFile pageTextFile = pageFiles.get(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks());
+                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap);
                 bean.setTextFile(textBean);
             }
 
-            IFile ocrFile = fileService.getFileById(page.getOcrFileId());
+            IFile ocrFile = pageFiles.get(page.getOcrFileId());
             if (ocrFile != null) {
                 FilePageBean ocrBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks());
+                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks(), additionalFilesMap);
                 bean.setOcrFile(ocrBean);
             }
         }
@@ -153,19 +164,20 @@ public class ViewDocumentController {
     private FilePageBean createFilePageBean(
             IGilesMappingService<IFile, FilePageBean> fileMappingService,
             Map<String, List<IProcessingRequest>> requestsByFileId,
-            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks)
+            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks, Map<String, IFile> additionalFiles)
             throws GilesMappingException {
         FilePageBean pageBean = fileMappingService.convertToT2(file, new FilePageBean());
         pageBean.setMetadataLink(metadataService.getFileLink(file));
         setRequestStatus(pageBean, requestsByFileId);
         pageBean.setBadges(badgesByFile.get(pageBean.getId()));
-        addAdditionalFiles(pageBean, tasks, requestsByFileId);
+        addAdditionalFiles(pageBean, tasks, requestsByFileId, additionalFiles);
         return pageBean;
     }
 
-    private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, Map<String, List<IProcessingRequest>> requestsByFileId) {
+    private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, 
+            Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles) {
         tasks.forEach(t -> {
-            IFile additionalFile = fileService.getFileById(t.getResultFileId());
+            IFile additionalFile = additionalFiles.get(t.getResultFileId());
             if (additionalFile != null) {   
                 if (bean.getId().equals(additionalFile.getDerivedFrom())) {
                     AdditionalFilePageBean additionalFileBean = new AdditionalFilePageBean(t.getResultFileId(),

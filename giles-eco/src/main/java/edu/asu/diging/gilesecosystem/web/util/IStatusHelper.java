@@ -1,9 +1,12 @@
 package edu.asu.diging.gilesecosystem.web.util;
 
+import java.util.List;
+
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 
 /**
  * Implementations of this interface provide support for calculating statuses of
@@ -32,7 +35,7 @@ public interface IStatusHelper {
      * if at least one of them submitted; otherwise it returns {@link RequestStatus.COMPLETE}.
      * 
      * @param requestClass The type of request that should be filtered on.
-     * @param document The document for which the processing phase result should be deteremined.
+     * @param procRequests The processing results used to determine the request status.
      * @return The request status of the document according to the conditions in the following order:
      * <ol>
      *  <li>{@link RequestStatus.FAILED}: if at least one request failed.</li>
@@ -41,7 +44,7 @@ public interface IStatusHelper {
      *  <li>{@link RequestStatus.COMPLETE}: in any other case.</li>
      * </ol>
      */
-    public abstract RequestStatus getProcessingPhaseResult(Class<? extends IRequest> requestClass, IDocument document);
+    public abstract RequestStatus getProcessingPhaseResult(Class<? extends IRequest> requestClass, List<IProcessingRequest> procRequests);
 
     /**
      * Method to get the processing status of a file. If there exist a request that has

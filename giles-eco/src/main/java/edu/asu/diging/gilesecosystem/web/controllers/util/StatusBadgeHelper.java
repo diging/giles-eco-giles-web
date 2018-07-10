@@ -49,7 +49,7 @@ public class StatusBadgeHelper {
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof ITextExtractionRequest)
                 .count() > 0) {
-            RequestStatus status = statusHelper.getProcessingPhaseResult(ITextExtractionRequest.class, docBean);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(ITextExtractionRequest.class, procRequests);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager
@@ -64,7 +64,7 @@ public class StatusBadgeHelper {
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof IImageExtractionRequest)
                 .count() > 0) {
-            RequestStatus status = statusHelper.getProcessingPhaseResult(IImageExtractionRequest.class, docBean);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(IImageExtractionRequest.class, procRequests);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager
@@ -80,7 +80,7 @@ public class StatusBadgeHelper {
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof IOCRRequest)
                 .count() > 0) {
-            RequestStatus status = statusHelper.getProcessingPhaseResult(IOCRRequest.class, docBean);
+            RequestStatus status = statusHelper.getProcessingPhaseResult(IOCRRequest.class, procRequests);
             docBean.getBadges()
                 .add(new Badge(
                     propertiesManager

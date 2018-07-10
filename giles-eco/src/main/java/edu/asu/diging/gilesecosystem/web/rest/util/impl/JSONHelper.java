@@ -84,18 +84,19 @@ public class JSONHelper implements IJSONHelper {
                 ObjectNode pageNode = pagesArray.addObject();
                 pageNode.put("nr", page.getPageNr());
                 ArrayNode additionalPageFiles = mapper.createArrayNode();
+                Map<String, IFile> pageFiles = fileService.getFilesForPage(page);
                 if (page.getImageFileId() != null) {
-                    IFile imageFile = fileService.getFileById(page.getImageFileId());
+                    IFile imageFile = pageFiles.get(page.getImageFileId());
                     pageNode.set("image", createFileJsonObject(mapper, imageFile));
                     addFiletoArray(mapper, tasksByDerivedFrom, imageFile, additionalPageFiles);
                 }
                 if (page.getTextFileId() != null) {
-                    IFile textFile = fileService.getFileById(page.getTextFileId());
+                    IFile textFile = pageFiles.get(page.getTextFileId());
                     pageNode.set("text", createFileJsonObject(mapper, textFile));
                     addFiletoArray(mapper, tasksByDerivedFrom, textFile, additionalPageFiles);
                 }
                 if (page.getOcrFileId() != null) {
-                    IFile ocrFile = fileService.getFileById(page.getOcrFileId());
+                    IFile ocrFile = pageFiles.get(page.getOcrFileId());
                     pageNode.set("ocr", createFileJsonObject(mapper, ocrFile));
                     addFiletoArray(mapper, tasksByDerivedFrom, ocrFile, additionalPageFiles);
                 }

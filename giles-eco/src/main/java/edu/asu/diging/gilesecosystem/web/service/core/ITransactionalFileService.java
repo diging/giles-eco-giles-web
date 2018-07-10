@@ -1,9 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.service.core;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.domain.IPage;
 
 public interface ITransactionalFileService {
 
@@ -22,5 +24,9 @@ public interface ITransactionalFileService {
     String generateRequestId(String prefix);
 
     List<IFile> getFilesByDerivedFrom(String derivedFromId);
+
+    Map<String, IFile> getFilesForPage(IPage page);
+
+    Map<String, IFile> getFilesForIds(List<String> ids);
 
 }
