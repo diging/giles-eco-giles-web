@@ -61,10 +61,7 @@ public class StatusHelper implements IStatusHelper {
 
     @Override
     public RequestStatus getProcessingPhaseResult(Class<? extends IRequest> requestClass,
-            IDocument document) {
-        List<IProcessingRequest> procRequests = procReqDbClient
-                .getRequestByDocumentId(document.getId());
-
+            List<IProcessingRequest> procRequests) {
         if (procRequests
                 .stream()
                 .filter(preq -> requestClass.isAssignableFrom(preq.getSentRequest()

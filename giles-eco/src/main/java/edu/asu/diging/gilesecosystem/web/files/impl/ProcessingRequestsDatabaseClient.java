@@ -31,7 +31,9 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
 
     @Override
     public List<IProcessingRequest> getRequestByDocumentId(String docId) {
-        return searchByProperty("documentId", docId, ProcessingRequest.class);
+        List<Object> results = getClient().createQuery("SELECT t FROM " + IProcessingRequest.class.getName()  + " t WHERE t.documentId = '" + docId + "'").getResultList();
+        TypedQuery<IProcessingRequest> query = getClient().createQuery("SELECT t FROM " + IProcessingRequest.class.getName()  + " t WHERE t.documentId = '" + docId + "'", IProcessingRequest.class);
+        return query.getResultList();
     }
     
     @Override

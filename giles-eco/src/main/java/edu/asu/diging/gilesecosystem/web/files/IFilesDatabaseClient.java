@@ -24,4 +24,6 @@ public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
 
     List<IFile> getFilesByDerivedFrom(String derivedFromId);
 
+    List<IFile> getFilesForIds(List<String> ids);
+
 }

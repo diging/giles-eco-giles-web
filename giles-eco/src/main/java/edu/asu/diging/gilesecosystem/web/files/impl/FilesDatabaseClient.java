@@ -1,9 +1,11 @@
 package edu.asu.diging.gilesecosystem.web.files.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Component;
 
@@ -40,6 +42,13 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     @Override
     public IFile getFileById(String id) {
         return em.find(File.class, id);
+    }
+    
+    @Override
+    public List<IFile> getFilesForIds(List<String> ids) {
+        TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE t.id IN (:ids)", IFile.class);
+        query.setParameter("ids", ids);
+        return query.getResultList();
     }
 
     @Override

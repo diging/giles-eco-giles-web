@@ -196,7 +196,7 @@ public class UploadImagesController {
                     "{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
     

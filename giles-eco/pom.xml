@@ -118,11 +118,6 @@
             <artifactId>util</artifactId>
             <version>${geco.util.version}</version>
         </dependency>
-        <dependency>
-            <groupId>edu.asu.diging.giles-eco</groupId>
-            <artifactId>september-util</artifactId>
-            <version>${geco.september.util.version}</version>
-        </dependency>
 
         <!-- Spring -->
         <dependency>
