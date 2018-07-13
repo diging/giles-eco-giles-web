@@ -18,8 +18,8 @@
                 <param name="enumClass">edu.asu.diging.gilesecosystem.requests.RequestStatus</param>
             </type>
         </property>
-        <property name="downloadUrl" type="string" />
-        <property name="downloadPath" type="string" />
+        <property name="downloadUrl" type="text" />
+        <property name="downloadPath" type="text" />
         <property name="errorMsg" type="string" />
         <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest" table="CompletedImageExtractionRequest">
             <key column="id" />
