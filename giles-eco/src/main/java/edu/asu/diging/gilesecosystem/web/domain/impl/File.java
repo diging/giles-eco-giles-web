@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.domain.impl;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
@@ -23,14 +24,14 @@ public class File implements IFile {
 
     @Id private String id;
     private String uploadId;
-    private String filename;
+    @Lob private String filename;
     private String username;
     private String documentId;
     private String uploadDate;
     private DocumentAccess access;
     private String contentType;
     private long size;
-    private String filepath; 
+    @Lob private String filepath; 
     private String derivedFrom;
     private String usernameForStorage;
     private String requestId;
