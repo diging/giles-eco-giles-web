@@ -47,15 +47,35 @@ public class NepomukUrlService implements INepomukUrlService {
 					MessageType.ERROR);
 			return null;
 		}
-		System.out.println("@@nepomukUrl" + nepomukUrl);
-		System.out.println("propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT)"
-				+ propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT));
 
-		downloadPath = nepomukUrl
-				+ propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}", file.getStorageId());
+		downloadPath = "";
 
-		if (downloadPath != null && downloadPath.contains("//")) {
-			downloadPath = downloadPath.replace("//", "/");
+		try {
+			downloadPath = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}",
+					file.getStorageId());
+		} catch (Exception e) {
+
+			messageHandler.handleMessage("Nepomuk Download URL could not be validated.", e, MessageType.ERROR);
+
+		}
+
+		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) {
+
+			String[] components = downloadPath.split("//");
+
+			StringBuilder downloadUrl = new StringBuilder();
+
+			downloadUrl.append(components[0]);
+			downloadUrl.append("//");
+			downloadUrl.append(components[1]);
+
+			for (int i = 2; i < components.length; i++) {
+				downloadUrl.append("/");
+				downloadUrl.append(components[i]);
+			}
+
+			return downloadUrl.toString();
+
 		}
 		return downloadPath;
 	}
