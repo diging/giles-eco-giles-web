@@ -59,6 +59,7 @@ public class NepomukUrlService implements INepomukUrlService {
 
 		}
 
+		// check for extra slash in download url
 		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) {
 
 			String[] components = downloadPath.split("//");
@@ -74,8 +75,14 @@ public class NepomukUrlService implements INepomukUrlService {
 				downloadUrl.append(components[i]);
 			}
 
-			return downloadUrl.toString();
+			downloadPath = downloadUrl.toString();
 
+		}
+
+		// check for null values in url
+		if (downloadPath == null || downloadPath.contains("null")) {
+			messageHandler.handleMessage("Nepomuk Unavailable",
+					"Could not download file. Nepomuk could not be reached.", MessageType.ERROR);
 		}
 		return downloadPath;
 	}

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
@@ -41,6 +42,12 @@ public class RequestHelper {
         request.setUploadDate(file.getUploadDate());
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
+        
+		// check for null values
+		if (request != null && (request.getDownloadUrl() == null || request.getDownloadUrl().contains("null"))) {
+			request.setStatus(RequestStatus.FAILED);
+			request.setErrorMsg("Null value/components found in download URL while creating Storage Request.");
+		}
         
         return request;
     }
