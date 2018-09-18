@@ -58,8 +58,13 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         }
           
         request.setDocumentId(file.getDocumentId());
+		if (nepomukService.getFileDownloadPath(file) == null) {
+			request.setStatus(RequestStatus.FAILED);
+		} else {
+			request.setStatus(RequestStatus.SUBMITTED);
+		}
         request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
-        request.setStatus(RequestStatus.SUBMITTED);
+        
         request.setFilename(file.getFilename());
         
         return request;
