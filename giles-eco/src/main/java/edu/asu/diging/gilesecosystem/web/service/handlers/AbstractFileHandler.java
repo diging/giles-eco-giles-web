@@ -57,20 +57,23 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
     }
     
     @Override
-    public byte[] getFileContent(IFile file) {
-        try {
-            String downloadUrl = nepomukService.getFileDownloadPath(file);
-            if (downloadUrl == null || downloadUrl.contains("null")) {
-            	messageHandler.handleMessage("Url Error.","Download Url is null or has null value components.", MessageType.ERROR);
-                return null;
-            }
-            
-            return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
-        } catch (IOException e) {
-            messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
-            return null;
-        } 
-    }
+	public byte[] getFileContent(IFile file) {
+		String downloadUrl;
+
+		try {
+			downloadUrl = nepomukService.getFileDownloadPath(file);
+
+			if (downloadUrl == null || downloadUrl.contains("null")) {
+				messageHandler.handleMessage("Url Error.", "Download Url is null or has null value components.",
+						MessageType.ERROR);
+				return null;
+			}
+			return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
+		} catch (IOException e) {
+			messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
+			return null;
+		}
+	}
     
     @Override
     public String getFileUrl(IFile file) {
