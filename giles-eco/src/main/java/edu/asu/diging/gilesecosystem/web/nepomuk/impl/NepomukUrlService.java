@@ -21,28 +21,69 @@ import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
 @Service
 public class NepomukUrlService implements INepomukUrlService {
 
-    @Autowired
-    protected INepomukServiceDiscoverer nepomukDiscoverer;
-    
-    @Autowired
-    protected IPropertiesManager propertyManager;
-    
-    @Autowired
-    private ISystemMessageHandler messageHandler;
+	@Autowired
+	protected INepomukServiceDiscoverer nepomukDiscoverer;
 
-    /* (non-Javadoc)
-     * @see edu.asu.diging.gilesecosystem.web.nepomuk.impl.INepomukUrlService#getFileDownloadPath(edu.asu.diging.gilesecosystem.web.domain.IFile)
-     */
-    @Override
-    public String getFileDownloadPath(IFile file) {
-        String nepomukUrl;
-        try {
-            nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
-        } catch (NoNepomukFoundException e) {
-            messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e, MessageType.ERROR);
-            return null;
-        }
-        
-        return nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}", file.getStorageId());
-    }
+	@Autowired
+	protected IPropertiesManager propertyManager;
+
+	@Autowired
+	private ISystemMessageHandler messageHandler;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.asu.diging.gilesecosystem.web.nepomuk.impl.INepomukUrlService#
+	 * getFileDownloadPath(edu.asu.diging.gilesecosystem.web.domain.IFile)
+	 */
+	@Override
+	public String getFileDownloadPath(IFile file) {
+		String nepomukUrl;
+		String downloadPath;
+		try {
+			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
+		} catch (NoNepomukFoundException e) {
+			messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e,
+					MessageType.ERROR);
+			return null;
+		}
+
+		downloadPath = "";
+
+		try {
+			downloadPath = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}",
+					file.getStorageId());
+		} catch (Exception e) {
+
+			messageHandler.handleMessage("Nepomuk Download URL could not be validated.", e, MessageType.ERROR);
+
+		}
+
+		// check for extra slash in download url
+		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) {
+
+			String[] components = downloadPath.split("//");
+
+			StringBuilder downloadUrl = new StringBuilder();
+
+			downloadUrl.append(components[0]);
+			downloadUrl.append("//");
+			downloadUrl.append(components[1]);
+
+			for (int i = 2; i < components.length; i++) {
+				downloadUrl.append("/");
+				downloadUrl.append(components[i]);
+			}
+
+			downloadPath = downloadUrl.toString();
+
+		}
+
+		// check for null values in url
+		if (downloadPath == null || downloadPath.contains("null")) {
+			messageHandler.handleMessage("Nepomuk Unavailable",
+					"Could not download file. Nepomuk could not be reached.", MessageType.ERROR);
+		}
+		return downloadPath;
+	}
 }

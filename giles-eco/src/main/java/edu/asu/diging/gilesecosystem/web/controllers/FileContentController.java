@@ -6,6 +6,8 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 @Controller
 public class FileContentController {
+	
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
     private IFilesManager filesManager;
@@ -48,7 +52,13 @@ public class FileContentController {
 
         byte[] content = filesManager.getFileContent(file);
         response.setContentType(file.getContentType());
-        response.setContentLength(content.length);
+        
+        if(content == null) {
+            logger.error("Could not retrieve file content.");
+            return new ResponseEntity<String>("{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }", HttpStatus.INTERNAL_SERVER_ERROR);
+        }else {
+            response.setContentLength(content.length);
+        }
         response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\""); 
         try {
             response.getOutputStream().write(content);
