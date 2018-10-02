@@ -67,7 +67,6 @@ public class FileContentController {
             messageHandler.handleMessage("Could not write to output stream.", e, MessageType.ERROR);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 }

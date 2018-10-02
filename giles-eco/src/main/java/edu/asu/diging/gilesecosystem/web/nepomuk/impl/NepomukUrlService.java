@@ -39,7 +39,7 @@ public class NepomukUrlService implements INepomukUrlService {
 	@Override
 	public String getFileDownloadPath(IFile file) {
 		String nepomukUrl;
-		String downloadPath;
+		String downloadPath="";
 		try {
 			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
 		} catch (NoNepomukFoundException e) {
@@ -47,23 +47,14 @@ public class NepomukUrlService implements INepomukUrlService {
 					MessageType.ERROR);
 			return null;
 		}
-
-		downloadPath = "";
-
 		try {
 			downloadPath = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}",
 					file.getStorageId());
 		} catch (Exception e) {
-
 			messageHandler.handleMessage("Nepomuk Download URL could not be validated.", e, MessageType.ERROR);
-
 		}
-
-		// check for extra slash in download url
-		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) {
-
+		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) { // check for extra slash in download url
 			String[] components = downloadPath.split("//");
-
 			StringBuilder downloadUrl = new StringBuilder();
 
 			downloadUrl.append(components[0]);
@@ -74,13 +65,9 @@ public class NepomukUrlService implements INepomukUrlService {
 				downloadUrl.append("/");
 				downloadUrl.append(components[i]);
 			}
-
 			downloadPath = downloadUrl.toString();
-
 		}
-
-		// check for null values in url
-		if (downloadPath == null || downloadPath.contains("null")) {
+		if (downloadPath == null || downloadPath.contains("null")) { // check for null values in url
 			messageHandler.handleMessage("Nepomuk Unavailable",
 					"Could not download file. Nepomuk could not be reached.", MessageType.ERROR);
 		}

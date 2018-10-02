@@ -43,8 +43,7 @@ public class RequestHelper {
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
         
-		// check for null values
-		if (request != null && (request.getDownloadUrl() == null || request.getDownloadUrl().contains("null"))) {
+		if ((request != null) && ((request.getDownloadUrl() == null) || (request.getDownloadUrl().contains("null")))) {  // check for null values
 			request.setStatus(RequestStatus.FAILED);
 			request.setErrorMsg("Null value/components found in download URL while creating Storage Request.");
 		}

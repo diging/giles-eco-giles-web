@@ -62,7 +62,7 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
 		try {
 		  downloadUrl = nepomukService.getFileDownloadPath(file);
           if (downloadUrl == null || downloadUrl.contains("null")) {
-				messageHandler.handleMessage("Url Error.", "Download Url is null or has null value components.",
+				messageHandler.handleMessage("Url Error.", "Download Url has null value components.",
 						MessageType.ERROR);
 				return null;
 		  }
