@@ -42,8 +42,16 @@ public class NepomukUrlService implements INepomukUrlService {
 		String downloadPath="";
 		try {
 			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
+			if (nepomukUrl == null) {
+				throw new NullPointerException();
+			}
+			
 		} catch (NoNepomukFoundException e) {
 			messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e,
+					MessageType.ERROR);
+			return null;
+		} catch (NullPointerException e) {
+			messageHandler.handleMessage("Could not download file. Nepomuk is unavailable.", e,
 					MessageType.ERROR);
 			return null;
 		}

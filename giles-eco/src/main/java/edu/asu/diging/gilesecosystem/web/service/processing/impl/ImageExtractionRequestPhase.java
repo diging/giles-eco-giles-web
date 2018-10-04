@@ -62,7 +62,10 @@ public class ImageExtractionRequestPhase extends ProcessingPhase<IProcessingInfo
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
         }
-          
+        
+        if ((nepomukService != null) && (nepomukService.getFileDownloadPath(file) == null)) {
+        	throw new NullPointerException();
+        }
         request.setDocumentId(file.getDocumentId());
         request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
         request.setStatus(RequestStatus.SUBMITTED);

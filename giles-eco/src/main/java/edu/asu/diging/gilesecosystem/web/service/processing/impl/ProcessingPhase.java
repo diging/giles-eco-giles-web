@@ -55,6 +55,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         } catch (GilesProcessingException ex) {
             messageHandler.handleMessage("Could not create request.", ex, MessageType.ERROR);
             return RequestStatus.FAILED;
+        } catch (NullPointerException ex) {
+        	messageHandler.handleMessage("Could not create request.Nepomuk is unreachable", ex, MessageType.ERROR);
+            return RequestStatus.FAILED;
         }
         
         if (request == null) {
