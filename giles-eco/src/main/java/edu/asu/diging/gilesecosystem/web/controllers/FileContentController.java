@@ -20,6 +20,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
@@ -43,7 +44,7 @@ public class FileContentController {
     public ResponseEntity<String> getFile(
             @PathVariable String fileId,
             HttpServletResponse response,
-            HttpServletRequest request, Principal principal) {
+            HttpServletRequest request, Principal principal) throws NoNepomukFoundException {
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {

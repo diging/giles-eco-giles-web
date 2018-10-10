@@ -13,6 +13,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.nepomuk.INepomukUrlService;
 import edu.asu.diging.gilesecosystem.web.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
@@ -57,15 +58,15 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
 	}
 
 	@Override
-	public byte[] getFileContent(IFile file) {
+	public byte[] getFileContent(IFile file) throws NoNepomukFoundException {
 		String downloadUrl;
 		try {
 		  downloadUrl = nepomukService.getFileDownloadPath(file);
-          if (downloadUrl == null || downloadUrl.contains("null")) {
+      /*    if (downloadUrl == null || downloadUrl.contains("null")) {
 				messageHandler.handleMessage("Url Error.", "Download Url has null value components.",
 						MessageType.ERROR);
 				return null;
-		  }
+		  }*/
 		  return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
 		} catch (IOException e) {
 		  messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);

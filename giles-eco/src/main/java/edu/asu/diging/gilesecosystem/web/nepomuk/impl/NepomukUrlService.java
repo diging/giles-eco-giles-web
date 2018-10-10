@@ -37,48 +37,29 @@ public class NepomukUrlService implements INepomukUrlService {
 	 * getFileDownloadPath(edu.asu.diging.gilesecosystem.web.domain.IFile)
 	 */
 	@Override
-	public String getFileDownloadPath(IFile file) {
+	public String getFileDownloadPath(IFile file) throws NoNepomukFoundException {
 		String nepomukUrl;
 		String downloadPath="";
 		try {
 			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
-			if (nepomukUrl == null) {
-				throw new NullPointerException();
-			}
-			
+			System.out.println("nepomukUrl**"+nepomukUrl);
 		} catch (NoNepomukFoundException e) {
 			messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e,
 					MessageType.ERROR);
-			return null;
-		} catch (NullPointerException e) {
-			messageHandler.handleMessage("Could not download file. Nepomuk is unavailable.", e,
-					MessageType.ERROR);
-			return null;
+			System.out.println("nepomukUrl**@@");
+			throw new NoNepomukFoundException();
+		} 
+		if(nepomukUrl == null) {
+			throw new NoNepomukFoundException();
 		}
+		
 		try {
 			downloadPath = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}",
 					file.getStorageId());
 		} catch (Exception e) {
 			messageHandler.handleMessage("Nepomuk Download URL could not be validated.", e, MessageType.ERROR);
 		}
-		if (downloadPath != null && downloadPath.matches("http://(.*)//(.*)")) { // check for extra slash in download url
-			String[] components = downloadPath.split("//");
-			StringBuilder downloadUrl = new StringBuilder();
-
-			downloadUrl.append(components[0]);
-			downloadUrl.append("//");
-			downloadUrl.append(components[1]);
-
-			for (int i = 2; i < components.length; i++) {
-				downloadUrl.append("/");
-				downloadUrl.append(components[i]);
-			}
-			downloadPath = downloadUrl.toString();
-		}
-		if (downloadPath == null || downloadPath.contains("null")) { // check for null values in url
-			messageHandler.handleMessage("Nepomuk Unavailable",
-					"Could not download file. Nepomuk could not be reached.", MessageType.ERROR);
-		}
+		
 		return downloadPath;
 	}
 }

@@ -46,7 +46,7 @@ public class NepomukUrlServiceTest {
     }
     
     @Test
-    public void test_getFileDownloadPath_success() {
+    public void test_getFileDownloadPath_success() throws NoNepomukFoundException {
         IFile file = new File();
         String ID = "ID";
         file.setStorageId(ID);

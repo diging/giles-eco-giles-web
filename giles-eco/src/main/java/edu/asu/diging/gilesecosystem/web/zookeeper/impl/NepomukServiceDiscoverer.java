@@ -92,8 +92,7 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
 			randomInstance = ThreadLocalRandom.current().nextInt(0, uris.size());
 			//error after randomInstance is generated
 		} catch (Exception e) {
-			//throw new NoNepomukFoundException(e); //check this..uncomment later
-			return null;
+			throw new NoNepomukFoundException(e);
 		}
 		
 		

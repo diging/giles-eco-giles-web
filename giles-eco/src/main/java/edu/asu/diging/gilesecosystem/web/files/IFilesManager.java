@@ -8,6 +8,7 @@ import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.users.User;
 
@@ -30,7 +31,7 @@ public interface IFilesManager {
 
     public abstract String getFileUrl(IFile file);
 
-    public abstract byte[] getFileContent(IFile file);
+    public abstract byte[] getFileContent(IFile file) throws NoNepomukFoundException;
 
     public abstract List<IFile> getTextFilesOfDocument(IDocument doc);
 
