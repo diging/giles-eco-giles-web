@@ -23,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
@@ -150,9 +151,15 @@ public class FilesManager implements IFilesManager {
     }
 
     @Override
-    public byte[] getFileContent(IFile file) {
-        IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
-                .getContentType());
+    public byte[] getFileContent(IFile file) throws NoNepomukFoundException {
+        IFileTypeHandler handler = null;
+		try {
+			handler = fileHandlerRegistry.getHandler(file
+			        .getContentType());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return handler.getFileContent(file);
     }
 

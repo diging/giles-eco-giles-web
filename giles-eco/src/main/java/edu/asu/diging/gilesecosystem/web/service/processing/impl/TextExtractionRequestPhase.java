@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.nepomuk.INepomukUrlService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.service.processing.IProcessingInfo;
@@ -44,7 +45,7 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
     }
    
     @Override
-    public IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException {
+    public IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException, NoNepomukFoundException {
         if (!file.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
             return null;
         }
@@ -58,10 +59,8 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
         }
           
         request.setDocumentId(file.getDocumentId());
-        request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
-        request.setStatus(RequestStatus.SUBMITTED);
+		request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
         request.setFilename(file.getFilename());
-        
         return request;
     }
 

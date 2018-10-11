@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 
 public interface IFileTypeHandler {
     
@@ -20,5 +21,5 @@ public interface IFileTypeHandler {
     
     String getFileUrl(IFile file);
     
-    byte[] getFileContent(IFile file);
+    byte[] getFileContent(IFile file) throws NoNepomukFoundException;
 }

@@ -15,6 +15,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.domain.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.service.IProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
@@ -54,6 +55,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
             request = createRequest(file, info);
         } catch (GilesProcessingException ex) {
             messageHandler.handleMessage("Could not create request.", ex, MessageType.ERROR);
+            return RequestStatus.FAILED;
+        } catch (NoNepomukFoundException ex) {
+        	messageHandler.handleMessage("Could not create request.Nepomuk is unreachable", ex, MessageType.ERROR);
             return RequestStatus.FAILED;
         }
         
@@ -118,7 +122,7 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
         }
     }
     
-    protected abstract IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException ;
+    protected abstract IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException, NoNepomukFoundException ;
     
     protected abstract String getTopic();
     

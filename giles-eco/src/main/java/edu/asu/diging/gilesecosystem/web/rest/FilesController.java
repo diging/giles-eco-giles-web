@@ -38,6 +38,7 @@ import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.domain.IDocument;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
 import edu.asu.diging.gilesecosystem.web.domain.IUpload;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.rest.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
@@ -197,7 +198,7 @@ public class FilesController {
             @RequestParam(defaultValue="") String accessToken, 
             User user,
             HttpServletResponse response,
-            HttpServletRequest request) throws UnsupportedEncodingException {
+            HttpServletRequest request) throws UnsupportedEncodingException, NoNepomukFoundException {
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {
