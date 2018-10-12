@@ -42,7 +42,6 @@ public class NepomukUrlService implements INepomukUrlService {
 		String downloadPath="";
 		try {
 			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
-			
 			if(nepomukUrl == null) {
 				throw new NoNepomukFoundException();
 			}
