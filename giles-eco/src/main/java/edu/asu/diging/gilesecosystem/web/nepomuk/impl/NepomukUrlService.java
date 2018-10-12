@@ -42,16 +42,15 @@ public class NepomukUrlService implements INepomukUrlService {
 		String downloadPath="";
 		try {
 			nepomukUrl = nepomukDiscoverer.getRandomNepomukInstance();
-			System.out.println("nepomukUrl**"+nepomukUrl);
+			
+			if(nepomukUrl == null) {
+				throw new NoNepomukFoundException();
+			}
 		} catch (NoNepomukFoundException e) {
 			messageHandler.handleMessage("Could not download file. Nepomuk could not be reached.", e,
 					MessageType.ERROR);
-			System.out.println("nepomukUrl**@@");
 			throw new NoNepomukFoundException();
 		} 
-		if(nepomukUrl == null) {
-			throw new NoNepomukFoundException();
-		}
 		
 		try {
 			downloadPath = nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}",

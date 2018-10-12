@@ -86,11 +86,13 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
 	public String getRandomNepomukInstance() throws NoNepomukFoundException {
 		// throws Exception
 		List<String> uris;
-		int randomInstance;
+		int randomInstance = 0;
 		try {
 			uris = curatorFramework.getChildren().forPath(znode);
+			if((uris != null) && (uris.size() > 0)) {
 			randomInstance = ThreadLocalRandom.current().nextInt(0, uris.size());
 			//error after randomInstance is generated
+			}
 		} catch (Exception e) {
 			throw new NoNepomukFoundException(e);
 		}
