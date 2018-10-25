@@ -151,7 +151,7 @@ public class FilesManager implements IFilesManager {
     }
 
     @Override
-    public byte[] getFileContent(IFile file) throws NoNepomukFoundException {
+    public byte[] getFileContent(IFile file) {
         IFileTypeHandler handler = null;
 		try {
 			handler = fileHandlerRegistry.getHandler(file
@@ -160,7 +160,12 @@ public class FilesManager implements IFilesManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        return handler.getFileContent(file);
+        try {
+            return handler.getFileContent(file);
+        } catch (NoNepomukFoundException e) {
+            messageHandler.handleMessage("Nepomuk is Not available", e, MessageType.ERROR);
+        }
+        return null;
     }
 
     public Map<String, Map<String, String>> getUploadedFilenames(String username) {

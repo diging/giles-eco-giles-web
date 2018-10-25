@@ -83,7 +83,7 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
 	}
 
 	@Override
-	public String getRandomNepomukInstance() throws NoNepomukFoundException {
+    public String getRandomNepomukInstance() throws NoNepomukFoundException {
 		// throws Exception
 		List<String> uris;
 		int randomInstance = 0;

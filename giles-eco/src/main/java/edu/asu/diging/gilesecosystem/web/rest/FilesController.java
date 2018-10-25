@@ -198,7 +198,7 @@ public class FilesController {
             @RequestParam(defaultValue="") String accessToken, 
             User user,
             HttpServletResponse response,
-            HttpServletRequest request) throws UnsupportedEncodingException, NoNepomukFoundException {
+            HttpServletRequest request) throws UnsupportedEncodingException {
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {
@@ -220,8 +220,12 @@ public class FilesController {
             }
         }
         
-
-        byte[] content = filesManager.getFileContent(file);
+        byte[] content = null;
+        try {
+            content = filesManager.getFileContent(file);
+        } catch (NoNepomukFoundException e1) {
+            messageHandler.handleMessage("NepomukUrl not available.", e1, MessageType.ERROR);
+        }
         if (content == null) {
             logger.error("Could not retrieve file content.");
             return new ResponseEntity<String>("{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }", HttpStatus.INTERNAL_SERVER_ERROR);

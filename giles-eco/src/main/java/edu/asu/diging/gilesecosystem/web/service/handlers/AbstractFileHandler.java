@@ -58,16 +58,20 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
 	}
 
 	@Override
-	public byte[] getFileContent(IFile file) throws NoNepomukFoundException {
+	public byte[] getFileContent(IFile file) {
 		String downloadUrl;
 		try {
 		  downloadUrl = nepomukService.getFileDownloadPath(file);
+		  if(downloadUrl == null) {
+		      return null;
+		  }
 		  return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
 	
 		} catch (IOException e) {
 		  messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
-		  return null;
-		}
+		} catch (NoNepomukFoundException e) {
+		    messageHandler.handleMessage("Nepomuk is Unavailable.", e, MessageType.ERROR);        }
+		return null;
 	}
 
 	@Override

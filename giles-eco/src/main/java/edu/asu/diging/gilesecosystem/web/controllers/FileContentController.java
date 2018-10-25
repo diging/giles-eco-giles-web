@@ -26,12 +26,12 @@ import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
 
 @Controller
 public class FileContentController {
-	
+
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Autowired
     private IFilesManager filesManager;
-    
+
     @Autowired
     private ITransactionalFileService fileService;
 
@@ -41,26 +41,31 @@ public class FileContentController {
     @AccountCheck
     @FileAccessCheck
     @RequestMapping(value = "/files/{fileId}/content")
-    public ResponseEntity<String> getFile(
-            @PathVariable String fileId,
-            HttpServletResponse response,
-            HttpServletRequest request, Principal principal) throws NoNepomukFoundException {
+    public ResponseEntity<String> getFile(@PathVariable String fileId, HttpServletResponse response,
+            HttpServletRequest request, Principal principal) {
 
         IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
 
-        byte[] content = filesManager.getFileContent(file);
+        byte[] content = null;
+        try {
+            content = filesManager.getFileContent(file);
+        } catch (NoNepomukFoundException e1) {
+            messageHandler.handleMessage("Nepomuk is not available.", e1, MessageType.ERROR);
+        }
         response.setContentType(file.getContentType());
-        
-        if(content == null) {
+
+        if (content == null) {
             logger.error("Could not retrieve file content.");
-            return new ResponseEntity<String>("{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }", HttpStatus.INTERNAL_SERVER_ERROR);
-        }else {
+            return new ResponseEntity<String>(
+                    "{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
             response.setContentLength(content.length);
         }
-        response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\""); 
+        response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\"");
         try {
             response.getOutputStream().write(content);
             response.getOutputStream().close();
