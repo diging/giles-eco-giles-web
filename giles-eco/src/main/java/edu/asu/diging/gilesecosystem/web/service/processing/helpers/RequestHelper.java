@@ -16,24 +16,24 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Component
 public class RequestHelper {
-    
+
     @Autowired
     private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
-    
+
     @PostConstruct
     public void init() {
         requestFactory.config(StorageRequest.class);
     }
 
-    public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
-            FileType filetype, String requestId) throws GilesProcessingException {
+    public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl, FileType filetype,
+            String requestId) throws GilesProcessingException {
         IStorageRequest request = null;
         try {
             request = requestFactory.createRequest(requestId, file.getUploadId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
-        
+
         request.setDocumentId(file.getDocumentId());
         request.setFileId(file.getId());
         request.setDownloadPath(pathToFile);
@@ -42,19 +42,14 @@ public class RequestHelper {
         request.setUploadDate(file.getUploadDate());
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
-        
-		if ((request != null) && ((request.getDownloadUrl() == null) || (request.getDownloadUrl().contains("null")))) {  // check for null values
-			request.setStatus(RequestStatus.FAILED);
-			request.setErrorMsg("Null value/components found in download URL while creating Storage Request.");
-		}
-        
+
         return request;
     }
-    
+
     public String getUsernameForStorage(User user) {
         return getUsernameForStorage(user.getProvider(), user.getUserIdOfProvider());
     }
-    
+
     public String getUsernameForStorage(String provider, String userIdOfProvider) {
         return provider + "_" + userIdOfProvider;
     }
