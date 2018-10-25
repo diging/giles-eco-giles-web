@@ -48,50 +48,50 @@ import edu.asu.diging.gilesecosystem.web.users.User;
 
 @Controller
 public class FilesController {
-    
+
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     public final static String DOCUMENT_ID_PLACEHOLDER = "{docId}";
     public final static String GET_DOCUMENT_PATH = "/rest/documents/" + DOCUMENT_ID_PLACEHOLDER;
 
     public final static String FILE_ID_PLACEHOLDER = "{fileId}";
     public final static String DOWNLOAD_FILE_URL = "/rest/files/" + FILE_ID_PLACEHOLDER + "/content";
-    
+
     public final static String UPLOAD_ID_PLACEHOLDER = "{uploadId}";
     public final static String GET_UPLOAD_PATH = "/rest/files/upload/" + UPLOAD_ID_PLACEHOLDER;
-    
+
     @Autowired
     private IFilesManager filesManager;
-    
+
     @Autowired
     private ITransactionalDocumentService documentService;
-    
+
     @Autowired
     private ITransactionalFileService fileService;
-    
+
     @Autowired
     private ITransactionalUploadService uploadService;
-    
+
     @Autowired
     private IJSONHelper jsonHelper;
 
     @Autowired
     private ISystemMessageHandler messageHandler;
-    
+
     @Autowired
     private DigilibHelper digilibHelper;
-    
+
     @TokenCheck
     @RequestMapping(value = "/rest/files/uploads", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> getAllUploadsOfUser(@RequestParam(defaultValue = "") String accessToken, 
+    public ResponseEntity<String> getAllUploadsOfUser(@RequestParam(defaultValue = "") String accessToken,
             HttpServletRequest request, User user) {
-        
+
         Map<String, Map<String, String>> filenames = filesManager.getUploadedFilenames(user.getUsername());
-        
+
         ObjectMapper mapper = new ObjectMapper();
-        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ArrayNode root = mapper.createArrayNode();
-        
+
         for (String uploadId : filenames.keySet()) {
             ObjectNode node = root.addObject();
             ArrayNode filenameList = node.putArray(uploadId);
@@ -101,7 +101,7 @@ public class FilesController {
                 fileNode.put("filename", fileIdAndName.getValue());
             }
         }
-        
+
         StringWriter sw = new StringWriter();
         try {
             mapper.writeValue(sw, root);
@@ -111,27 +111,21 @@ public class FilesController {
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
     @TokenCheck
     @RequestMapping(value = GET_UPLOAD_PATH, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> getUpload(
-            @RequestParam(defaultValue = "") String accessToken, 
-            HttpServletRequest request,
-            @PathVariable("uploadId") String uploadId,
-            User user) {
+    public ResponseEntity<String> getUpload(@RequestParam(defaultValue = "") String accessToken,
+            HttpServletRequest request, @PathVariable("uploadId") String uploadId, User user) {
 
         IUpload upload = uploadService.getUpload(uploadId);
         if (upload == null) {
-            return new ResponseEntity<String>(
-                    "{'error': 'Upload does not exist.'}", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("{'error': 'Upload does not exist.'}", HttpStatus.NOT_FOUND);
         }
         if (!upload.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(
-                    "{'error': 'Upload id not valid for user.'}",
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("{'error': 'Upload id not valid for user.'}", HttpStatus.BAD_REQUEST);
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -146,7 +140,7 @@ public class FilesController {
             ObjectNode docNode = mapper.createObjectNode();
             jsonHelper.createDocumentJson(doc, mapper, docNode);
             root.add(docNode);
-            
+
         }
 
         StringWriter sw = new StringWriter();
@@ -154,37 +148,32 @@ public class FilesController {
             mapper.writeValue(sw, root);
         } catch (IOException e) {
             messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(
-                    "{\"error\": \"Could not write json result.\" }",
+            return new ResponseEntity<String>("{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
-             
+
     @DocumentAccessCheck
     @RequestMapping(value = GET_DOCUMENT_PATH, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> getDocument(
-            @RequestParam(defaultValue = "") String accessToken,
-            HttpServletRequest request,
-            @PathVariable("docId") String docId,
-            User user) {
-        
+    public ResponseEntity<String> getDocument(@RequestParam(defaultValue = "") String accessToken,
+            HttpServletRequest request, @PathVariable("docId") String docId, User user) {
+
         IDocument doc = documentService.getDocument(docId);
-        
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ObjectNode docNode = mapper.createObjectNode();
 
         jsonHelper.createDocumentJson(doc, mapper, docNode);
-        
+
         StringWriter sw = new StringWriter();
         try {
             mapper.writeValue(sw, docNode);
         } catch (IOException e) {
             messageHandler.handleMessage(e.getMessage(), e, MessageType.ERROR);
-            return new ResponseEntity<String>(
-                    "{\"error\": \"Could not write json result.\" }",
+            return new ResponseEntity<String>("{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -193,11 +182,8 @@ public class FilesController {
 
     @FileTokenAccessCheck
     @RequestMapping(value = DOWNLOAD_FILE_URL, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> getFile(
-            @PathVariable String fileId,
-            @RequestParam(defaultValue="") String accessToken, 
-            User user,
-            HttpServletResponse response,
+    public ResponseEntity<String> getFile(@PathVariable String fileId,
+            @RequestParam(defaultValue = "") String accessToken, User user, HttpServletResponse response,
             HttpServletRequest request) throws UnsupportedEncodingException {
 
         IFile file = fileService.getFileById(fileId);
@@ -205,21 +191,20 @@ public class FilesController {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
 
-        if (file.getAccess() != DocumentAccess.PUBLIC
-                && !file.getUsername().equals(user.getUsername())) {
+        if (file.getAccess() != DocumentAccess.PUBLIC && !file.getUsername().equals(user.getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
-        Map<String,String[]> allParameters = new HashMap<>(request.getParameterMap());
+        Map<String, String[]> allParameters = new HashMap<>(request.getParameterMap());
         // if we have an image and have parameters, pass this on to digilib
         if (file.getContentType() != null && file.getContentType().startsWith("image/")) {
-            
+
             allParameters.remove("accessToken");
             if (!allParameters.isEmpty()) {
-                allParameters.put("fn", new String[] { file.getFilepath()});
+                allParameters.put("fn", new String[] { file.getFilepath() });
                 digilibHelper.getDigilibResponse(allParameters, response);
             }
         }
-        
+
         byte[] content = null;
         try {
             content = filesManager.getFileContent(file);
@@ -228,11 +213,13 @@ public class FilesController {
         }
         if (content == null) {
             logger.error("Could not retrieve file content.");
-            return new ResponseEntity<String>("{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(
+                    "{\"error\": \"Could not retrieve file content. Most likely, Nepomuk is down.\" }",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
         response.setContentType(file.getContentType());
         response.setContentLength(content.length);
-        response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\""); 
+        response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\"");
         try {
             response.getOutputStream().write(content);
             response.getOutputStream().close();

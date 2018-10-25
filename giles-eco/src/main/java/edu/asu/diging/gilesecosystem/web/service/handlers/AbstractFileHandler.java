@@ -21,66 +21,66 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 public abstract class AbstractFileHandler implements IFileTypeHandler {
 
-	@Autowired
-	protected IPropertiesManager propertyManager;
+    @Autowired
+    protected IPropertiesManager propertyManager;
 
-	@Autowired
-	protected IFileContentHelper fileContentHelper;
+    @Autowired
+    protected IFileContentHelper fileContentHelper;
 
-	@Autowired
-	protected INepomukUrlService nepomukService;
+    @Autowired
+    protected INepomukUrlService nepomukService;
 
-	@Autowired
-	private ISystemMessageHandler messageHandler;
+    @Autowired
+    private ISystemMessageHandler messageHandler;
 
-	protected byte[] getFileContentFromUrl(URL url) throws IOException {
-		URLConnection con = url.openConnection();
+    protected byte[] getFileContentFromUrl(URL url) throws IOException {
+        URLConnection con = url.openConnection();
 
-		InputStream input = con.getInputStream();
+        InputStream input = con.getInputStream();
 
-		byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[4096];
 
-		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		BufferedOutputStream output = new BufferedOutputStream(byteOutput);
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        BufferedOutputStream output = new BufferedOutputStream(byteOutput);
 
-		int n = -1;
-		while ((n = input.read(buffer)) != -1) {
-			output.write(buffer, 0, n);
-		}
-		input.close();
-		output.flush();
-		output.close();
+        int n = -1;
+        while ((n = input.read(buffer)) != -1) {
+            output.write(buffer, 0, n);
+        }
+        input.close();
+        output.flush();
+        output.close();
 
-		byteOutput.flush();
-		byte[] bytes = byteOutput.toByteArray();
-		byteOutput.close();
-		return bytes;
-	}
+        byteOutput.flush();
+        byte[] bytes = byteOutput.toByteArray();
+        byteOutput.close();
+        return bytes;
+    }
 
-	@Override
-	public byte[] getFileContent(IFile file) {
-		String downloadUrl;
-		try {
-		  downloadUrl = nepomukService.getFileDownloadPath(file);
-		  if(downloadUrl == null) {
-		      return null;
-		  }
-		  return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
-	
-		} catch (IOException e) {
-		  messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
-		} catch (NoNepomukFoundException e) {
-		    messageHandler.handleMessage("Nepomuk is Unavailable.", e, MessageType.ERROR);        }
-		return null;
-	}
+    @Override
+    public byte[] getFileContent(IFile file) {
+        String downloadUrl;
+        try {
+            downloadUrl = nepomukService.getFileDownloadPath(file);
+            if (downloadUrl == null) {
+                return null;
+            }
+            return fileContentHelper.getFileContentFromUrl(new URL(downloadUrl));
 
-	@Override
-	public String getFileUrl(IFile file) {
-		String gilesUrl = propertyManager.getProperty(Properties.GILES_URL).trim();
-		String pdfEndpoint = propertyManager.getProperty(Properties.GILES_FILE_ENDPOINT).trim();
-		String contentSuffix = propertyManager.getProperty(Properties.GILES_FILE_CONTENT_SUFFIX).trim();
+        } catch (IOException e) {
+            messageHandler.handleMessage("Could not download file.", e, MessageType.ERROR);
+        } catch (NoNepomukFoundException e) {
+            messageHandler.handleMessage("Nepomuk is Unavailable.", e, MessageType.ERROR);
+        }
+        return null;
+    }
 
-		return gilesUrl + pdfEndpoint + file.getId() + contentSuffix;
-	}
+    @Override
+    public String getFileUrl(IFile file) {
+        String gilesUrl = propertyManager.getProperty(Properties.GILES_URL).trim();
+        String pdfEndpoint = propertyManager.getProperty(Properties.GILES_FILE_ENDPOINT).trim();
+        String contentSuffix = propertyManager.getProperty(Properties.GILES_FILE_CONTENT_SUFFIX).trim();
+
+        return gilesUrl + pdfEndpoint + file.getId() + contentSuffix;
+    }
 }
-
