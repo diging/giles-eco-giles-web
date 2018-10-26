@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.ITextExtractionRequest;
-import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -24,32 +23,33 @@ import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
 
 @Service
 public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo> {
-    
+
     public final static String REQUEST_PREFIX = "TEEXREQ";
-    
+
     @Autowired
     private ITransactionalFileService filesService;
-    
+
     @Autowired
     private IRequestFactory<ITextExtractionRequest, TextExtractionRequest> requestFactory;
-    
+
     @Autowired
     private IPropertiesManager propertyManager;
-    
+
     @Autowired
     private INepomukUrlService nepomukService;
-    
+
     @PostConstruct
     public void init() {
         requestFactory.config(TextExtractionRequest.class);
     }
-   
+
     @Override
-    public IRequest createRequest(IFile file, IProcessingInfo info) throws GilesProcessingException, NoNepomukFoundException {
+    public IRequest createRequest(IFile file, IProcessingInfo info)
+            throws GilesProcessingException, NoNepomukFoundException {
         if (!file.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
             return null;
         }
-        
+
         ITextExtractionRequest request;
         try {
             request = requestFactory.createRequest(filesService.generateRequestId(REQUEST_PREFIX), file.getUploadId());
@@ -57,9 +57,9 @@ public class TextExtractionRequestPhase extends ProcessingPhase<IProcessingInfo>
             // TODO Auto-generated catch block
             throw new GilesProcessingException(e);
         }
-          
+
         request.setDocumentId(file.getDocumentId());
-		request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
+        request.setDownloadUrl(nepomukService.getFileDownloadPath(file));
         request.setFilename(file.getFilename());
         return request;
     }

@@ -150,12 +150,9 @@ public class FilesManager implements IFilesManager {
     @Override
     public byte[] getFileContent(IFile file) {
         IFileTypeHandler handler = null;
-        try {
-            handler = fileHandlerRegistry.getHandler(file.getContentType());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        handler = fileHandlerRegistry.getHandler(file.getContentType());
+
         try {
             return handler.getFileContent(file);
         } catch (NoNepomukFoundException e) {

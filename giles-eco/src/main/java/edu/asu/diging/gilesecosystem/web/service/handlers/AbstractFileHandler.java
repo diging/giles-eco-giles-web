@@ -59,9 +59,8 @@ public abstract class AbstractFileHandler implements IFileTypeHandler {
 
     @Override
     public byte[] getFileContent(IFile file) {
-        String downloadUrl;
         try {
-            downloadUrl = nepomukService.getFileDownloadPath(file);
+            String downloadUrl = nepomukService.getFileDownloadPath(file);
             if (downloadUrl == null) {
                 return null;
             }
