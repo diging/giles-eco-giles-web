@@ -62,6 +62,21 @@ public class NepomukUrlServiceTest {
     }
     
     @Test
+    public void test_getFileDownloadPath_e() {
+        IFile file = new File();
+        String ID = "ID";
+        file.setStorageId(ID);
+        
+        String url=null;
+        try {
+            url = serviceToTest.getFileDownloadPath(file);
+        } catch (NoNepomukFoundException e) {
+            messageHandler.handleMessage("Nepomuk not available.", e, MessageType.ERROR);
+        }
+        Assert.assertEquals(NEPOMUK_URL + FILES_ENDPOINT + ID, url);
+    }
+    
+    @Test
     public void test_getFileDownloadPath_exception() throws NoNepomukFoundException {
         Mockito.when(nepomukDiscoverer.getRandomNepomukInstance()).thenThrow(new NoNepomukFoundException());
         
