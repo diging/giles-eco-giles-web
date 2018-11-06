@@ -50,11 +50,9 @@ public class FileContentController {
         }
 
         byte[] content = null;
-        try {
-            content = filesManager.getFileContent(file);
-        } catch (NoNepomukFoundException e1) {
-            messageHandler.handleMessage("Nepomuk is not available.", e1, MessageType.ERROR);
-        }
+
+        content = filesManager.getFileContent(file);
+
         response.setContentType(file.getContentType());
 
         if (content == null) {
