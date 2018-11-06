@@ -29,9 +29,7 @@ import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
 public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private String znode;
-
     private CuratorFramework curatorFramework;
 
     @Autowired
@@ -86,17 +84,12 @@ public class NepomukServiceDiscoverer implements INepomukServiceDiscoverer {
     public String getRandomNepomukInstance() throws NoNepomukFoundException {
         // throws Exception
         List<String> uris;
-        int randomInstance = 0;
         try {
             uris = curatorFramework.getChildren().forPath(znode);
-            if ((uris != null) && (uris.size() > 0)) {
-                randomInstance = ThreadLocalRandom.current().nextInt(0, uris.size());
-                // error after randomInstance is generated
-            }
         } catch (Exception e) {
             throw new NoNepomukFoundException(e);
         }
-
+        int randomInstance = ThreadLocalRandom.current().nextInt(0, uris.size());
         for (int i = 0; i < uris.size(); i++) {
             // get random Nepomuk instance
             byte[] urlBytes;
