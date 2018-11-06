@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.domain.IFile;
@@ -46,12 +47,17 @@ public class NepomukUrlServiceTest {
     }
     
     @Test
-    public void test_getFileDownloadPath_success() throws NoNepomukFoundException {
+    public void test_getFileDownloadPath_success() {
         IFile file = new File();
         String ID = "ID";
         file.setStorageId(ID);
         
-        String url = serviceToTest.getFileDownloadPath(file);
+        String url=null;
+        try {
+            url = serviceToTest.getFileDownloadPath(file);
+        } catch (NoNepomukFoundException e) {
+            messageHandler.handleMessage("Nepomuk not available.", e, MessageType.ERROR);
+        }
         Assert.assertEquals(NEPOMUK_URL + FILES_ENDPOINT + ID, url);
     }
     
