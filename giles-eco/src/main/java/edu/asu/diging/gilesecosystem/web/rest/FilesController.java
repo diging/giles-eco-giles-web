@@ -206,11 +206,9 @@ public class FilesController {
         }
 
         byte[] content = null;
-        try {
-            content = filesManager.getFileContent(file);
-        } catch (NoNepomukFoundException e1) {
-            messageHandler.handleMessage("NepomukUrl not available.", e1, MessageType.ERROR);
-        }
+
+        content = filesManager.getFileContent(file);
+
         if (content == null) {
             logger.error("Could not retrieve file content.");
             return new ResponseEntity<String>(
