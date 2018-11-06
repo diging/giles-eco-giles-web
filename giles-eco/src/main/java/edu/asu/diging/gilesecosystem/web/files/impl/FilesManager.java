@@ -23,6 +23,7 @@ import edu.asu.diging.gilesecosystem.web.domain.IPage;
 import edu.asu.diging.gilesecosystem.web.domain.IUpload;
 import edu.asu.diging.gilesecosystem.web.domain.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
 import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.service.IFileHandlerRegistry;
 import edu.asu.diging.gilesecosystem.web.service.IFileTypeHandler;
@@ -39,29 +40,30 @@ public class FilesManager implements IFilesManager {
 
     @Autowired
     private ITransactionalFileService fileService;
-    
+
     @Autowired
     private ITransactionalDocumentService documentService;
-    
+
     @Autowired
     private ITransactionalUploadService uploadService;
-    
+
     @Autowired
     private IFileHandlerRegistry fileHandlerRegistry;
-    
+
     @Autowired
     private IProcessingCoordinator processCoordinator;
 
     @Autowired
     private ISystemMessageHandler messageHandler;
+
     /*
      * (non-Javadoc)
      * 
      * @see edu.asu.giles.files.impl.IFilesManager#addFiles(java.util.List)
      */
     @Override
-    public List<StorageStatus> addFiles(Map<IFile, byte[]> files,
-            User user, DocumentType docType, DocumentAccess access, String uploadProgressId) {
+    public List<StorageStatus> addFiles(Map<IFile, byte[]> files, User user, DocumentType docType,
+            DocumentAccess access, String uploadProgressId) {
 
         String username = user.getUsername();
         String uploadId = uploadService.generateUploadId();
@@ -76,14 +78,12 @@ public class FilesManager implements IFilesManager {
         }
         for (IFile file : files.keySet()) {
             if (docType == DocumentType.SINGLE_PAGE) {
-                document = documentService.createDocument(uploadId, uploadDate,
-                        file.getAccess(), docType, username);
+                document = documentService.createDocument(uploadId, uploadDate, file.getAccess(), docType, username);
             }
 
             byte[] content = files.get(file);
             if (content == null) {
-                statuses.add(new StorageStatus(document, file, null,
-                        RequestStatus.FAILED));
+                statuses.add(new StorageStatus(document, file, null, RequestStatus.FAILED));
                 continue;
             }
 
@@ -101,7 +101,7 @@ public class FilesManager implements IFilesManager {
 
             try {
                 documentService.saveDocument(document);
-                
+
                 // send file off to be stored
                 StorageRequestProcessingInfo info = new StorageRequestProcessingInfo();
                 info.setContent(content);
@@ -118,11 +118,10 @@ public class FilesManager implements IFilesManager {
             } catch (UnstorableObjectException e) {
                 messageHandler.handleMessage("Object is not storable. Please review your code.", e, MessageType.ERROR);
                 statuses.add(new StorageStatus(document, file, new GilesProcessingException(e), RequestStatus.FAILED));
-            } 
+            }
         }
 
-        boolean atLeastOneSuccess = statuses.stream().anyMatch(
-                status -> status.getStatus() != RequestStatus.FAILED);
+        boolean atLeastOneSuccess = statuses.stream().anyMatch(status -> status.getStatus() != RequestStatus.FAILED);
         if (atLeastOneSuccess) {
             try {
                 uploadService.saveUpload(upload);
@@ -138,8 +137,7 @@ public class FilesManager implements IFilesManager {
 
     @Override
     public List<IDocument> getDocumentsByUploadId(String uploadId) {
-        List<IDocument> documents = documentService
-                .getDocumentsByUploadId(uploadId);
+        List<IDocument> documents = documentService.getDocumentsByUploadId(uploadId);
         for (IDocument doc : documents) {
             doc.setFiles(new ArrayList<>());
             for (String fileId : doc.getFileIds()) {
@@ -151,15 +149,22 @@ public class FilesManager implements IFilesManager {
 
     @Override
     public byte[] getFileContent(IFile file) {
-        IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
-                .getContentType());
-        return handler.getFileContent(file);
+        IFileTypeHandler handler = null;
+
+        handler = fileHandlerRegistry.getHandler(file.getContentType());
+
+        try {
+            return handler.getFileContent(file);
+        } catch (NoNepomukFoundException e) {
+            messageHandler.handleMessage("Nepomuk is Not available", e, MessageType.ERROR);
+        }
+        return null;
     }
 
     public Map<String, Map<String, String>> getUploadedFilenames(String username) {
         List<IDocument> documents = documentService.getDocumentsByUsername(username);
         Map<String, Map<String, String>> filenames = new HashMap<String, Map<String, String>>();
-        
+
         for (IDocument doc : documents) {
             Map<String, String> filenameList = filenames.get(doc.getUploadId());
             if (filenameList == null) {
@@ -173,11 +178,9 @@ public class FilesManager implements IFilesManager {
         return filenames;
     }
 
-    
     @Override
     public String getFileUrl(IFile file) {
-        IFileTypeHandler handler = fileHandlerRegistry.getHandler(file
-                .getContentType());
+        IFileTypeHandler handler = fileHandlerRegistry.getHandler(file.getContentType());
         return handler.getFileUrl(file);
     }
 
@@ -190,11 +193,11 @@ public class FilesManager implements IFilesManager {
 
         return files;
     }
-    
+
     @Override
     public List<IFile> getTextFilesOfDocument(IDocument doc) {
         List<String> fileIds = doc.getTextFileIds();
-        
+
         List<IFile> files = new ArrayList<>();
         fileIds.forEach(id -> files.add(fileService.getFileById(id)));
         return files;
