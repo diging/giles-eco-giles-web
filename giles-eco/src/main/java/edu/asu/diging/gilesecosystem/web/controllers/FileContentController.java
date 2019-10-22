@@ -48,11 +48,14 @@ public class FileContentController {
 
         byte[] content = filesManager.getFileContent(file);
         response.setContentType(file.getContentType());
-        response.setContentLength(content.length);
+        
         response.setHeader("Content-disposition", "filename=\"" + file.getFilename() + "\""); 
         try {
-            response.getOutputStream().write(content);
-            response.getOutputStream().close();
+            if (content != null) {
+                response.setContentLength(content.length);
+                response.getOutputStream().write(content);
+                response.getOutputStream().close();
+            }
         } catch (IOException e) {
             messageHandler.handleMessage("Could not write to output stream.", e, MessageType.ERROR);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);

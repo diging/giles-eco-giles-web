@@ -84,8 +84,8 @@
         </id>
         <property name="pageNr" type="int" />
         <property name="filename" type="string" />
-        <property name="pathToFile" type="string" />
-        <property name="downloadUrl" type="string" />
+        <property name="pathToFile" type="text" />
+        <property name="downloadUrl" type="text" />
         <property name="contentType" type="string" />
         <property name="size" type="long" />
     </class>
