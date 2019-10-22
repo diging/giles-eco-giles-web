@@ -43,6 +43,11 @@ public class NepomukUrlService implements INepomukUrlService {
             return null;
         }
         
+        if (file.getStorageId() == null) {
+            messageHandler.handleMessage("Could not download file.", "Could not download file. No storage id present for " + file.getId() + ".", MessageType.ERROR);
+            return null;
+        }
+        
         return nepomukUrl + propertyManager.getProperty(Properties.NEPOMUK_FILES_ENDPOINT).replace("{0}", file.getStorageId());
     }
 }
