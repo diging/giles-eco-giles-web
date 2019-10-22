@@ -17,10 +17,10 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.8.4</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.7</geco.requests.version>
-        <geco.util.version>0.4.3</geco.util.version>
+        <geco.requests.version>0.9</geco.requests.version>
+        <geco.util.version>0.6</geco.util.version>
         <geco.september.util.version>0.2</geco.september.util.version>
-        <geco.kafka-util.version>0.1</geco.kafka-util.version>
+        <geco.kafka-util.version>0.2</geco.kafka-util.version>
         
         <tomcat.deploy.path></tomcat.deploy.path>
         <tomcat.app.name>geco-giles</tomcat.app.name>
@@ -99,8 +99,8 @@
         <!-- Giles Ecosystem -->
         
         <dependency>
-            <groupId>edu.asu.diging.giles-eco</groupId>
-            <artifactId>kafka-util</artifactId>
+            <groupId>edu.asu.diging</groupId>
+            <artifactId>giles-eco-kafka-util</artifactId>
             <version>${geco.kafka-util.version}</version>
         </dependency>
         <dependency>
@@ -109,13 +109,13 @@
             <version>${geco.september.util.version}</version>
         </dependency>
         <dependency>
-            <groupId>edu.asu.diging.giles-eco</groupId>
-            <artifactId>requests</artifactId>
+            <groupId>edu.asu.diging</groupId>
+            <artifactId>giles-eco-requests</artifactId>
             <version>${geco.requests.version}</version>
         </dependency>
         <dependency>
-            <groupId>edu.asu.diging.giles-eco</groupId>
-            <artifactId>util</artifactId>
+            <groupId>edu.asu.diging</groupId>
+            <artifactId>giles-eco-util</artifactId>
             <version>${geco.util.version}</version>
         </dependency>
 
