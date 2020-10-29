@@ -16,20 +16,17 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInController;
-import org.springframework.social.google.connect.GoogleConnectionFactory;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GoogleChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidAccessTokenChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.MitreidChecker;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGithubConnectionFactory;
-import edu.asu.diging.gilesecosystem.web.config.social.AdjustableGoogleConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.social.AdjustableMitreidConnectionFactory;
-import edu.asu.diging.gilesecosystem.web.service.IIdentityProviderRegistry;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.GitHubChecker;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.MitreidAccessTokenChecker;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.MitreidChecker;
+import edu.asu.diging.gilesecosystem.web.core.service.IIdentityProviderRegistry;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 
 @Configuration
 @EnableSocial
@@ -57,20 +54,7 @@ public class SocialContext implements SocialConfigurer {
     @Override
     public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig,
             Environment env) {
-        String googleClientId = propertyManager.getProperty(Properties.GOOGLE_CLIENT_ID);
-        String googleSecret = propertyManager.getProperty(Properties.GOOGLE_SECRET);
-        GoogleConnectionFactory tmpGooglefactory = new GoogleConnectionFactory(
-                googleClientId, googleSecret);
-        
-        AdjustableGoogleConnectionFactory googleFactory = new AdjustableGoogleConnectionFactory(googleClientId, googleSecret);
-       
-//        factory.setScope("email");
-        googleFactory.setScope("email");
-        cfConfig.addConnectionFactory(tmpGooglefactory);
-        reloadService.addFactory(IReloadService.GOOGLE, googleFactory);
-        identityProviderRegistry.addProvider(googleFactory.getProviderId(), null);
-        identityProviderRegistry.addProviderTokenChecker(googleFactory.getProviderId(), null, GoogleChecker.ID);
-        
+                
         String githubClientId = propertyManager.getProperty(Properties.GITHUB_CLIENT_ID);
         String githubSecret = propertyManager.getProperty(Properties.GITHUB_SECRET);
 //        GitHubConnectionFactory githubFactory = new GitHubConnectionFactory(

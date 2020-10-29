@@ -10,12 +10,13 @@ import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.domain.impl.File;
-import edu.asu.diging.gilesecosystem.web.exceptions.NoNepomukFoundException;
-import edu.asu.diging.gilesecosystem.web.nepomuk.INepomukUrlService;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.zookeeper.INepomukServiceDiscoverer;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.NoNepomukFoundException;
+import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.nepomuk.INepomukUrlService;
+import edu.asu.diging.gilesecosystem.web.core.nepomuk.impl.NepomukUrlService;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.zookeeper.INepomukServiceDiscoverer;
 
 public class NepomukUrlServiceTest {
 

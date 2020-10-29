@@ -6,9 +6,9 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
-import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 @Service
 public class UserHelper implements IUserHelper {

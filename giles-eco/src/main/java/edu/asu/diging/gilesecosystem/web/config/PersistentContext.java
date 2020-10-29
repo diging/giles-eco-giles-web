@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -22,6 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
         "edu.asu.diging.gilesecosystem.web"
 })
 @EnableTransactionManagement
+@PropertySource("classpath:config.properties")
 public class PersistentContext {
 
     @Bean(destroyMethod = "close")
@@ -41,7 +43,7 @@ public class PersistentContext {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web.domain", "edu.asu.diging.gilesecosystem.web.apps", "edu.asu.diging.gilesecosystem.web.users");
+        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web.core.model", "edu.asu.diging.gilesecosystem.web.core.apps", "edu.asu.diging.gilesecosystem.web.core.users");
  
         Properties jpaProperties = new Properties();
      

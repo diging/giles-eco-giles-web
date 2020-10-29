@@ -32,10 +32,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
-import edu.asu.diging.gilesecosystem.web.users.LocalUserDetailsService;
-import edu.asu.diging.gilesecosystem.web.users.SimpleSocialUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.users.IAdminUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.core.users.LocalUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.core.users.SimpleSocialUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

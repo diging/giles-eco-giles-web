@@ -16,8 +16,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.apps.IRegisteredAppDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredAppDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredAppDatabaseClient;
 
 public class RegisteredAppDatabaseClientTest {
 

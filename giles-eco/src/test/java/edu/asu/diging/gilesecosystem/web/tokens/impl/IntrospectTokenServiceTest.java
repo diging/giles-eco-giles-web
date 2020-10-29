@@ -11,10 +11,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.AppMisconfigurationException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.ServerMisconfigurationException;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.IntrospectTokenService;
 
 public class IntrospectTokenServiceTest {
 

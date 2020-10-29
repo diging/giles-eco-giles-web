@@ -27,7 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.PropertiesPersister;
 
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
-import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
+import edu.asu.diging.gilesecosystem.web.core.users.GilesGrantedAuthority;
+import edu.asu.diging.gilesecosystem.web.core.users.impl.AdminUserDetailsService;
 
 public class AdminUserDetailsServiceTest {
 

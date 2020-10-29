@@ -1,6 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.config;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.FactoryDoesNotExistException;
 
 public interface IReloadService {
     
