@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.api.FilesController;
+import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IPage;

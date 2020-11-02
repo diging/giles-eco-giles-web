@@ -25,6 +25,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.IGilesMappingService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.impl.GilesMappingService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.core.util.IStatusHelper;
 import edu.asu.diging.gilesecosystem.web.web.pages.Badge;
@@ -44,6 +45,9 @@ public class ListUploadsController {
 
     @Autowired
     private IPropertiesManager propertiesManager;
+    
+    @Autowired
+    private IUserManager userManager;
 
     @AccountCheck
     @RequestMapping(value = "/uploads", method = RequestMethod.GET)
@@ -68,10 +72,17 @@ public class ListUploadsController {
         int sortDirInt = new Integer(sortDir);
 
         if (username != null) {
-            pageCount = uploadService.getUploadsOfUserPageCount(username);
+            User currentUser = userManager.findUser(username);
+            List<IUpload> uploads;
+            if (!currentUser.getIsAdmin()) {
+                pageCount = uploadService.getUploadsOfUserPageCount(username);
+                uploads = uploadService.getUploadsOfUser(username, pageInt, -1,
+                        "createdDate", sortDirInt);
+            } else {
+                pageCount = uploadService.getUploadsPageCount();
+                uploads = uploadService.getUploads(pageInt, -1, "createdDate", sortDirInt);
+            }
 
-            List<IUpload> uploads = uploadService.getUploadsOfUser(username, pageInt, -1,
-                    "createdDate", sortDirInt);
             List<UploadPageBean> mappedUploads = new ArrayList<UploadPageBean>();
 
             if (uploads != null) {

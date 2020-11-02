@@ -1,4 +1,4 @@
-package edu.asu.diging.gilesecosystem.web.api;
+package edu.asu.diging.gilesecosystem.web.api.v1;
 
 import java.util.List;
 

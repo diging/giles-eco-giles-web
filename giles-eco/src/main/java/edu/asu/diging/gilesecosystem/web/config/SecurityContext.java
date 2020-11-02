@@ -4,19 +4,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,6 @@ import org.springframework.social.security.SpringSocialConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
@@ -40,125 +40,149 @@ import edu.asu.diging.gilesecosystem.web.core.users.SimpleSocialUserDetailsServi
 @Configuration
 @EnableWebSecurity
 public class SecurityContext extends WebSecurityConfigurerAdapter {
-    
-    @Autowired
-    private IPropertiesManager propertiesManager;
-    
-    @Autowired
-    @Qualifier("adminDetailsService")
-    private IAdminUserDetailsService adminUserDetailsService;
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web
-        // Spring Security ignores request to static resources such as CSS or JS
-        // files.
-        .ignoring().antMatchers("/static/**");
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        HeadersConfigurer<HttpSecurity> config = http.cors().and().antMatcher("**").csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
-            
-            @Override
-            public boolean matches(HttpServletRequest arg0) {
-                // don't require CSRF for REST calls
-                if (arg0.getRequestURI().indexOf("/rest/") > -1) {
-                    return false;
-                }
-                // mitreid connect server can't deal with additional parameteres
-                if (arg0.getRequestURI().indexOf("/signin/mitreid") > -1) {
-                    return false;
-                }
-                if (arg0.getMethod().equals("GET")) {
-                    return false;
-                }
-                return true;
-            }
-        }).and().headers().frameOptions().sameOrigin();
+    @Configuration
+    @Order(2)
+    public static class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         
-        String iframeing = propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM);
-        if (iframeing == null) {
-            config.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.DENY));
-        } else {
-            String[] origins = iframeing.split(",");
-            StringBuffer sb = new StringBuffer();
-            sb.append("frame-ancestors ");
-            
-            if (origins.length == 0 || (origins.length == 1 && origins[0].isEmpty())) {
-                sb.append("'none'");
-            } else {
-                for (String org : origins) {
-                    sb.append(org);
-                    sb.append(" ");
-                }
-            }
-            config.addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", sb.toString()));
+        @Autowired
+        @Qualifier("adminDetailsService")
+        private IAdminUserDetailsService adminUserDetailsService;
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(adminUserDetailsService)
+                    .passwordEncoder(passwordEncoder());
+            auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+        }
+
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder(10);
+        }
+
+        @Bean
+        public SocialUserDetailsService socialUserDetailsService() {
+            return new SimpleSocialUserDetailsService(userDetailsService());
+        }
+
+        @Bean
+        public UserDetailsService userDetailsService() {
+            return new LocalUserDetailsService();
         }
         
-        // Configures form login
-        config.and().formLogin()
-                .loginPage("/")
-                .loginProcessingUrl("/login/authenticate")
-                .failureUrl("/?error=bad_credentials")
-                // Configures the logout function
-                .and()
-                .logout()
-                .deleteCookies("JSESSIONID")
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .and().exceptionHandling().accessDeniedPage("/403")
-                // Configures url based authorization
-                .and()
-                .authorizeRequests()
-                // Anyone can access the urls
-                .antMatchers("/auth/**", "/signin/**", "/", "/connect/**",
-                        "/signup/**", "/user/register/**", "/resources/**",
-                        "/rest/**").permitAll()
-                // The rest of the our application is protected.
-                .antMatchers("/users/**", "/admin/**").hasRole("ADMIN")
-                .anyRequest().hasRole("USER")
-                // Adds the SocialAuthenticationFilter to Spring Security's
-                // filter chain.
-                .and()
-                .apply(new SpringSocialConfigurer());
-    }
-    
-    @Bean
-    protected CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        List<String> allowOrigins = Arrays.asList(propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM).split(","));
-        allowOrigins = allowOrigins.stream().map(o -> o.trim()).collect(Collectors.toList());
-        configuration.setAllowedOrigins(allowOrigins);
-        configuration.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/rest/**", configuration);
-        return source;
+        @Autowired
+        private IPropertiesManager propertiesManager;
+        
+        @Bean
+        protected CorsConfigurationSource corsConfigurationSource() {
+            CorsConfiguration configuration = new CorsConfiguration();
+            List<String> allowOrigins = Arrays.asList(
+                    propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM).split(","));
+            allowOrigins = allowOrigins.stream().map(o -> o.trim())
+                    .collect(Collectors.toList());
+            configuration.setAllowedOrigins(allowOrigins);
+            configuration.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET"));
+            configuration.setAllowedHeaders(Arrays.asList("*"));
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/rest/**", configuration);
+            return source;
+        }
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                    // Spring Security ignores request to static resources such as
+                    // CSS or JS
+                    // files.
+                    .ignoring().antMatchers("/static/**");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            HeadersConfigurer<HttpSecurity> config = http.cors().and().antMatcher("**").csrf()
+                    .requireCsrfProtectionMatcher(new RequestMatcher() {
+
+                        @Override
+                        public boolean matches(HttpServletRequest arg0) {
+                            // don't require CSRF for REST calls
+                            if (arg0.getRequestURI().indexOf("/rest/") > -1) {
+                                return false;
+                            }
+                            // mitreid connect server can't deal with additional
+                            // parameteres
+                            if (arg0.getRequestURI().indexOf("/signin/mitreid") > -1) {
+                                return false;
+                            }
+                            if (arg0.getMethod().equals("GET")) {
+                                return false;
+                            }
+                            return true;
+                        }
+                    }).and().headers().frameOptions().sameOrigin();
+
+            String iframeing = propertiesManager.getProperty(Properties.ALLOW_IFRAMING_FROM);
+            if (iframeing == null) {
+                config.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.DENY));
+            } else {
+                String[] origins = iframeing.split(",");
+                StringBuffer sb = new StringBuffer();
+                sb.append("frame-ancestors ");
+
+                if (origins.length == 0 || (origins.length == 1 && origins[0].isEmpty())) {
+                    sb.append("'none'");
+                } else {
+                    for (String org : origins) {
+                        sb.append(org);
+                        sb.append(" ");
+                    }
+                }
+                config.addHeaderWriter(
+                        new StaticHeadersWriter("Content-Security-Policy", sb.toString()));
+            }
+
+            // Configures form login
+            config.and().formLogin().loginPage("/").loginProcessingUrl("/login/authenticate")
+                    .failureUrl("/?error=bad_credentials")
+                    // Configures the logout function
+                    .and().logout().deleteCookies("JSESSIONID").logoutUrl("/logout")
+                    .logoutSuccessUrl("/").and().exceptionHandling().accessDeniedPage("/403")
+                    // Configures url based authorization
+                    .and().authorizeRequests()
+                    // Anyone can access the urls
+                    .antMatchers("/signin/**", "/", "/connect/**", "/signup/**",
+                            "/user/register/**", "/resources/**", "/rest/**")
+                    .permitAll()
+                    // The rest of the our application is protected.
+                    .antMatchers("/users/**", "/admin/**").hasRole("ADMIN").anyRequest()
+                    .hasRole("USER")
+                    // Adds the SocialAuthenticationFilter to Spring Security's
+                    // filter chain.
+                    .and().apply(new SpringSocialConfigurer());
+        }
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.userDetailsService(adminUserDetailsService).passwordEncoder(
-                passwordEncoder());
-        auth.userDetailsService(userDetailsService()).passwordEncoder(
-                passwordEncoder());
-    }
+    @Configuration
+    @Order(1)
+    public static class ApiV2WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/v2/**").httpBasic()
+                    .authenticationDetailsSource(authenticationDetailsSource()).and()
+                    .authenticationProvider(authenticationProvider()).csrf().disable()
+                    .authorizeRequests().antMatchers("/api/v2/**").fullyAuthenticated();
+        }
 
-    @Bean
-    public SocialUserDetailsService socialUserDetailsService() {
-        return new SimpleSocialUserDetailsService(userDetailsService());
+        @Bean
+        public ApiAuthentiationDetailsSource authenticationDetailsSource() {
+            return new ApiAuthentiationDetailsSource();
+        }
+
+        @Bean
+        public ApiAuthenticationProvider authenticationProvider() {
+            return new ApiAuthenticationProvider();
+        }
     }
-    
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new LocalUserDetailsService();
-    }
- 
 }

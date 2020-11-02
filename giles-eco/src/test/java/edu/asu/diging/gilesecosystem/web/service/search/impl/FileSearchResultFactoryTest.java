@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.api.FilesController;
+import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
