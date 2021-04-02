@@ -21,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
@@ -168,10 +169,15 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
+            CitesphereTokenFilter filter = new CitesphereTokenFilter("/api/v2/**");
+            filter.setAuthenticationManager(authenticationManager());
+
             http.sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/v2/**").httpBasic()
-                    .authenticationDetailsSource(authenticationDetailsSource()).and()
-                    .authenticationProvider(authenticationProvider()).csrf().disable()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/v2/**")
+                    .addFilterAfter(filter, BasicAuthenticationFilter.class)
+                    //.authenticationDetailsSource(authenticationDetailsSource()).and()
+                    //.authenticationProvider(authenticationProvider())
+                    .csrf().disable()
                     .authorizeRequests().antMatchers("/api/v2/**").fullyAuthenticated();
         }
 

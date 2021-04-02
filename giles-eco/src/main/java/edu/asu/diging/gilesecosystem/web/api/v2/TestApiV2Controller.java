@@ -11,6 +11,6 @@ public class TestApiV2Controller {
 
     @RequestMapping(value = "/api/v2/test", method = RequestMethod.GET)
     public ResponseEntity<String> test() {
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<String>("success", HttpStatus.OK);
     }
 }

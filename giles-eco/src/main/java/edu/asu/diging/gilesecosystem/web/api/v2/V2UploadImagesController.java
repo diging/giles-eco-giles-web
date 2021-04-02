@@ -75,7 +75,6 @@ public class V2UploadImagesController {
     @Autowired
     private ISystemMessageHandler messageHandler;
 
-    @TokenCheck
     @RequestMapping(value = "/api/v2/files/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadImages(
             @RequestParam(defaultValue = "") String accessToken,

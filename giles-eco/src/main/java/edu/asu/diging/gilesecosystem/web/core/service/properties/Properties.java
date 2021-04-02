@@ -87,4 +87,11 @@ public interface Properties {
     public final static String NEPOMUK_FILES_ENDPOINT = "nepomuk_files_endpoint";
     
     public final static String CURRENT_REQUESTS_MAX = "current_requests_max_number";
+    
+    public final static String CITESPHERE_CLIENT_ID = "citesphere_client_id";
+    public final static String CITESPHERE_CLIENT_SECRET = "citesphere_client_secret";
+    public final static String CITESPHERE_BASE_URL = "citesphere_base_url";
+    public final static String CITESPHERE_TOKEN_ENDPOINT = "citesphere_token_endpoint";
+    public final static String CITESPHERE_CHECK_TOKEN_ENDPOINT = "citesphere_check_token_endpoint";
+    public final static String CITESPHERE_SCOPES = "citesphere_scopes";
 }

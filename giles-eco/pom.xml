@@ -65,6 +65,11 @@
         <iframing.hostname></iframing.hostname>
         <app.url>http://localhost:8080/giles</app.url>
 
+        <!-- Citesphere -->
+        <citesphere.client.id></citesphere.client.id>
+        <citesphere.client.secret></citesphere.client.secret>
+        <citesphere.base.url></citesphere.base.url>
+
         <!-- DB config -->
         <db.driver>com.mysql.jdbc.Driver</db.driver>
         <db.database.url></db.database.url>
@@ -254,6 +259,7 @@
             <artifactId>spring-security-ldap</artifactId>
             <version>${spring-security-version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.tiles</groupId>
             <artifactId>tiles-template</artifactId>
