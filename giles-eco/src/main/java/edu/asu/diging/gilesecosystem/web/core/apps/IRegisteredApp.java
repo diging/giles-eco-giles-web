@@ -5,6 +5,8 @@ import java.util.List;
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 public interface IRegisteredApp extends IStorableObject {
+    
+    public final String PROVIDER = "GilesEcosystem";
 
     public abstract String getId();
 

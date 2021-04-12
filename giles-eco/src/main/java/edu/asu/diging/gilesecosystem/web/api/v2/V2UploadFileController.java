@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.api.v2;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
-import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
@@ -50,11 +51,11 @@ import edu.asu.diging.gilesecosystem.web.core.util.IGilesUrlHelper;
 
 @PropertySource("classpath:/config.properties")
 @Controller
-public class V2UploadImagesController {
+public class V2UploadFileController {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${giles_check_upload_endpoint}")
+    @Value("${giles_check_upload_endpoint_v2}")
     private String uploadEndpoint;
     
     @Autowired
@@ -81,7 +82,7 @@ public class V2UploadImagesController {
             HttpServletRequest request,
             @RequestParam(value = "access", defaultValue = "PRIVATE") String access,
             @RequestParam("files") MultipartFile[] files,
-            @RequestParam(value = "document_type", defaultValue = "SINGLE_PAGE") String docType, User user) {
+            @RequestParam(value = "document_type", defaultValue = "SINGLE_PAGE") String docType, Principal principal) {
 
         DocumentAccess docAccess = DocumentAccess.valueOf(access);
         if (docAccess == null) {
@@ -123,6 +124,11 @@ public class V2UploadImagesController {
             }
         }
 
+        User user = new User();
+        user.setUsername(principal.getName());
+        user.setProvider(IRegisteredApp.PROVIDER);
+        user.setUserIdOfProvider(principal.getName());
+        
         String id = uploadService.startUpload(docAccess, documentType, files, fileBytes, user);
        
         Map<String, String> msgs = new HashMap<String, String>();
@@ -133,13 +139,11 @@ public class V2UploadImagesController {
         return generateResponse(msgs, HttpStatus.OK);
     }
     
-    @TokenCheck
     @RequestMapping(value = "/api/v2/files/upload/check/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> checkAndGetResults(
             @RequestParam(defaultValue = "") String accessToken,
             HttpServletRequest request,
-            @PathVariable String id, 
-            User user) {
+            @PathVariable String id) {
         
         List<StorageStatus> statusList = uploadService.getUpload(id);
         if (statusList == null || statusList.isEmpty()) {

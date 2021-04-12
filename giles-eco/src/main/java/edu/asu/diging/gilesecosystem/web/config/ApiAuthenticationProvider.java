@@ -80,7 +80,11 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
         for (String role : response.getAuthorities()) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
-        return new CitesphereToken(authorities);
+        CitesphereToken citesphereAuth = new CitesphereToken(authorities);
+        citesphereAuth.setPrincipal(response.getClient_id());
+        citesphereAuth.setAuthenticated(true);
+        citesphereAuth.setDetails(response);
+        return citesphereAuth;
     }
 
     public String getAccessToken() {

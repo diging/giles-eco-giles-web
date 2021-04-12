@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class CitesphereToken extends AbstractAuthenticationToken {
     
     private String token;
+    private String principal;
     
     public CitesphereToken(String token) {
         super(null);
@@ -30,7 +31,11 @@ public class CitesphereToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return this.principal;
+    }
+
+    public void setPrincipal(String principal) {
+        this.principal = principal;
     }
 
 }

@@ -173,12 +173,10 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
             filter.setAuthenticationManager(authenticationManager());
 
             http.sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/api/v2/**")
-                    .addFilterAfter(filter, BasicAuthenticationFilter.class)
-                    //.authenticationDetailsSource(authenticationDetailsSource()).and()
-                    //.authenticationProvider(authenticationProvider())
-                    .csrf().disable()
-                    .authorizeRequests().antMatchers("/api/v2/**").fullyAuthenticated();
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().antMatcher("/api/v2/**")
+                    .addFilterBefore(filter, BasicAuthenticationFilter.class)
+                    .csrf().disable();
         }
 
         @Bean
