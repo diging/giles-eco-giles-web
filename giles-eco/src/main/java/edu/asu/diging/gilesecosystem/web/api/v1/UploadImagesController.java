@@ -141,7 +141,7 @@ public class UploadImagesController {
             @PathVariable String id, 
             User user) {
         
-        List<StorageStatus> statusList = uploadService.getUpload(id);
+        List<StorageStatus> statusList = uploadService.getUploadStatus(id);
         if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Upload does not exist.");

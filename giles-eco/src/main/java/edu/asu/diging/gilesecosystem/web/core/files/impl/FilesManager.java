@@ -67,7 +67,7 @@ public class FilesManager implements IFilesManager {
         String uploadId = uploadService.generateUploadId();
         String uploadDate = OffsetDateTime.now(ZoneId.of("UTC")).toString();
 
-        IUpload upload = uploadService.createUpload(username, uploadId, uploadDate, uploadProgressId);
+        IUpload upload = uploadService.createUpload(username, user.getProvider(), uploadId, uploadDate, uploadProgressId);
 
         List<StorageStatus> statuses = new ArrayList<StorageStatus>();
         IDocument document = null;

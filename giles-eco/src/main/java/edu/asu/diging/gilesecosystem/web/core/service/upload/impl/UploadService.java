@@ -59,7 +59,7 @@ public class UploadService implements IUploadService {
     }
 
     @Override
-    public List<StorageStatus> getUpload(String id) {
+    public List<StorageStatus> getUploadStatus(String id) {
         List<StorageStatus> statuses = new ArrayList<>();
         IUpload upload = uploadService.getUploadByProgressId(id);
         if (upload != null) {
@@ -73,6 +73,11 @@ public class UploadService implements IUploadService {
         }
     
         return statuses;
+    }
+    
+    @Override
+    public IUpload getUpload(String id) {
+        return uploadService.getUploadByProgressId(id);
     }
 
     protected String generateId() {

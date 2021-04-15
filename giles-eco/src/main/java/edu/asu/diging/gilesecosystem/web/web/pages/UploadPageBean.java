@@ -95,5 +95,17 @@ public class UploadPageBean implements IUpload {
     public void setStatus(Badge status) {
         this.status = status;
     }
+
+    @Override
+    public String getUploadingApp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setUploadingApp(String uploadingApp) {
+        // TODO Auto-generated method stub
+        
+    }
 	
 }

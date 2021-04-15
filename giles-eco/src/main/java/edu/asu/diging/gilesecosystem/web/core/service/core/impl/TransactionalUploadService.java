@@ -115,12 +115,13 @@ public class TransactionalUploadService implements ITransactionalUploadService {
     }
     
     @Override
-    public IUpload createUpload(String username, String uploadId,
+    public IUpload createUpload(String username, String uploadingApp, String uploadId,
             String uploadDate, String uploadProgressId) {
         IUpload upload = new Upload(uploadId);
         upload.setCreatedDate(uploadDate);
         upload.setUsername(username);
         upload.setUploadProgressId(uploadProgressId);
+        upload.setUploadingApp(uploadingApp);
         return upload;
     }
 

@@ -19,6 +19,7 @@ public class Upload implements IUpload {
     private String username;
 	private String createdDate;
 	private String uploadProgressId;
+	private String uploadingApp;
 	
 	public Upload() {}
 	
@@ -77,6 +78,16 @@ public class Upload implements IUpload {
     @Override
     public void setUploadProgressId(String uploadProgressId) {
         this.uploadProgressId = uploadProgressId;
+    }
+
+    @Override
+    public String getUploadingApp() {
+        return uploadingApp;
+    }
+
+    @Override
+    public void setUploadingApp(String uploadingApp) {
+        this.uploadingApp = uploadingApp;
     }
 	
 }

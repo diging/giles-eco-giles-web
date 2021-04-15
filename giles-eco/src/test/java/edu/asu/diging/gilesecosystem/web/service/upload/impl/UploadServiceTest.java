@@ -24,6 +24,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.upload.impl.UploadService;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.core.util.FileUploadHelper;
@@ -45,7 +46,7 @@ public class UploadServiceTest {
     private ITransactionalUploadService uploadService;
 
     @InjectMocks
-    private UploadService serviceToTest;
+    private IUploadService serviceToTest;
 
     @Before
     public void setUp() {

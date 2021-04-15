@@ -63,7 +63,7 @@ public class UploadController {
         }
         
         String uploadProgressId = uploadService.startUpload(docAccess, DocumentType.SINGLE_PAGE, files, null, user);
-        List<StorageStatus> statuses = uploadService.getUpload(uploadProgressId);
+        List<StorageStatus> statuses = uploadService.getUploadStatus(uploadProgressId);
         
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode root = mapper.createObjectNode();

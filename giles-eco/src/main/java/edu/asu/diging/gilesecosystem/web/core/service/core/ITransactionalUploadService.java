@@ -32,7 +32,7 @@ public interface ITransactionalUploadService {
 
     long getUploadsOfUserCount(String username);
 
-    IUpload createUpload(String username, String uploadId, String uploadDate, String uploadProgressId);
+    IUpload createUpload(String username, String uploadingApp, String uploadId, String uploadDate, String uploadProgressId);
 
     int getUploadsPageCount();
 

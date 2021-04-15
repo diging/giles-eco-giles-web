@@ -21,4 +21,8 @@ public interface IUpload extends IStorableObject {
 
     public abstract String getUploadProgressId();
 
+    String getUploadingApp();
+
+    void setUploadingApp(String uploadingApp);
+
 }

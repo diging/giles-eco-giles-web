@@ -38,38 +38,40 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
-import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
+import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.core.util.IGilesUrlHelper;
 
 @PropertySource("classpath:/config.properties")
 @Controller
 public class V2UploadFileController {
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${giles_check_upload_endpoint_v2}")
     private String uploadEndpoint;
-    
+
     @Autowired
     private IPropertiesManager propertyManager;
-    
+
     @Autowired
     private IUploadService uploadService;
 
     @Autowired
     private ITransactionalDocumentService documentService;
-    
+
     @Autowired
     private IJSONHelper jsonHelper;
-    
+
     @Autowired
     private IGilesUrlHelper urlHelper;
 
@@ -82,99 +84,118 @@ public class V2UploadFileController {
             HttpServletRequest request,
             @RequestParam(value = "access", defaultValue = "PRIVATE") String access,
             @RequestParam("files") MultipartFile[] files,
-            @RequestParam(value = "document_type", defaultValue = "SINGLE_PAGE") String docType, Principal principal) {
+            @RequestParam(value = "document_type", defaultValue = "SINGLE_PAGE") String docType,
+            CitesphereToken citesphereToken) {
 
         DocumentAccess docAccess = DocumentAccess.valueOf(access);
         if (docAccess == null) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Access type: " + access + " does not exist.");
             msgs.put("errorCode", "400");
-            
+
             return generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
-        
+
         DocumentType documentType = DocumentType.valueOf(docType);
         if (documentType == null) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Document type: " + docType + " does not exist.");
             msgs.put("errorCode", "400");
-            
+
             return generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
-        
+
         if (files == null || files.length == 0) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "There were no files attached to request.");
             msgs.put("errorCode", "400");
-            
+
             return generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
-        
+
         List<byte[]> fileBytes = new ArrayList<byte[]>();
         for (MultipartFile file : files) {
             try {
                 fileBytes.add(file.getBytes());
             } catch (IOException e) {
-                messageHandler.handleMessage("Error reading bytes.", e, MessageType.ERROR);
+                messageHandler.handleMessage("Error reading bytes.", e,
+                        MessageType.ERROR);
                 Map<String, String> msgs = new HashMap<String, String>();
                 msgs.put("errorMsg", "File bytes could not be read.");
                 msgs.put("errorCode", "500");
-                
+
                 return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
+        CitesphereUser citesphereUser = (CitesphereUser)citesphereToken.getPrincipal();
         User user = new User();
-        user.setUsername(principal.getName());
-        user.setProvider(IRegisteredApp.PROVIDER);
-        user.setUserIdOfProvider(principal.getName());
-        
-        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes, user);
-       
+        user.setUsername(citesphereUser.getUsername());
+        user.setProvider(citesphereUser.getAuthorizingClient());
+        user.setUserIdOfProvider(citesphereUser.getUsername());
+
+        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes,
+                user);
+
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", id);
-        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
-        
+        msgs.put("checkUrl",
+                propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
+
         logger.info("Uploaded file started with id " + id);
         return generateResponse(msgs, HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/api/v2/files/upload/check/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> checkAndGetResults(
-            @RequestParam(defaultValue = "") String accessToken,
-            HttpServletRequest request,
-            @PathVariable String id) {
-        
-        List<StorageStatus> statusList = uploadService.getUpload(id);
+    public ResponseEntity<String> checkAndGetResults(HttpServletRequest request,
+            @PathVariable String id, CitesphereToken citesphereToken) {
+
+        IUpload upload = uploadService.getUpload(id);
+        String username = upload.getUsername();
+        String uploadingApp = upload.getUploadingApp();
+        CitesphereUser user = (CitesphereUser)citesphereToken.getPrincipal();
+        if (!user.getUsername().equals(username)
+                || !user.getAuthorizingClient()
+                        .equals(uploadingApp)) {
+            Map<String, String> msgs = new HashMap<String, String>();
+            msgs.put("errorMsg", "User is not authorized to check status.");
+            msgs.put("errorCode", "401");
+
+            return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
+        }
+
+        List<StorageStatus> statusList = uploadService.getUploadStatus(id);
         if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Upload does not exist.");
             msgs.put("errorCode", "404");
-            
+
             return generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
-        
+
         boolean complete = true;
         for (StorageStatus status : statusList) {
-            complete = complete && (status.getStatus() == RequestStatus.COMPLETE || status.getStatus() == RequestStatus.FAILED);
+            complete = complete && (status.getStatus() == RequestStatus.COMPLETE
+                    || status.getStatus() == RequestStatus.FAILED);
         }
-        
+
         if (!complete) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("msg", "Upload in progress. Please check back later.");
             msgs.put("msgCode", "010");
-            
-            // get upload id from first document 
+
+            // get upload id from first document
             // there should only be one upload id for a process id
-            if (statusList.get(0).getDocument() != null) { 
+            if (statusList.get(0).getDocument() != null) {
                 String uploadId = statusList.get(0).getDocument().getUploadId();
-                String uploadUrl = urlHelper.getUrl(FilesController.GET_UPLOAD_PATH.replace(FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
+                String uploadUrl = urlHelper.getUrl(V2FilesController.GET_UPLOAD_PATH
+                        .replace(V2FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
                 msgs.put("uploadUrl", uploadUrl);
             }
-            
+
             return generateResponse(msgs, HttpStatus.ACCEPTED);
         }
-        
+
         Set<String> docIds = new HashSet<String>();
         statusList.forEach(status -> docIds.add(status.getDocument().getId()));
 
@@ -182,15 +203,14 @@ public class V2UploadFileController {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ArrayNode root = mapper.createArrayNode();
 
-        
         for (String docId : docIds) {
             IDocument doc = documentService.getDocument(docId);
             ObjectNode docNode = mapper.createObjectNode();
             root.add(docNode);
 
-            jsonHelper.createDocumentJson(doc, mapper, docNode);  
+            jsonHelper.createDocumentJson(doc, mapper, docNode);
         }
-        
+
         StringWriter sw = new StringWriter();
         try {
             mapper.writeValue(sw, root);
@@ -200,18 +220,19 @@ public class V2UploadFileController {
                     "{\"error\": \"Could not write json result.\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
-    
-    private ResponseEntity<String> generateResponse(Map<String, String> msgs, HttpStatus status) {
+
+    private ResponseEntity<String> generateResponse(Map<String, String> msgs,
+            HttpStatus status) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ObjectNode root = mapper.createObjectNode();
         for (String key : msgs.keySet()) {
             root.put(key, msgs.get(key));
         }
-        
+
         StringWriter sw = new StringWriter();
         try {
             mapper.writeValue(sw, root);
@@ -221,7 +242,7 @@ public class V2UploadFileController {
                     "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
         return new ResponseEntity<String>(sw.toString(), status);
     }
 }

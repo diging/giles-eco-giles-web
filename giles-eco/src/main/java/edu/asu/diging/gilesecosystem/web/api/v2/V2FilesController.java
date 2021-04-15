@@ -117,7 +117,6 @@ public class V2FilesController {
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
-    @TokenCheck
     @RequestMapping(value = GET_UPLOAD_PATH, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getUpload(
             @RequestParam(defaultValue = "") String accessToken,
@@ -162,7 +161,6 @@ public class V2FilesController {
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
     }
 
-    @DocumentAccessCheck
     @RequestMapping(value = GET_DOCUMENT_PATH, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getDocument(
             @RequestParam(defaultValue = "") String accessToken,
