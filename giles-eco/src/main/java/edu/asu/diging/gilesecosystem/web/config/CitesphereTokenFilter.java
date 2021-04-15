@@ -11,12 +11,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.StringUtils;
 
 public class CitesphereTokenFilter extends AbstractAuthenticationProcessingFilter {
 
     public static final String AUTHENTICATION_SCHEME_BASIC = "Bearer";
+    public static final String USER_TOKEN_HEADER = "User-Token";
 
     public CitesphereTokenFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
@@ -26,6 +29,7 @@ public class CitesphereTokenFilter extends AbstractAuthenticationProcessingFilte
     protected void successfulAuthentication(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
         chain.doFilter(request, response);
     }
 
@@ -45,8 +49,14 @@ public class CitesphereTokenFilter extends AbstractAuthenticationProcessingFilte
         }
 
         String token = header.substring(AUTHENTICATION_SCHEME_BASIC.length() + 1);
+        
+        String userToken = request.getHeader(USER_TOKEN_HEADER);
+        
+        if (userToken == null || userToken.trim().isEmpty()) {
+            throw new AuthenticationCredentialsNotFoundException("No user token found in header.");
+        }
 
-        CitesphereToken citesphereToken = new CitesphereToken(token);
+        CitesphereToken citesphereToken = new CitesphereToken(token, userToken);
 
         return this.getAuthenticationManager().authenticate(citesphereToken);
     }

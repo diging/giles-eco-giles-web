@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -35,7 +36,10 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.config.impl.TokenInfo;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.OAuthException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.TokenExpiredException;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 public class ApiAuthenticationProvider implements AuthenticationProvider {
 
@@ -45,6 +49,8 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
     private IPropertiesManager propertiesManager;
 
     private RestTemplate restTemplate;
+    
+    private String currentAccessToken;
 
     public ApiAuthenticationProvider() {
         restTemplate = new RestTemplate();
@@ -54,17 +60,46 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication auth)
             throws AuthenticationException {
 
-        String token = auth.getCredentials().toString();
+        String token = ((CitesphereToken)auth).getUserToken();
 
-        String accessToken = getAccessToken();
+        if (currentAccessToken == null) {
+            currentAccessToken = getAccessToken();
+        }
         
+        TokenInfo response;
+        try {
+            response = getUserInfo(token);
+        } catch (TokenExpiredException e) {
+            // if getUserInfo throws this exception, the access token
+            // might be expired, so let's get a new one.
+            currentAccessToken = getAccessToken();
+            try {
+                response = getUserInfo(token);
+            } catch (TokenExpiredException e1) {
+                // if the status is still 401, then there is another problem
+                throw new OAuthException();
+            }
+        }
+        
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        for (String role : response.getAuthorities()) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        CitesphereToken citesphereAuth = new CitesphereToken(authorities);
+        citesphereAuth.setPrincipal(new CitesphereUser(response.getUser_name(), response.getClient_id(), authorities));
+        citesphereAuth.setAuthenticated(true);
+        citesphereAuth.setDetails(response);
+        return citesphereAuth;
+    }
+
+    public TokenInfo getUserInfo(String token) throws TokenExpiredException {
         String citesphereBase = propertiesManager
                 .getProperty(Properties.CITESPHERE_BASE_URL);
         String citesphereCheckTokenEndpoint = propertiesManager
                 .getProperty(Properties.CITESPHERE_CHECK_TOKEN_ENDPOINT);
         
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
+        headers.set("Authorization", "Bearer " + currentAccessToken);
         
         HttpEntity<String> entity = new HttpEntity<String>(headers);
         
@@ -73,18 +108,12 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
         try {
             response = restTemplate.postForObject(checkTokenUrl, entity, TokenInfo.class, new Object[] {});
         } catch(HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new TokenExpiredException(ex);
+            }
             throw new BadCredentialsException("Token is invalid for app.", ex);
         }
-        
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (String role : response.getAuthorities()) {
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        CitesphereToken citesphereAuth = new CitesphereToken(authorities);
-        citesphereAuth.setPrincipal(response.getClient_id());
-        citesphereAuth.setAuthenticated(true);
-        citesphereAuth.setDetails(response);
-        return citesphereAuth;
+        return response;
     }
 
     public String getAccessToken() {

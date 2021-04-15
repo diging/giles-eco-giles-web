@@ -5,14 +5,18 @@ import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
+
 public class CitesphereToken extends AbstractAuthenticationToken {
     
-    private String token;
-    private String principal;
+    private String clientToken;
+    private String userToken;
+    private CitesphereUser principal;
     
-    public CitesphereToken(String token) {
+    public CitesphereToken(String clientToken, String userToken) {
         super(null);
-        this.token = token;
+        this.clientToken = clientToken;
+        this.userToken = userToken;
     }
 
     public CitesphereToken(Collection<? extends GrantedAuthority> authorities) {
@@ -26,7 +30,11 @@ public class CitesphereToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return token;
+        return clientToken;
+    }
+    
+    public String getUserToken() {
+        return this.userToken;
     }
 
     @Override
@@ -34,7 +42,7 @@ public class CitesphereToken extends AbstractAuthenticationToken {
         return this.principal;
     }
 
-    public void setPrincipal(String principal) {
+    public void setPrincipal(CitesphereUser principal) {
         this.principal = principal;
     }
 
