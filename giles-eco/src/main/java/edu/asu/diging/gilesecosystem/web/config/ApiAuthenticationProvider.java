@@ -60,7 +60,7 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication auth)
             throws AuthenticationException {
 
-        String token = ((CitesphereToken)auth).getUserToken();
+        String token = auth.getCredentials().toString();
 
         if (currentAccessToken == null) {
             currentAccessToken = getAccessToken();

@@ -50,13 +50,7 @@ public class CitesphereTokenFilter extends AbstractAuthenticationProcessingFilte
 
         String token = header.substring(AUTHENTICATION_SCHEME_BASIC.length() + 1);
         
-        String userToken = request.getHeader(USER_TOKEN_HEADER);
-        
-        if (userToken == null || userToken.trim().isEmpty()) {
-            throw new AuthenticationCredentialsNotFoundException("No user token found in header.");
-        }
-
-        CitesphereToken citesphereToken = new CitesphereToken(token, userToken);
+        CitesphereToken citesphereToken = new CitesphereToken(token);
 
         return this.getAuthenticationManager().authenticate(citesphereToken);
     }

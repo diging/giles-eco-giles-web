@@ -9,14 +9,12 @@ import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 public class CitesphereToken extends AbstractAuthenticationToken {
     
-    private String clientToken;
-    private String userToken;
+    private String token;
     private CitesphereUser principal;
     
-    public CitesphereToken(String clientToken, String userToken) {
+    public CitesphereToken(String token) {
         super(null);
-        this.clientToken = clientToken;
-        this.userToken = userToken;
+        this.token = token;
     }
 
     public CitesphereToken(Collection<? extends GrantedAuthority> authorities) {
@@ -30,13 +28,9 @@ public class CitesphereToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return clientToken;
+        return token;
     }
     
-    public String getUserToken() {
-        return this.userToken;
-    }
-
     @Override
     public Object getPrincipal() {
         return this.principal;
