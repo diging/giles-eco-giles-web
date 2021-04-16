@@ -2,7 +2,6 @@ package edu.asu.diging.gilesecosystem.web.api.v2;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,10 +34,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
-import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
+import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
@@ -47,7 +47,9 @@ import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
 import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.core.util.IGilesUrlHelper;
 
@@ -77,6 +79,12 @@ public class V2UploadFileController {
 
     @Autowired
     private ISystemMessageHandler messageHandler;
+
+    @Autowired
+    private IUserManager userManager;
+    
+    @Autowired
+    private IUserHelper userHelper;
 
     @RequestMapping(value = "/api/v2/files/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadImages(
@@ -128,12 +136,21 @@ public class V2UploadFileController {
             }
         }
 
-        CitesphereUser citesphereUser = (CitesphereUser)citesphereToken.getPrincipal();
-        User user = new User();
-        user.setUsername(citesphereUser.getUsername());
-        user.setProvider(citesphereUser.getAuthorizingClient());
-        user.setUserIdOfProvider(citesphereUser.getUsername());
+        User user;
 
+        try {
+            user = createUser(citesphereToken);
+        } catch (UnstorableObjectException e) {
+            messageHandler.handleMessage("Could not store non login user.", e,
+                    MessageType.ERROR);
+            Map<String, String> msgs = new HashMap<String, String>();
+            msgs.put("errorMsg", "An erro occurred. Request could not be processed.");
+            msgs.put("errorCode", "500");
+
+            return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // FIXME: andromeda seems to have an issues with these uploads
         String id = uploadService.startUpload(docAccess, documentType, files, fileBytes,
                 user);
 
@@ -146,6 +163,23 @@ public class V2UploadFileController {
         return generateResponse(msgs, HttpStatus.OK);
     }
 
+    public User createUser(CitesphereToken citesphereToken)
+            throws UnstorableObjectException {
+        CitesphereUser citesphereUser = (CitesphereUser) citesphereToken.getPrincipal();
+        User user = new User();
+        user.setUsername(userHelper.createUsername(citesphereUser.getUsername(), citesphereUser.getAuthorizingClient()));
+        user.setProvider(citesphereUser.getAuthorizingClient());
+        user.setUserIdOfProvider(citesphereUser.getUsername());
+
+        if (userManager.findUserByProviderUserId(user.getUserIdOfProvider(),
+                user.getProvider()) == null) {
+            user.setAccountStatus(AccountStatus.NON_LOGIN);
+            userManager.addUser(user);
+        }
+
+        return user;
+    }
+
     @RequestMapping(value = "/api/v2/files/upload/check/{id}", method = RequestMethod.GET)
     public ResponseEntity<String> checkAndGetResults(HttpServletRequest request,
             @PathVariable String id, CitesphereToken citesphereToken) {
@@ -153,10 +187,9 @@ public class V2UploadFileController {
         IUpload upload = uploadService.getUpload(id);
         String username = upload.getUsername();
         String uploadingApp = upload.getUploadingApp();
-        CitesphereUser user = (CitesphereUser)citesphereToken.getPrincipal();
+        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
         if (!user.getUsername().equals(username)
-                || !user.getAuthorizingClient()
-                        .equals(uploadingApp)) {
+                || !user.getAuthorizingClient().equals(uploadingApp)) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "User is not authorized to check status.");
             msgs.put("errorCode", "401");

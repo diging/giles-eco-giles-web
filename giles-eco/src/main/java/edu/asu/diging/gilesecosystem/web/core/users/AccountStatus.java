@@ -4,4 +4,5 @@ public enum AccountStatus {
     APPROVED,
     ADDED,
     REVOKED,
+    NON_LOGIN;
 }

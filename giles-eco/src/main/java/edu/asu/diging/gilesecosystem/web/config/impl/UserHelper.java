@@ -23,7 +23,7 @@ public class UserHelper implements IUserHelper {
     public User createUser(Connection<?> connection) {
         UserProfile profile = connection.fetchUserProfile();
         
-        String username = profile.getUsername() + "_" + connection.getKey().getProviderId();
+        String username =  createUsername(profile.getUsername(), connection.getKey().getProviderId());
         User user = new User();
         
         // make sure someone else didn't change their username to this one
@@ -43,5 +43,10 @@ public class UserHelper implements IUserHelper {
         user.setAccountStatus(AccountStatus.ADDED);
         
         return user;
+    }
+    
+    @Override
+    public String createUsername(String username, String providerId) {
+        return username + "_" + providerId;
     }
 }
