@@ -150,7 +150,6 @@ public class V2UploadFileController {
             return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // FIXME: andromeda seems to have an issues with these uploads
         String id = uploadService.startUpload(docAccess, documentType, files, fileBytes,
                 user);
 
