@@ -187,7 +187,8 @@ public class V2UploadFileController {
         String username = upload.getUsername();
         String uploadingApp = upload.getUploadingApp();
         CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        if (!user.getUsername().equals(username)
+        String usernameInSystem = userHelper.createUsername(user.getUsername(), user.getAuthorizingClient());
+        if (!usernameInSystem.equals(username)
                 || !user.getAuthorizingClient().equals(uploadingApp)) {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "User is not authorized to check status.");
