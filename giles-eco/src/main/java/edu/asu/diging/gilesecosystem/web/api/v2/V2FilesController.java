@@ -29,9 +29,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
-import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.DocumentAccessCheck;
-import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.FileTokenAccessCheck;
-import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
@@ -40,6 +39,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.web.util.DigilibHelper;
 
@@ -62,6 +62,9 @@ public class V2FilesController {
 
     @Autowired
     private IFilesManager filesManager;
+    
+    @Autowired
+    private ICitesphereConnector citesphereConnector;
 
     @Autowired
     private ITransactionalDocumentService documentService;
@@ -84,10 +87,11 @@ public class V2FilesController {
     @RequestMapping(value = "/api/v2/resources/files/uploads", produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getAllUploadsOfUser(
             @RequestParam(defaultValue = "") String accessToken,
-            HttpServletRequest request, User user) {
-
+            HttpServletRequest request, CitesphereToken citesphereToken) {
+        
+        // check with citesphere
         Map<String, Map<String, String>> filenames = filesManager
-                .getUploadedFilenames(user.getUsername());
+                .getUploadedFilenames(citesphereToken.getName());
 
         ObjectMapper mapper = new ObjectMapper();
         // mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -193,19 +197,20 @@ public class V2FilesController {
 
     @RequestMapping(value = DOWNLOAD_FILE_URL, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getFile(@PathVariable String fileId,
-            @RequestParam(defaultValue = "") String accessToken, User user,
+            @RequestParam(defaultValue = "") String accessToken, CitesphereToken citesphereToken,
             HttpServletResponse response, HttpServletRequest request)
             throws UnsupportedEncodingException {
-
+        
         IFile file = fileService.getFileById(fileId);
         if (file == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
 
-        if (file.getAccess() != DocumentAccess.PUBLIC
-                && !file.getUsername().equals(user.getUsername())) {
+        
+        if (!citesphereConnector.hasAccess(file.getDocumentId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
+        
         Map<String, String[]> allParameters = new HashMap<>(request.getParameterMap());
         // if we have an image and have parameters, pass this on to digilib
         if (file.getContentType() != null && file.getContentType().startsWith("image/")) {

@@ -93,5 +93,6 @@ public interface Properties {
     public final static String CITESPHERE_BASE_URL = "citesphere_base_url";
     public final static String CITESPHERE_TOKEN_ENDPOINT = "citesphere_token_endpoint";
     public final static String CITESPHERE_CHECK_TOKEN_ENDPOINT = "citesphere_check_token_endpoint";
+    public final static String CITESPHERE_CHECK_ACCESS_ENDPOINT = "citesphere_check_access_endpoint";
     public final static String CITESPHERE_SCOPES = "citesphere_scopes";
 }
