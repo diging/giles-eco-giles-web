@@ -39,14 +39,14 @@ public class SecurityAspect {
     @Autowired
     private ITransactionalFileService fileService;
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(noCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.web..*) && @annotation(noCheck)")
     public Object doNotCheckUserAccess(ProceedingJoinPoint joinPoint,
             NoAccessCheck noCheck) throws Throwable {
 
         return joinPoint.proceed();
     }
 
-    @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(uploadCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.web..*) && @annotation(uploadCheck)")
     public Object checkUpoadIdAccess(ProceedingJoinPoint joinPoint,
             UploadIdAccessCheck uploadCheck) throws Throwable {
         
@@ -72,7 +72,7 @@ public class SecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(docCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.web..*) && @annotation(docCheck)")
     public Object checkDocumentIdAccess(ProceedingJoinPoint joinPoint, DocumentIdAccessCheck docCheck) throws Throwable {
         String docId = getRequestParameter(joinPoint, docCheck.value());
         
@@ -98,7 +98,7 @@ public class SecurityAspect {
         return joinPoint.proceed();
     }
 
-    @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(fileCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.web..*) && @annotation(fileCheck)")
     public Object checkFileAccess(ProceedingJoinPoint joinPoint,
             FileAccessCheck fileCheck) throws Throwable {
         String fileId = getRequestParameter(joinPoint, fileCheck.value());
@@ -138,7 +138,7 @@ public class SecurityAspect {
         return value;
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.controllers..*) && @annotation(check)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.web..*) && @annotation(check)")
     public Object checkAccount(ProceedingJoinPoint joinPoint, AccountCheck check) throws Throwable {
         Authentication auth = SecurityContextHolder.getContext()
                 .getAuthentication();
