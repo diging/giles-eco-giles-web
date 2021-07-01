@@ -93,7 +93,7 @@ public class RestSecurityAspect {
         
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(tokenCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(tokenCheck)")
     public Object checkAppTokenOnlyAccess(ProceedingJoinPoint joinPoint,
             AppTokenOnlyCheck tokenCheck) throws Throwable {
         logger.debug("Checking App access token for REST endpoint.");
@@ -111,7 +111,7 @@ public class RestSecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(tokenCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(tokenCheck)")
     public Object checkAppTokenAccess(ProceedingJoinPoint joinPoint,
             AppTokenCheck tokenCheck) throws Throwable {
         logger.debug("Checking App access token for REST endpoint.");
@@ -172,7 +172,7 @@ public class RestSecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(tokenCheck)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(tokenCheck)")
     public Object checkGilesTokenAccess(ProceedingJoinPoint joinPoint,
             TokenCheck tokenCheck) throws Throwable {
         
@@ -199,7 +199,7 @@ public class RestSecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(check)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(check)")
     public Object checkDocument(ProceedingJoinPoint joinPoint, DocumentAccessCheck check) throws Throwable {
                 
         UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.github(), check.value());
@@ -239,7 +239,7 @@ public class RestSecurityAspect {
         return joinPoint.proceed();
     }
     
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(check)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(check)")
     public Object checkImageAccess(ProceedingJoinPoint joinPoint, ImageAccessCheck check ) throws Throwable {
 
         UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.value(), null);
@@ -309,7 +309,7 @@ public class RestSecurityAspect {
         return joinPoint.proceed(arguments);
     }
 
-    @Around("within(edu.asu.diging.gilesecosystem.web.api..*) && @annotation(check)")
+    @Around("within(edu.asu.diging.gilesecosystem.web.api.v1..*) && @annotation(check)")
     public Object checkFileGitHubAccess(ProceedingJoinPoint joinPoint, FileTokenAccessCheck check) throws Throwable {
         
         UserTokenObject userTokenObj = extractUserTokenInfo(joinPoint, check.github(), check.value());
