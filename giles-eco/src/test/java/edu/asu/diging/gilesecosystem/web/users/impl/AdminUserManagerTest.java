@@ -13,9 +13,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import edu.asu.diging.gilesecosystem.web.exceptions.BadPasswordException;
-import edu.asu.diging.gilesecosystem.web.exceptions.UnauthorizedException;
-import edu.asu.diging.gilesecosystem.web.users.IAdminUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.BadPasswordException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.UnauthorizedException;
+import edu.asu.diging.gilesecosystem.web.core.users.IAdminUserDetailsService;
+import edu.asu.diging.gilesecosystem.web.core.users.impl.AdminUserManager;
 
 public class AdminUserManagerTest {
 

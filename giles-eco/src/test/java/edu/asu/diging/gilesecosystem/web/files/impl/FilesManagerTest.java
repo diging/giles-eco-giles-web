@@ -13,16 +13,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.domain.IDocument;
-import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.domain.IPage;
-import edu.asu.diging.gilesecosystem.web.domain.impl.Document;
-import edu.asu.diging.gilesecosystem.web.domain.impl.File;
-import edu.asu.diging.gilesecosystem.web.domain.impl.Page;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.core.files.impl.FilesManager;
+import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IPage;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Page;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 
 public class FilesManagerTest {
 
@@ -70,9 +71,9 @@ public class FilesManagerTest {
         pages.add(page);
         doc.setPages(pages);
 
-        Mockito.when(fileService.getFileById(IMG_ID)).thenReturn((File) imgFile);
-        Mockito.when(fileService.getFileById(TXT_ID)).thenReturn((File) txtFile);
-        Mockito.when(fileService.getFileById(OCR_ID)).thenReturn((File) ocrFile);
+        Mockito.when(fileService.getFileById(IMG_ID)).thenReturn((IFile) imgFile);
+        Mockito.when(fileService.getFileById(TXT_ID)).thenReturn((IFile) txtFile);
+        Mockito.when(fileService.getFileById(OCR_ID)).thenReturn((IFile) ocrFile);
     }
 
     @Test

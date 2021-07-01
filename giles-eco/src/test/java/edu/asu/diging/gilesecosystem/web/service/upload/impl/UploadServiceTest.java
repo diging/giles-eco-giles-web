@@ -18,14 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.domain.DocumentType;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.files.impl.StorageStatus;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.users.User;
-import edu.asu.diging.gilesecosystem.web.util.FileUploadHelper;
+import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
+import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.core.service.upload.impl.UploadService;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
+import edu.asu.diging.gilesecosystem.web.core.util.FileUploadHelper;
 
 public class UploadServiceTest {
     
@@ -44,7 +46,7 @@ public class UploadServiceTest {
     private ITransactionalUploadService uploadService;
 
     @InjectMocks
-    private UploadService serviceToTest;
+    private IUploadService serviceToTest;
 
     @Before
     public void setUp() {

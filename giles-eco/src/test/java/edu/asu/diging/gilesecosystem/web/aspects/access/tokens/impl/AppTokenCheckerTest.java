@@ -14,15 +14,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.apps.impl.RegisteredApp;
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
-import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
-import edu.asu.diging.gilesecosystem.web.service.apps.IRegisteredAppManager;
-import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
-import edu.asu.diging.gilesecosystem.web.tokens.ITokenService;
-import edu.asu.diging.gilesecosystem.web.tokens.impl.AppToken;
+import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.CheckerResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.ValidationResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.AppTokenChecker;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.InvalidTokenException;
+import edu.asu.diging.gilesecosystem.web.core.service.apps.IRegisteredAppManager;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IAppToken;
+import edu.asu.diging.gilesecosystem.web.core.tokens.ITokenService;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.AppToken;
 
 public class AppTokenCheckerTest {
 

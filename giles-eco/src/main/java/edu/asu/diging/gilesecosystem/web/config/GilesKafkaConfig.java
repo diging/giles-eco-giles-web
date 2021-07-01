@@ -17,8 +17,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.kafka.KafkaConfig;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.kafka.KafkaProcessingListener;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.kafka.KafkaProcessingListener;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 
 @Configuration
 @EnableKafka

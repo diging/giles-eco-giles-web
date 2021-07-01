@@ -11,13 +11,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
-import edu.asu.diging.gilesecosystem.web.exceptions.AppMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.exceptions.ServerMisconfigurationException;
-import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.impl.ApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.impl.IntrospectTokenService;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.CheckerResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.ValidationResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.MitreidAccessTokenChecker;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.AppMisconfigurationException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.ServerMisconfigurationException;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.ApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.IntrospectTokenService;
 
 public class MitreidAccessTokenCheckerTest {
 

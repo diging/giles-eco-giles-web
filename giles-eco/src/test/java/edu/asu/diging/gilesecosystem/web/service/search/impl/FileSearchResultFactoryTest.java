@@ -9,16 +9,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.domain.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.domain.IDocument;
-import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.domain.impl.Document;
-import edu.asu.diging.gilesecosystem.web.domain.impl.File;
-import edu.asu.diging.gilesecosystem.web.rest.FilesController;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalDocumentService;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.service.search.FileSearchResult;
+import edu.asu.diging.gilesecosystem.web.api.v1.FilesController;
+import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
+import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.service.search.FileSearchResult;
+import edu.asu.diging.gilesecosystem.web.core.service.search.impl.FileSearchResultFactory;
 
 public class FileSearchResultFactoryTest {
 

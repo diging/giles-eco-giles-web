@@ -20,19 +20,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
-import edu.asu.diging.gilesecosystem.web.aspects.access.SecurityAspect;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.FileAccessCheck;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.UploadIdAccessCheck;
-import edu.asu.diging.gilesecosystem.web.domain.IFile;
-import edu.asu.diging.gilesecosystem.web.domain.IUpload;
-import edu.asu.diging.gilesecosystem.web.domain.impl.File;
-import edu.asu.diging.gilesecosystem.web.domain.impl.Upload;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalFileService;
-import edu.asu.diging.gilesecosystem.web.service.core.ITransactionalUploadService;
-import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.SecurityAspect;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.FileAccessCheck;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.UploadIdAccessCheck;
+import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
+import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 public class SecurityAspectTest {
 

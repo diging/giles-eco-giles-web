@@ -27,25 +27,25 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 
 import com.google.common.net.HttpHeaders;
 
-import edu.asu.diging.gilesecosystem.web.aspects.access.RestSecurityAspect;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.AppTokenCheck;
-import edu.asu.diging.gilesecosystem.web.aspects.access.annotations.TokenCheck;
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.CheckerResult;
-import edu.asu.diging.gilesecosystem.web.aspects.access.openid.google.ValidationResult;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.IChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.AppTokenChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GilesChecker;
-import edu.asu.diging.gilesecosystem.web.aspects.access.tokens.impl.GitHubChecker;
-import edu.asu.diging.gilesecosystem.web.exceptions.InvalidTokenException;
-import edu.asu.diging.gilesecosystem.web.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.service.IIdentityProviderRegistry;
-import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
-import edu.asu.diging.gilesecosystem.web.tokens.impl.ApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.impl.AppToken;
-import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.RestSecurityAspect;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.AppTokenCheck;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.TokenCheck;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.CheckerResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.openid.google.ValidationResult;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.IChecker;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.AppTokenChecker;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.GilesChecker;
+import edu.asu.diging.gilesecosystem.web.core.aspects.access.tokens.impl.GitHubChecker;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.InvalidTokenException;
+import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
+import edu.asu.diging.gilesecosystem.web.core.service.IIdentityProviderRegistry;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IAppToken;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.ApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.AppToken;
+import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 public class RestSecurityAspectTest {
 

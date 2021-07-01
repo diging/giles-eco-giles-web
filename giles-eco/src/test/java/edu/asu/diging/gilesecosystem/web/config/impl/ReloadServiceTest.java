@@ -11,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.web.config.IAdjustableConnectionFactory;
 import edu.asu.diging.gilesecosystem.web.config.IReloadService;
-import edu.asu.diging.gilesecosystem.web.exceptions.FactoryDoesNotExistException;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.FactoryDoesNotExistException;
 
 public class ReloadServiceTest {
     
