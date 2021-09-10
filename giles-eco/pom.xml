@@ -20,7 +20,7 @@
 
         <geco.requests.version>0.9</geco.requests.version>
         <geco.util.version>0.6</geco.util.version>
-        <geco.september.util.version>0.2</geco.september.util.version>
+        <geco.september.util.version>0.3</geco.september.util.version>
         <geco.kafka-util.version>0.2</geco.kafka-util.version>
 
         <tomcat.deploy.path></tomcat.deploy.path>
@@ -136,13 +136,6 @@
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>september-util</artifactId>
             <version>${geco.september.util.version}</version>
-            <exclusions>
-                <!-- Exclude Commons Logging in favor of SLF4j -->
-                <exclusion>
-                    <groupId>edu.asu.digin</groupId>
-                    <artifactId>giles-eco-requests</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>edu.asu.diging</groupId>
