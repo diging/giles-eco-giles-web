@@ -19,9 +19,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
-import edu.asu.diging.gilesecosystem.web.users.GilesGrantedAuthority;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.core.users.GilesGrantedAuthority;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 public final class SimpleSignInAdapter implements SignInAdapter {
     

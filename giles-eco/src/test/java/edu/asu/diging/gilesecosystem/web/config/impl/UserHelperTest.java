@@ -11,9 +11,10 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.UserProfile;
 
-import edu.asu.diging.gilesecosystem.web.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.users.IUserManager;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
+import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 public class UserHelperTest {
 
@@ -21,7 +22,7 @@ public class UserHelperTest {
     
     @Mock private Connection<?> connection;
     
-    @InjectMocks private UserHelper helperToTest;
+    @InjectMocks private IUserHelper helperToTest;
     
     private String USER_ID = "user_id";
     

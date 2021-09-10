@@ -1,14 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.tokens.impl;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +9,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.social.google.api.drive.DriveApp.AppIcon;
 
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.apps.IRegisteredApp;
-import edu.asu.diging.gilesecosystem.web.apps.impl.RegisteredApp;
-import edu.asu.diging.gilesecosystem.web.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.tokens.IApiTokenContents;
-import edu.asu.diging.gilesecosystem.web.tokens.IAppToken;
-import edu.asu.diging.gilesecosystem.web.users.User;
+import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredApp;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IApiTokenContents;
+import edu.asu.diging.gilesecosystem.web.core.tokens.IAppToken;
+import edu.asu.diging.gilesecosystem.web.core.tokens.impl.TokenService;
+import edu.asu.diging.gilesecosystem.web.core.users.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import junit.framework.Assert;
 
 public class TokenServiceTest {
 
