@@ -136,6 +136,13 @@
             <groupId>edu.asu.diging.giles-eco</groupId>
             <artifactId>september-util</artifactId>
             <version>${geco.september.util.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>edu.asu.digin</groupId>
+                    <artifactId>giles-eco-requests</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>edu.asu.diging</groupId>
