@@ -20,7 +20,7 @@
 
         <geco.requests.version>0.9</geco.requests.version>
         <geco.util.version>0.6</geco.util.version>
-        <geco.september.util.version>0.2</geco.september.util.version>
+        <geco.september.util.version>0.3</geco.september.util.version>
         <geco.kafka-util.version>0.2</geco.kafka-util.version>
 
         <tomcat.deploy.path></tomcat.deploy.path>
@@ -547,7 +547,7 @@
 
     </dependencies>
 
-    <repositories>
+    <!-- <repositories>
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -556,7 +556,8 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-    </repositories>
+    </repositories>-->
+
 
     <profiles>
         <profile>
