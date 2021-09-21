@@ -50,6 +50,10 @@
 	</logger>
     
     <logger name="org.springframework.security">
+        <level value="${log.level}" />
+    </logger>
+    
+    <logger name="org.springframework.social">
         <level value="debug" />
     </logger>
     
