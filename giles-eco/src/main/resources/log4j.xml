@@ -8,7 +8,16 @@
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss,SSS} %-5p: %c - %m%n" />
 		</layout>
+	</appender>	
+	<appender name="FILE" class="org.apache.log4j.FileAppender">
+	      <param name="file" value="logs/geco-giles.log"/>
+	      <param name="immediateFlush" value="true"/>
+
+	      <layout class="org.apache.log4j.PatternLayout">
+		<param name="conversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+	      </layout>
 	</appender>
+
 	
 	<!-- Application Loggers -->
 	<logger name="edu.asu.diging">
@@ -41,6 +50,10 @@
 	</logger>
     
     <logger name="org.springframework.security">
+        <level value="${log.level}" />
+    </logger>
+    
+    <logger name="org.springframework.social">
         <level value="debug" />
     </logger>
     
@@ -52,6 +65,7 @@
 	<root>
 		<priority value="warn" />
 		<appender-ref ref="console" />
+		<appender-ref ref="FILE" />
 	</root>
 	
 </log4j:configuration>
