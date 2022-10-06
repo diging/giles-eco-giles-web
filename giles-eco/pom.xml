@@ -18,7 +18,7 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.12.0-rc1</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.9</geco.requests.version>
+        <geco.requests.version>0.10-SNAPSHOT</geco.requests.version>
         <geco.util.version>0.6</geco.util.version>
         <geco.september.util.version>0.3</geco.september.util.version>
         <geco.kafka-util.version>0.2</geco.kafka-util.version>
@@ -595,21 +595,24 @@
                 </excludes>
             </resource>
         </resources>
+        
+        <pluginManagement>
         <plugins>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.2</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.3.2</version>
                 <configuration>
                     <webResources>
                         <resource>
@@ -637,13 +640,6 @@
                             </excludes>
                         </resource>
                     </webResources>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
                 </configuration>
             </plugin>
 
@@ -709,6 +705,7 @@
             </plugin>
 
         </plugins>
+        </pluginManagement>
     </build>
 
     <scm>

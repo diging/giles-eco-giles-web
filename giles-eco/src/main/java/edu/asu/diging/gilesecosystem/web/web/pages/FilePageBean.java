@@ -33,7 +33,7 @@ public class FilePageBean implements IFile {
     private RequestStatus storedStatus;
     private RequestStatus ocrStatus;
     
-    private Map<String, AdditionalFilePageBean> additionalFiles = new HashMap<>();  
+    private Map<String, List<AdditionalFilePageBean>> additionalFiles = new HashMap<>();  
     
     private List<Badge> badges = new ArrayList<>();
     
@@ -172,10 +172,10 @@ public class FilePageBean implements IFile {
     public void setBadges(List<Badge> badges) {
         this.badges = badges;
     }
-    public Map<String, AdditionalFilePageBean> getAdditionalFiles() {
+    public Map<String, List<AdditionalFilePageBean>> getAdditionalFiles() {
         return additionalFiles;
     }
-    public void setAdditionalFiles(Map<String, AdditionalFilePageBean> additionalFiles) {
+    public void setAdditionalFiles(Map<String, List<AdditionalFilePageBean>> additionalFiles) {
         this.additionalFiles = additionalFiles;
     }
     @Override
