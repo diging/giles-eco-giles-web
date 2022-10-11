@@ -195,8 +195,10 @@ public class ViewDocumentController {
                         }
                     }
                     
-                    
-                    bean.getAdditionalFiles().put(t.getTaskHandlerId(), additionalFileBean);
+                    if (bean.getAdditionalFiles().get(t.getTaskHandlerId()) == null) {
+                        bean.getAdditionalFiles().put(t.getTaskHandlerId(), new ArrayList<>()); 
+                    }
+                    bean.getAdditionalFiles().get(t.getTaskHandlerId()).add(additionalFileBean);
                 }
             }
         });

@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletionNotificationRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletionNotificationRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.Page;
+import edu.asu.diging.gilesecosystem.requests.impl.PageElement;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
@@ -48,10 +51,36 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         
         IFile file = filesService.getFileById(request.getFileId());
         String fileDownloadUrl = request.getDownloadUrl();
+        
+        if (document.getTasks() == null) {
+            document.setTasks(new ArrayList<ITask>());
+        }
+        
         // if there was a new file created
-        IFile additionalFile = null;
-        if (fileDownloadUrl != null && !fileDownloadUrl.isEmpty()) {
-            additionalFile = createFile(file, document, request.getContentType(), request.getSize(), request.getFilename(), REQUEST_PREFIX);
+        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename());
+        
+        
+        if (request.getPages() != null && !request.getPages().isEmpty()) {
+            for (Page page : request.getPages()) {
+                saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename());  
+                for (PageElement element : page.getPageElements()) {
+                    saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename());
+                }
+            }
+        }
+        
+        try {
+            documentService.saveDocument(document);
+        } catch (UnstorableObjectException e) {
+            // should never happen
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
+        }
+     }
+
+    public void saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename) {
+        // if there was a new file created
+        if (downloadUrl != null && !downloadUrl.isEmpty()) {
+            IFile additionalFile = createFile(file, document, contentType, size, filename, REQUEST_PREFIX);
             
             try {
                 filesService.saveFile(additionalFile);
@@ -61,38 +90,29 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             }
             
             FileType fileType = FileType.OTHER;
-            if (request.getContentType() != null) {
-                if (request.getContentType().equals(MediaType.TEXT_PLAIN_VALUE)) {
+            if (contentType != null) {
+                if (contentType.equals(MediaType.TEXT_PLAIN_VALUE)) {
                     fileType = FileType.TEXT;
-                } else if (request.getContentType().startsWith("image/")) {
+                } else if (contentType.startsWith("image/")) {
                     fileType = FileType.IMAGE;
-                } else if (request.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
+                } else if (contentType.equals(MediaType.APPLICATION_PDF_VALUE)) {
                     fileType = FileType.PDF;
                 }
             }
-            sendStorageRequest(additionalFile, request.getDownloadPath(), request.getDownloadUrl(), fileType);
-        } 
-        
-        ITask task = new Task();
-        task.setFileId(request.getFileId());
-        task.setStatus(request.getStatus());
-        task.setTaskHandlerId(request.getNotifier());
-        if (additionalFile != null) {
-            task.setResultFileId(additionalFile.getId());
+            sendStorageRequest(additionalFile, "", downloadUrl, fileType);
+            
+            ITask task = new Task();
+            task.setFileId(file.getId());
+            task.setStatus(status);
+            task.setTaskHandlerId(notifier);
+            if (additionalFile != null) {
+                task.setResultFileId(additionalFile.getId());
+            }
+            document.getTasks().add(task);
         }
         
-        if (document.getTasks() == null) {
-            document.setTasks(new ArrayList<ITask>());
-        }
         
-        document.getTasks().add(task);
-        try {
-            documentService.saveDocument(document);
-        } catch (UnstorableObjectException e) {
-            // should never happen
-            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
-        }
-     }
+    }
 
     @Override
     public Class<? extends ICompletionNotificationRequest> getRequestClass() {
