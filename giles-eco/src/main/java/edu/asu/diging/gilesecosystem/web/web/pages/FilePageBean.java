@@ -12,7 +12,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 
-public class FilePageBean implements IFile {
+public class FilePageBean implements IFile, BeanWithAdditionalFiles {
 
     private String uploadId;
     private String filename;
@@ -172,6 +172,7 @@ public class FilePageBean implements IFile {
     public void setBadges(List<Badge> badges) {
         this.badges = badges;
     }
+    @Override
     public Map<String, List<AdditionalFilePageBean>> getAdditionalFiles() {
         return additionalFiles;
     }

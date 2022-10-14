@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,11 @@ import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingExceptio
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IPage;
+import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 import edu.asu.diging.gilesecosystem.web.core.model.PageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Page;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Task;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.ICompletedOCRProcessor;
@@ -34,6 +37,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 public class CompletedOCRProcessor extends ACompletedExtractionProcessor implements RequestProcessor<ICompletedOCRRequest>, ICompletedOCRProcessor {
 
     public final static String REQUEST_PREFIX = "STOCRREQ";
+    public final static String OCR_PROVIDER_ID = "ocr";
     
     @Autowired
     private ITransactionalDocumentService documentService;
@@ -59,10 +63,12 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         IFile file = filesService.getFileById(document.getUploadedFileId());
         
         Map<String, IPage> pages = getPageMap(document.getPages());
-        IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+        Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
+        
+        IFile textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
        
         try {
-            filesService.saveFile(pageText);
+            filesService.saveFile(textFile);
         } catch (UnstorableObjectException e) {
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
@@ -70,24 +76,41 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         
         // we are looking for the image that was ocred
         IPage documentPage = pages.get(request.getFilename());
-        if (documentPage == null) {
-            // FIXME what about page nr
-            documentPage = new Page();
-            document.getPages().add(documentPage);
-            documentPage.setDocument(document);
-        }
-        documentPage.setOcrFileId(pageText.getId());
-        if (request.getStatus() != null) {
-            documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+        if (documentPage != null) {
+            documentPage.setOcrFileId(textFile.getId());
+            if (request.getStatus() != null) {
+                documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+            } else {
+                documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+            }
+            documentPage.setOcrFileErrorMsg(request.getErrorMsg());
         } else {
-            documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+            // maybe its an ocr of an additional file
+            documentPage = additionalFilesPagesMap.get(request.getFilename());
+            if (documentPage == null) {
+                documentPage = new Page();
+                document.getPages().add(documentPage);
+                documentPage.setDocument(document);
+            }
+            if (documentPage.getAdditionalFileIds() == null) {
+                documentPage.setAdditionalFileIds(new ArrayList<>());
+            }
+            documentPage.getAdditionalFileIds().add(textFile.getId());
+            
+            ITask task = new Task();
+            task.setFileId(file.getId());
+            task.setStatus(request.getStatus());
+            task.setTaskHandlerId(OCR_PROVIDER_ID);
+            task.setResultFileId(textFile.getId());
+            
+            document.getTasks().add(task);
         }
-        documentPage.setOcrFileErrorMsg(request.getErrorMsg());
+        
         
         if (request.getDownloadPath() != null && !request.getDownloadPath().isEmpty()
                 && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty() && request.getStatus() != RequestStatus.FAILED) {
             request.setStatus(RequestStatus.COMPLETE);
-            sendStorageRequest(pageText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+            sendStorageRequest(textFile, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } else {
             request.setStatus(RequestStatus.FAILED);
         }
@@ -141,9 +164,28 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         for (IPage page : pages) {
             String imageFileId = page.getImageFileId();
             IFile file = filesService.getFileById(imageFileId);
-            
             if (file != null) {
                 pageMap.put(file.getFilename(), page);
+            }
+        }
+        return pageMap;
+    }
+    
+    /**
+     * 
+     * This method maps pages to the filenames of additional files.
+     * @param pages List of pages to be mapped
+     * @return A map of the form imageFilename -> page
+     */
+    private Map<String, IPage> getAdditionalFilesPageMap(List<IPage> pages) {
+        Map<String, IPage> pageMap = new HashMap<>();
+        for (IPage page : pages) {
+            for (String additionalFileId : page.getAdditionalFileIds()) {
+                IFile additionalFile = filesService.getFileById(additionalFileId);
+                
+                if (additionalFile != null) {
+                    pageMap.put(additionalFile.getFilename(), page);
+                }  
             }
         }
         return pageMap;
