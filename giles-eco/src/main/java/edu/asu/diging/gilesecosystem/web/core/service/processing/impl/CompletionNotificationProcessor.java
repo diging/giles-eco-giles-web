@@ -1,6 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +20,7 @@ import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IPage;
 import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Task;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
@@ -61,11 +64,32 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         
         
         if (request.getPages() != null && !request.getPages().isEmpty()) {
+            Map<Integer, IPage> pageMap = getPageMap(document);
             for (Page page : request.getPages()) {
-                saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename());  
-                for (PageElement element : page.getPageElements()) {
-                    saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename());
+                IPage documentPage = pageMap.get(page.getPageNr());
+                if(documentPage == null) {
+                    documentPage = new edu.asu.diging.gilesecosystem.web.core.model.impl.Page();
+                    documentPage.setPageNr(page.getPageNr());
+                    document.getPages().add(documentPage);
+                    documentPage.setDocument(document);
                 }
+                if (documentPage.getAdditionalFileIds() == null) {
+                    documentPage.setAdditionalFileIds(new ArrayList<>());
+                }
+                document.getPages().add(documentPage);
+                
+                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename());  
+                if (additionalFile != null) {
+                    documentPage.getAdditionalFileIds().add(additionalFile.getId());
+                }
+                for (PageElement element : page.getPageElements()) {
+                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename());
+                    if (elementFile != null) {
+                        documentPage.getAdditionalFileIds().add(elementFile.getId());
+                    }
+                }
+                
+               
             }
         }
         
@@ -76,8 +100,16 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
      }
+    
+    private Map<Integer, IPage> getPageMap(IDocument doc) {
+        Map<Integer, IPage> pageMap = new HashMap<>();
+        for (IPage page : doc.getPages()) {
+            pageMap.put(page.getPageNr(), page);
+        }
+        return pageMap;
+    }
 
-    public void saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename) {
+    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename) {
         // if there was a new file created
         if (downloadUrl != null && !downloadUrl.isEmpty()) {
             IFile additionalFile = createFile(file, document, contentType, size, filename, REQUEST_PREFIX);
@@ -109,9 +141,10 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                 task.setResultFileId(additionalFile.getId());
             }
             document.getTasks().add(task);
+            return additionalFile;
         }
         
-        
+        return null;
     }
 
     @Override

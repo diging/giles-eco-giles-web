@@ -1,14 +1,15 @@
 package edu.asu.diging.gilesecosystem.web.web.pages;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IPage;
 import edu.asu.diging.gilesecosystem.web.core.model.PageStatus;
 
-public class PagePageBean implements IPage {
+public class PagePageBean implements IPage, BeanWithAdditionalFiles {
 
     private int pageNr;
     private String imageFileId;
@@ -26,6 +27,8 @@ public class PagePageBean implements IPage {
     private IFile imageFile;
     private IFile textFile;
     private IFile ocrFile;
+    
+    private Map<String, List<AdditionalFilePageBean>> additionalFiles = new HashMap<>();  
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -139,5 +142,21 @@ public class PagePageBean implements IPage {
     }
     public void setOcrFileErrorMsg(String ocrFileErrorMsg) {
         this.ocrFileErrorMsg = ocrFileErrorMsg;
+    }
+    @Override
+    public void setAdditionalFileIds(List<String> additionalFileIds) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public List<String> getAdditionalFileIds() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    public Map<String, List<AdditionalFilePageBean>> getAdditionalFiles() {
+        return additionalFiles;
+    }
+    public void setAdditionalFiles(Map<String, List<AdditionalFilePageBean>> additionalFiles) {
+        this.additionalFiles = additionalFiles;
     } 
 }

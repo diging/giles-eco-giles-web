@@ -1,5 +1,9 @@
 package edu.asu.diging.gilesecosystem.web.core.model.impl;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -9,6 +13,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IPage;
@@ -38,6 +46,10 @@ public class Page implements IPage {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity=Document.class)
     @JoinColumn(name = "document_id", nullable = false)
     private IDocument document;
+    
+    @ElementCollection 
+    @LazyCollection(LazyCollectionOption.FALSE) 
+    private List<String> additionalFileIds;
     
     /* (non-Javadoc)
      * @see edu.asu.giles.core.impl.IPage#getPageNr()
@@ -150,5 +162,13 @@ public class Page implements IPage {
     @Override
     public void setTextFileErrorMsg(String textFileErrorMsg) {
         this.textFileErrorMsg = textFileErrorMsg;
+    }
+    @Override
+    public List<String> getAdditionalFileIds() {
+        return additionalFileIds;
+    }
+    @Override
+    public void setAdditionalFileIds(List<String> additionalFileIds) {
+        this.additionalFileIds = additionalFileIds;
     }
 }

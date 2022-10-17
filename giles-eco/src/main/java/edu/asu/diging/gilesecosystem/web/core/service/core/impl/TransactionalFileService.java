@@ -68,6 +68,9 @@ public class TransactionalFileService implements ITransactionalFileService {
         if (page.getTextFileId() != null) {
             ids.add(page.getTextFileId());
         }
+        if (page.getAdditionalFileIds() != null) {
+            ids.addAll(page.getAdditionalFileIds());
+        }
         return getFilesForIds(ids);
     }
     

@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.core.model;
 
+import java.util.List;
 
 public interface IPage {
 
@@ -46,5 +47,9 @@ public interface IPage {
     void setImageFileErrorMsg(String imageFileErrorMsg);
 
     String getImageFileErrorMsg();
+
+    void setAdditionalFileIds(List<String> additionalFileIds);
+
+    List<String> getAdditionalFileIds();
 
 }

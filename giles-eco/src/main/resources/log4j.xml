@@ -54,11 +54,11 @@
     </logger>
     
     <logger name="org.springframework.social">
-        <level value="debug" />
+        <level value="${log.level}" />
     </logger>
     
     <logger name="org.hibernate">
-        <level value="info" />
+        <level value="${log.level}" />
     </logger>
 
 	<!-- Root Logger -->
