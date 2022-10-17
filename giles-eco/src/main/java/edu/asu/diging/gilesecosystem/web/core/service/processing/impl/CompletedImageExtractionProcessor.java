@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedImageExtractionRequest;
-import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedImageExtractionRequest;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;

@@ -111,6 +111,9 @@
         <c:if test="${not empty page.ocrFile.additionalFiles}">
             <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.ocrFile}" type="object" /></tiles:insertTemplate>
         </c:if>
+        <c:if test="${not empty page.additionalFiles}">
+            <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page}" type="object" /></tiles:insertTemplate>
+        </c:if>
     </dd>
 </dl>
 </c:forEach>

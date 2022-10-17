@@ -1,6 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,13 +10,17 @@ import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletionNotificationRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletionNotificationRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.Page;
+import edu.asu.diging.gilesecosystem.requests.impl.PageElement;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IPage;
 import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Task;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
@@ -48,10 +54,65 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         
         IFile file = filesService.getFileById(request.getFileId());
         String fileDownloadUrl = request.getDownloadUrl();
+        
+        if (document.getTasks() == null) {
+            document.setTasks(new ArrayList<ITask>());
+        }
+        
         // if there was a new file created
-        IFile additionalFile = null;
-        if (fileDownloadUrl != null && !fileDownloadUrl.isEmpty()) {
-            additionalFile = createFile(file, document, request.getContentType(), request.getSize(), request.getFilename(), REQUEST_PREFIX);
+        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename());
+        
+        
+        if (request.getPages() != null && !request.getPages().isEmpty()) {
+            Map<Integer, IPage> pageMap = getPageMap(document);
+            for (Page page : request.getPages()) {
+                IPage documentPage = pageMap.get(page.getPageNr());
+                if(documentPage == null) {
+                    documentPage = new edu.asu.diging.gilesecosystem.web.core.model.impl.Page();
+                    documentPage.setPageNr(page.getPageNr());
+                    document.getPages().add(documentPage);
+                    documentPage.setDocument(document);
+                }
+                if (documentPage.getAdditionalFileIds() == null) {
+                    documentPage.setAdditionalFileIds(new ArrayList<>());
+                }
+                document.getPages().add(documentPage);
+                
+                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename());  
+                if (additionalFile != null) {
+                    documentPage.getAdditionalFileIds().add(additionalFile.getId());
+                }
+                for (PageElement element : page.getPageElements()) {
+                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename());
+                    if (elementFile != null) {
+                        documentPage.getAdditionalFileIds().add(elementFile.getId());
+                    }
+                }
+                
+               
+            }
+        }
+        
+        try {
+            documentService.saveDocument(document);
+        } catch (UnstorableObjectException e) {
+            // should never happen
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
+        }
+     }
+    
+    private Map<Integer, IPage> getPageMap(IDocument doc) {
+        Map<Integer, IPage> pageMap = new HashMap<>();
+        for (IPage page : doc.getPages()) {
+            pageMap.put(page.getPageNr(), page);
+        }
+        return pageMap;
+    }
+
+    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename) {
+        // if there was a new file created
+        if (downloadUrl != null && !downloadUrl.isEmpty()) {
+            IFile additionalFile = createFile(file, document, contentType, size, filename, REQUEST_PREFIX);
             
             try {
                 filesService.saveFile(additionalFile);
@@ -61,38 +122,30 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             }
             
             FileType fileType = FileType.OTHER;
-            if (request.getContentType() != null) {
-                if (request.getContentType().equals(MediaType.TEXT_PLAIN_VALUE)) {
+            if (contentType != null) {
+                if (contentType.equals(MediaType.TEXT_PLAIN_VALUE)) {
                     fileType = FileType.TEXT;
-                } else if (request.getContentType().startsWith("image/")) {
+                } else if (contentType.startsWith("image/")) {
                     fileType = FileType.IMAGE;
-                } else if (request.getContentType().equals(MediaType.APPLICATION_PDF_VALUE)) {
+                } else if (contentType.equals(MediaType.APPLICATION_PDF_VALUE)) {
                     fileType = FileType.PDF;
                 }
             }
-            sendStorageRequest(additionalFile, request.getDownloadPath(), request.getDownloadUrl(), fileType);
-        } 
-        
-        ITask task = new Task();
-        task.setFileId(request.getFileId());
-        task.setStatus(request.getStatus());
-        task.setTaskHandlerId(request.getNotifier());
-        if (additionalFile != null) {
-            task.setResultFileId(additionalFile.getId());
+            sendStorageRequest(additionalFile, "", downloadUrl, fileType);
+            
+            ITask task = new Task();
+            task.setFileId(file.getId());
+            task.setStatus(status);
+            task.setTaskHandlerId(notifier);
+            if (additionalFile != null) {
+                task.setResultFileId(additionalFile.getId());
+            }
+            document.getTasks().add(task);
+            return additionalFile;
         }
         
-        if (document.getTasks() == null) {
-            document.setTasks(new ArrayList<ITask>());
-        }
-        
-        document.getTasks().add(task);
-        try {
-            documentService.saveDocument(document);
-        } catch (UnstorableObjectException e) {
-            // should never happen
-            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
-        }
-     }
+        return null;
+    }
 
     @Override
     public Class<? extends ICompletionNotificationRequest> getRequestClass() {

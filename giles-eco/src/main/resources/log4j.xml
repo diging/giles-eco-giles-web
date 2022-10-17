@@ -14,7 +14,7 @@
 	      <param name="immediateFlush" value="true"/>
 
 	      <layout class="org.apache.log4j.PatternLayout">
-		<param name="conversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+		<param name="conversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p: %c - %m%n"/>
 	      </layout>
 	</appender>
 
@@ -54,11 +54,11 @@
     </logger>
     
     <logger name="org.springframework.social">
-        <level value="debug" />
+        <level value="${log.level}" />
     </logger>
     
     <logger name="org.hibernate">
-        <level value="info" />
+        <level value="${log.level}" />
     </logger>
 
 	<!-- Root Logger -->

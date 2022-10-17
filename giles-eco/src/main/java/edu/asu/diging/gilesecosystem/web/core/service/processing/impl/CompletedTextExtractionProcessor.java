@@ -1,12 +1,15 @@
 package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.ICompletedTextExtractionRequest;
-import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.impl.CompletedTextExtractionRequest;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
@@ -71,6 +74,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             sendStorageRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } 
         
+        Map<Integer, IPage> pageMap = document.getPages().stream().collect(Collectors.toMap(IPage::getPageNr, Function.identity()));
+        
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
@@ -82,15 +87,19 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                     messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
                 }
                 
-                IPage documentPage = new Page();
-                documentPage.setDocument(document);
-                documentPage.setPageNr(page.getPageNr());
+                IPage documentPage = pageMap.get(page.getPageNr());
+                if (documentPage == null) {
+                    documentPage = new Page();
+                    documentPage.setDocument(document);
+                    documentPage.setPageNr(page.getPageNr());
+                    document.getPages().add(documentPage);
+                    
+                }
                 documentPage.setTextFileId(pageText.getId());
                 if (page.getStatus() != null) {
                     documentPage.setTextFileStatus(PageStatus.valueOf(page.getStatus().toString()));
                 }
                 documentPage.setTextFileErrorMsg(page.getErrorMsg());
-                document.getPages().add(documentPage);
                 
                 sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.TEXT);
             }
