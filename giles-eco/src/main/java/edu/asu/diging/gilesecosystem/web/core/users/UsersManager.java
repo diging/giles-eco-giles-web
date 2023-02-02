@@ -149,7 +149,6 @@ public class UsersManager implements IUserManager {
         client.update(user);
         try {
             if (user.getEmail() != null && !user.getEmail().equals("")) {
-                System.out.println("Sending mail to " + user.getEmail());
                 emailManager.sendAccountApprovalOrRevokeEmail(user.getName(), user.getUsername(), user.getEmail(), true);
             }
         } catch (GilesNotificationException e) {
@@ -167,7 +166,6 @@ public class UsersManager implements IUserManager {
         client.update(user);
         try {
             if (user.getEmail() != null && !user.getEmail().equals("")) {
-                System.out.println("Sending mail to " + user.getEmail());
                 emailManager.sendAccountApprovalOrRevokeEmail(user.getName(), user.getUsername(), user.getEmail(), false);
             }
         } catch (GilesNotificationException e) {
