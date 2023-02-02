@@ -21,4 +21,6 @@ public interface IEmailNotificationManager {
      */
     void sendAccountCreatedEmail(String name, String username, String adminName, String adminEmail)
             throws GilesNotificationException;
+    
+    void sendAccountApprovalOrRevokeEmail(String name, String userName, String userEmail, boolean approved) throws GilesNotificationException;
 }
