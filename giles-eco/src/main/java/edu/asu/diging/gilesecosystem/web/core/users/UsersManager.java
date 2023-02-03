@@ -149,10 +149,9 @@ public class UsersManager implements IUserManager {
         client.update(user);
         try {
             if (user.getEmail() != null && !user.getEmail().equals("")) {
-                emailManager.sendAccountApprovalOrRevokeEmail(user.getName(), user.getUsername(), user.getEmail(), true);
+                emailManager.sendAccountApprovalEmail(user.getName(), user.getUsername(), user.getEmail());
             }
         } catch (GilesNotificationException e) {
-            // let's log warning but keep on going
             messageHandler.handleMessage("Email to " + user.getUsername() + " could not be sent.", e, MessageType.WARNING);
         }
         
@@ -166,10 +165,9 @@ public class UsersManager implements IUserManager {
         client.update(user);
         try {
             if (user.getEmail() != null && !user.getEmail().equals("")) {
-                emailManager.sendAccountApprovalOrRevokeEmail(user.getName(), user.getUsername(), user.getEmail(), false);
+                emailManager.sendAccountRevokedEmail(user.getName(), user.getUsername(), user.getEmail());
             }
         } catch (GilesNotificationException e) {
-            // let's log warning but keep on going
             messageHandler.handleMessage("Email to " + user.getUsername() + " could not be sent.", e, MessageType.WARNING);
         }
         

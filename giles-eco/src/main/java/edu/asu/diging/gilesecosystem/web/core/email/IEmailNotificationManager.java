@@ -21,6 +21,25 @@ public interface IEmailNotificationManager {
      */
     void sendAccountCreatedEmail(String name, String username, String adminName, String adminEmail)
             throws GilesNotificationException;
+
+    /**
+     * Send account approval email to the user
+     *
+     * @param name name of new user
+     * @param userName userName of new user
+     * @param userEmail email id of user
+     * @throws GilesNotificationException
+     */
+    void sendAccountApprovalEmail(String name, String userName, String userEmail) throws GilesNotificationException;
+
+    /**
+     * Send account revoked email to the user
+     *
+     * @param name name of new user
+     * @param userName userName of new user
+     * @param userEmail email id of user
+     * @throws GilesNotificationException
+     */
+    void sendAccountRevokedEmail(String name, String userName, String userEmail) throws GilesNotificationException;
     
-    void sendAccountApprovalOrRevokeEmail(String name, String userName, String userEmail, boolean approved) throws GilesNotificationException;
 }
