@@ -238,5 +238,17 @@ public class FilesManager implements IFilesManager {
         }
         return true;
     }
+    
+    @Override
+    public boolean changeFileProcessingStatus(IFile file, ProcessingStatus status) {
+        file.setProcessingStatus(status);
+        try {
+            fileService.saveFile(file);
+        } catch (UnstorableObjectException e) {
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            return false;
+        }
+        return true;
+    }
 
 }
