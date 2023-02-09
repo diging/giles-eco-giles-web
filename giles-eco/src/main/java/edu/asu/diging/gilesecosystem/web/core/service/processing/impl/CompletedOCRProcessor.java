@@ -61,21 +61,25 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
     public void processRequest(ICompletedOCRRequest request) {
         IDocument document = documentService.getDocument(request.getDocumentId());
         IFile file = filesService.getFileById(document.getUploadedFileId());
-        
         Map<String, IPage> pages = getPageMap(document.getPages());
         Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
-        
-        IFile textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-       
-        try {
-            filesService.saveFile(textFile);
-        } catch (UnstorableObjectException e) {
-            // should never happen, we're setting the id
-            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        IFile textFile;
+        IPage documentPage = pages.get(request.getFilename());
+        if (documentPage != null && documentPage.getOcrFileId() != null && !documentPage.getOcrFileId().isEmpty()) {
+            textFile = filesService.getFileById(documentPage.getOcrFileId());
+        } else {
+            textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+            
+            try {
+                filesService.saveFile(textFile);
+            } catch (UnstorableObjectException e) {
+                // should never happen, we're setting the id
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            }
         }
         
+        
         // we are looking for the image that was ocred
-        IPage documentPage = pages.get(request.getFilename());
         if (documentPage != null) {
             documentPage.setOcrFileId(textFile.getId());
             if (request.getStatus() != null) {

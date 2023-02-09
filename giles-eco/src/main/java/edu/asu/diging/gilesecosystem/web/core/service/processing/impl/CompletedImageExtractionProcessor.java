@@ -60,16 +60,20 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
-                IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
-               
-                try {
-                    filesService.saveFile(pageText);
-                } catch (UnstorableObjectException e) {
-                    // should never happen, we're setting the id
-                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-                }
-                
                 IPage documentPage = pages.get(page.getPageNr());
+                IFile pageText;
+                if(documentPage != null && documentPage.getImageFileId() != null && !documentPage.getImageFileId().isEmpty()) {
+                    pageText = filesService.getFileById(documentPage.getImageFileId());
+                } else {
+                    pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
+                    try {
+                        filesService.saveFile(pageText);
+                    } catch (UnstorableObjectException e) {
+                        // should never happen, we're setting the id
+                        messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                    }
+                }    
+               
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setPageNr(page.getPageNr());

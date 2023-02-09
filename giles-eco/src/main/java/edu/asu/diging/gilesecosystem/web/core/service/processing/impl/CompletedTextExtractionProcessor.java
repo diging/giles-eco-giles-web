@@ -58,19 +58,23 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         IFile file = filesService.getFileById(document.getUploadedFileId());
         
         String completeTextDownload = request.getDownloadUrl();
+        IFile completeText;
         // text was extracted
         if (completeTextDownload != null && !completeTextDownload.isEmpty()) {
-            IFile completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-            
-            try {
-                filesService.saveFile(completeText);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            if (document.getExtractedTextFileId() != null) {
+                completeText = filesService.getFileById(document.getExtractedTextFileId());
+            } else {
+                completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+                
+                try {
+                    filesService.saveFile(completeText);
+                } catch (UnstorableObjectException e) {
+                    // should never happen, we're setting the id
+                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                }
+                
+                document.setExtractedTextFileId(completeText.getId());
             }
-            
-            document.setExtractedTextFileId(completeText.getId());
-            
             sendStorageRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } 
         
@@ -78,16 +82,23 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
-                IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
-               
-                try {
-                    filesService.saveFile(pageText);
-                } catch (UnstorableObjectException e) {
-                    // should never happen, we're setting the id
-                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                IFile pageText;
+                IPage documentPage = pageMap.get(page.getPageNr());
+                if (documentPage != null && documentPage.getTextFileId() != null && !documentPage.getTextFileId().isEmpty()) {
+                    pageText = filesService.getFileById(documentPage.getTextFileId());
+                } else {
+                    pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
+                    
+                    try {
+                        filesService.saveFile(pageText);
+                    } catch (UnstorableObjectException e) {
+                        // should never happen, we're setting the id
+                        messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                    }
                 }
                 
-                IPage documentPage = pageMap.get(page.getPageNr());
+                
+                
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setDocument(document);

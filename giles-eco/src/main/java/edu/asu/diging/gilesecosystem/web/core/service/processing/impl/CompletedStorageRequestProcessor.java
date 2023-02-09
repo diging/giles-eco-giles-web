@@ -1,5 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,13 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Override
     public void processRequest(ICompletedStorageRequest request) {
         IFile file = filesService.getFileById(request.getFileId());
-        
+        if (file.getStorageId() != null && !file.getStorageId().isEmpty()) {
+            if (file.getOldFileVersionsId() == null) {
+                file.setOldFileVersionsId(new ArrayList<>());
+            }
+            file.getOldFileVersionsId().add(file.getStorageId());
+            file.setOldFileVersionsId(file.getOldFileVersionsId());
+        }
         file.setStorageId(request.getStoredFileId());
         file.setDownloadUrl(request.getDownloadUrl());
         if (request.getDownloadUrl() != null && !request.getDownloadUrl().isEmpty()) {

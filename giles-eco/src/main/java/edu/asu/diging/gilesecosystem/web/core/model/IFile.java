@@ -1,5 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.core.model;
 
+import java.util.List;
+
 import edu.asu.diging.gilesecosystem.util.store.IStorableObject;
 
 public interface IFile extends IStorableObject {
@@ -77,5 +79,9 @@ public interface IFile extends IStorableObject {
     void setGroupId(String groupId);
 
     String getGroupId();
+    
+    public abstract void setOldFileVersionsId(List<String> fileVersionsIds);
+
+    public abstract List<String> getOldFileVersionsId();
 
 }

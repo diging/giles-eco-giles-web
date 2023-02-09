@@ -1,10 +1,16 @@
 package edu.asu.diging.gilesecosystem.web.core.model.impl;
 
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
@@ -15,7 +21,6 @@ import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
         @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
         @Index(columnList="username", name="IDX_USERNAME"),
         @Index(columnList="documentId", name="IDX_USERNAME"),
-        @Index(columnList="filepath", name="IDX_FILEPATH"),
         @Index(columnList="usernameForStorage", name="IDX_USERNAME_STORAGE"),
         @Index(columnList="requestId", name="IDX_REQUEST_ID"),
         @Index(columnList="derivedFrom", name="IDX_DERIVED_FROM"),
@@ -42,6 +47,9 @@ public class File implements IFile {
     private ProcessingStatus processingStatus;
     private String groupId;
     private String recordId;
+    @ElementCollection 
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<String> oldFileVersionsId;
 
     public File() {}
 
@@ -286,5 +294,15 @@ public class File implements IFile {
         file.setUsername(username);
         file.setUsernameForStorage(usernameForStorage);
         return file;
-    } 
+    }
+    
+    @Override
+    public void setOldFileVersionsId(List<String> fileVersionsIds) {
+        this.oldFileVersionsId = fileVersionsIds;
+    }
+    
+    @Override
+    public List<String> getOldFileVersionsId() {
+        return this.oldFileVersionsId;
+    }
 }
