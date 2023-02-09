@@ -21,6 +21,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
         @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
         @Index(columnList="username", name="IDX_USERNAME"),
         @Index(columnList="documentId", name="IDX_USERNAME"),
+        @Index(columnList="filepath", name="IDX_FILEPATH"),
         @Index(columnList="usernameForStorage", name="IDX_USERNAME_STORAGE"),
         @Index(columnList="requestId", name="IDX_REQUEST_ID"),
         @Index(columnList="derivedFrom", name="IDX_DERIVED_FROM"),
