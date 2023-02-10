@@ -61,19 +61,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IPage documentPage = pages.get(page.getPageNr());
-                IFile pageText;
-                if(documentPage != null && documentPage.getImageFileId() != null && !documentPage.getImageFileId().isEmpty()) {
-                    pageText = filesService.getFileById(documentPage.getImageFileId());
-                } else {
-                    pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
-                    try {
-                        filesService.saveFile(pageText);
-                    } catch (UnstorableObjectException e) {
-                        // should never happen, we're setting the id
-                        messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-                    }
-                }    
-               
+                IFile pageText = getExistingFileForPageorCreateFile(documentPage, document, file, request, page);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setPageNr(page.getPageNr());
@@ -127,5 +115,28 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
     @Override
     public Class<? extends ICompletedImageExtractionRequest> getRequestClass() {
         return CompletedImageExtractionRequest.class;
+    }
+    
+    /**
+     * 
+     * This method will return the file if its already present in case of reprocessing else it will create a new file
+     * @param page, file, document, completed text extraction request, page from request
+     * @return existing file or newly created file
+     */
+    
+    private IFile getExistingFileForPageorCreateFile(IPage documentPage, IDocument document, IFile file, ICompletedImageExtractionRequest request, edu.asu.diging.gilesecosystem.requests.impl.Page page) {
+        IFile pageText;
+        if(documentPage != null && documentPage.getImageFileId() != null && !documentPage.getImageFileId().isEmpty()) {
+            pageText = filesService.getFileById(documentPage.getImageFileId());
+        } else {
+            pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
+            try {
+                filesService.saveFile(pageText);
+            } catch (UnstorableObjectException e) {
+                // should never happen, we're setting the id
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            }
+        }    
+        return pageText;
     }
 }

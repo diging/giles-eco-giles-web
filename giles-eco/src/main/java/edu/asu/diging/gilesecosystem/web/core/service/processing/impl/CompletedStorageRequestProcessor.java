@@ -48,13 +48,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Override
     public void processRequest(ICompletedStorageRequest request) {
         IFile file = filesService.getFileById(request.getFileId());
-        if (file.getStorageId() != null && !file.getStorageId().isEmpty()) {
-            if (file.getOldFileVersionsId() == null) {
-                file.setOldFileVersionsId(new ArrayList<>());
-            }
-            file.getOldFileVersionsId().add(file.getStorageId());
-            file.setOldFileVersionsId(file.getOldFileVersionsId());
-        }
+        setOldFileVersionsIfReprocessing(file);
         file.setStorageId(request.getStoredFileId());
         file.setDownloadUrl(request.getDownloadUrl());
         if (request.getDownloadUrl() != null && !request.getDownloadUrl().isEmpty()) {
@@ -92,5 +86,15 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Override
     public Class<? extends ICompletedStorageRequest> getRequestClass() {
         return CompletedStorageRequest.class;
+    }
+    
+    private void setOldFileVersionsIfReprocessing(IFile file) {
+        if (file.getStorageId() != null && !file.getStorageId().isEmpty()) {
+            if (file.getOldFileVersionsId() == null) {
+                file.setOldFileVersionsId(new ArrayList<>());
+            }
+            file.getOldFileVersionsId().add(file.getStorageId());
+            file.setOldFileVersionsId(file.getOldFileVersionsId());
+        }
     }
 }
