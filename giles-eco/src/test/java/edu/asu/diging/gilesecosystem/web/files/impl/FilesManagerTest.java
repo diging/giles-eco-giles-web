@@ -19,6 +19,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IPage;
+import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Page;
@@ -91,5 +92,12 @@ public class FilesManagerTest {
 
         Mockito.verify(fileService).getFileById(OCR_ID);
         Assert.assertEquals(ocrFile.getAccess(), DocumentAccess.PUBLIC);
+    }
+    
+    @Test
+    public void test_changeFileProcessingStatus() throws UnstorableObjectException {
+        filesManagerToTest.changeFileProcessingStatus(imgFile, ProcessingStatus.UNPROCESSED);
+        Mockito.verify(fileService).saveFile(imgFile);
+        Assert.assertEquals(imgFile.getProcessingStatus(), ProcessingStatus.UNPROCESSED);
     }
 }

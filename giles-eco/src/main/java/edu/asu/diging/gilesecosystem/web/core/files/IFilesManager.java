@@ -47,6 +47,7 @@ public interface IFilesManager {
      * @throws UnstorableObjectException for exception while saving updated document
      */
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
-    public abstract boolean changeFileProcessingStatus(IFile file, ProcessingStatus status);
+    
+    public abstract void changeFileProcessingStatus(IFile file, ProcessingStatus status);
 
 }
