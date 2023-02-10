@@ -48,9 +48,46 @@ public class EmailNotificationManager implements IEmailNotificationManager {
         } catch (ParseErrorException e) {
             throw new GilesNotificationException(e);
         } catch (Exception e) {
-            //getTemplate method call under getRenderedTemplate can throw exception
             throw new GilesNotificationException(e);
         }
+    }
+    
+    @Override
+    public void sendAccountApprovalEmail(String name, String userName, String userEmail) 
+            throws GilesNotificationException {
+        Map<String, Object> contextProperties = new HashMap<String, Object>();
+        contextProperties.put("name", name);
+        contextProperties.put("userName", userName);
+        try {
+            emailSender.sendNotificationEmail(userEmail, emailMessages.getMessage("email.account_approved.subject", new String[]{}, null), 
+                    velocityBuilder.getRenderedTemplate("velocitytemplates/email/accountApproved.vm", contextProperties));
+        } catch (ResourceNotFoundException e) {
+            throw new GilesNotificationException(e);
+        } catch (ParseErrorException e) {
+            throw new GilesNotificationException(e);
+        } catch (Exception e) {
+            throw new GilesNotificationException(e);
+        }
+        
+    }
+    
+    @Override
+    public void sendAccountRevokedEmail(String name, String userName, String userEmail) 
+            throws GilesNotificationException {
+        Map<String, Object> contextProperties = new HashMap<String, Object>();
+        contextProperties.put("name", name);
+        contextProperties.put("userName", userName);
+        try {
+            emailSender.sendNotificationEmail(userEmail, emailMessages.getMessage("email.account_revoked.subject", new String[]{}, null), 
+                    velocityBuilder.getRenderedTemplate("velocitytemplates/email/accountRevoked.vm", contextProperties));
+        } catch (ResourceNotFoundException e) {
+            throw new GilesNotificationException(e);
+        } catch (ParseErrorException e) {
+            throw new GilesNotificationException(e);
+        } catch (Exception e) {
+            throw new GilesNotificationException(e);
+        }
+        
     }
 
 }
