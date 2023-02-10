@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,10 +12,12 @@ import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationExceptio
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IPage;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
@@ -53,6 +56,9 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     @Autowired
     private IProcessingRequestService requestService;
+    
+    @Autowired
+    private ITransactionalFileService filesService;
 
     protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
@@ -98,5 +104,51 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         pagefile.setId(fileService.generateFileId());
         
         return pagefile;
+    }
+    
+    /**
+     * 
+     * This method will return a file if its already present in case of reprocessing else it will create a new file
+     * @param ipage, document, file, contentType, size, fileName, requestPrefix, function to find file of particular type
+     * @return existing file or newly created file
+     */
+    protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileId) {
+        IFile requestedFile;
+        if(documentPage != null && documentPage.getImageFileId() != null && !documentPage.getImageFileId().isEmpty()) {
+            requestedFile = filesService.getFileById(getFileId.apply(documentPage));
+        } else {
+            requestedFile = createFile(file, document, contentType, size, fileName, requestPrefix);
+            try {
+                filesService.saveFile(requestedFile);
+            } catch (UnstorableObjectException e) {
+                // should never happen, we're setting the id
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            }
+        }    
+        return requestedFile;
+    }
+    /**
+     * 
+     * This method will return a file if its already present in case of reprocessing else it will create a new file
+     * @param file, document, contentType, size, fileName, requestPrefix
+     * @return existing file or newly created file
+     */
+    protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
+        IFile completeText;
+        if (document.getExtractedTextFileId() != null && !document.getExtractedTextFileId().isEmpty()) {
+            completeText = filesService.getFileById(document.getExtractedTextFileId());
+        } else {
+            completeText = createFile(file, document, contentType, size, fileName, requestPrefix);
+            
+            try {
+                filesService.saveFile(completeText);
+            } catch (UnstorableObjectException e) {
+                // should never happen, we're setting the id
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            }
+            
+            
+        }
+        return completeText;
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -64,7 +65,8 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         Map<String, IPage> pages = getPageMap(document.getPages());
         Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
         IPage documentPage = pages.get(request.getFilename());
-        IFile textFile = getExistingFileOrCreateFile(documentPage, file, document, request);
+        Function<IPage, String> getFileId = docPage -> docPage.getOcrFileId();
+        IFile textFile = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getFileId);
         
         // we are looking for the image that was ocred
         if (documentPage != null) {
@@ -180,29 +182,5 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             }
         }
         return pageMap;
-    }
-    
-    /**
-     * 
-     * This method will return a file if its already present in case of reprocessing else it will create a new file
-     * @param page, file, document, completed ocr request
-     * @return existing file or newly created file
-     */
-    
-    private IFile getExistingFileOrCreateFile(IPage documentPage, IFile file, IDocument document, ICompletedOCRRequest request) {
-        IFile textFile;
-        if (documentPage != null && documentPage.getOcrFileId() != null && !documentPage.getOcrFileId().isEmpty()) {
-            textFile = filesService.getFileById(documentPage.getOcrFileId());
-        } else {
-            textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-            
-            try {
-                filesService.saveFile(textFile);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-            }
-        }
-        return textFile;
     }
 }

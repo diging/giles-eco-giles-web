@@ -50,7 +50,7 @@ public class File implements IFile {
     private String recordId;
     @ElementCollection 
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<String> oldFileVersionsId;
+    private List<String> oldFileVersionIds;
 
     public File() {}
 
@@ -298,12 +298,12 @@ public class File implements IFile {
     }
     
     @Override
-    public void setOldFileVersionsId(List<String> fileVersionsIds) {
-        this.oldFileVersionsId = fileVersionsIds;
+    public void setOldFileVersionIds(List<String> fileVersionIds) {
+        this.oldFileVersionIds = fileVersionIds;
     }
     
     @Override
-    public List<String> getOldFileVersionsId() {
-        return this.oldFileVersionsId;
+    public List<String> getOldFileVersionIds() {
+        return this.oldFileVersionIds;
     }
 }

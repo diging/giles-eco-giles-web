@@ -80,8 +80,8 @@ public interface IFile extends IStorableObject {
 
     String getGroupId();
     
-    public abstract void setOldFileVersionsId(List<String> fileVersionsIds);
+    public abstract void setOldFileVersionIds(List<String> fileVersionIds);
 
-    public abstract List<String> getOldFileVersionsId();
+    public abstract List<String> getOldFileVersionIds();
 
 }

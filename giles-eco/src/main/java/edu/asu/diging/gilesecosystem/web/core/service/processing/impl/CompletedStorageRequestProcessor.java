@@ -90,11 +90,11 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     
     private void setOldFileVersionsIfReprocessing(IFile file) {
         if (file.getStorageId() != null && !file.getStorageId().isEmpty()) {
-            if (file.getOldFileVersionsId() == null) {
-                file.setOldFileVersionsId(new ArrayList<>());
+            if (file.getOldFileVersionIds() == null) {
+                file.setOldFileVersionIds(new ArrayList<>());
             }
-            file.getOldFileVersionsId().add(file.getStorageId());
-            file.setOldFileVersionsId(file.getOldFileVersionsId());
+            file.getOldFileVersionIds().add(file.getStorageId());
+            file.setOldFileVersionIds(file.getOldFileVersionIds());
         }
     }
 }

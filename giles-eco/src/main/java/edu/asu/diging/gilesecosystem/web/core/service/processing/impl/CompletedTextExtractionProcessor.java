@@ -61,7 +61,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         IFile completeText;
         // text was extracted
         if (completeTextDownload != null && !completeTextDownload.isEmpty()) {
-            completeText = getExistingFileOrCreateFile(file, document, request);
+            
+            completeText = getFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
             document.setExtractedTextFileId(completeText.getId());
             sendStorageRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } 
@@ -71,7 +72,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IPage documentPage = pageMap.get(page.getPageNr());
-                IFile pageText = getExistingFileForPageorCreateFile(documentPage, document, file, request, page);
+                Function<IPage, String> getFileId = docPage -> docPage.getTextFileId();
+                IFile pageText = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileId);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setDocument(document);
@@ -124,55 +126,5 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
     @Override
     public Class<? extends CompletedTextExtractionRequest> getRequestClass() {
         return CompletedTextExtractionRequest.class;
-    }
-    
-    /**
-     * 
-     * This method will return the extracted text file if its already present in case of reprocessing else it will create a new file
-     * @param file, document, completed text extraction request
-     * @return existing file or newly created file
-     */
-    
-    private IFile getExistingFileOrCreateFile(IFile file, IDocument document, ICompletedTextExtractionRequest request) {
-        IFile completeText;
-        if (document.getExtractedTextFileId() != null && !document.getExtractedTextFileId().isEmpty()) {
-            completeText = filesService.getFileById(document.getExtractedTextFileId());
-        } else {
-            completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-            
-            try {
-                filesService.saveFile(completeText);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-            }
-            
-            
-        }
-        return completeText;
-    }
-    
-    /**
-     * 
-     * This method will return the extracted text file if its already present in case of reprocessing else it will create a new file
-     * @param page, file, document, completed text extraction request, page from request
-     * @return existing file or newly created file
-     */
-    
-    private IFile getExistingFileForPageorCreateFile(IPage documentPage, IDocument document, IFile file, ICompletedTextExtractionRequest request, edu.asu.diging.gilesecosystem.requests.impl.Page page) {
-        IFile pageText;
-        if (documentPage != null && documentPage.getTextFileId() != null && !documentPage.getTextFileId().isEmpty()) {
-            pageText = filesService.getFileById(documentPage.getTextFileId());
-        } else {
-            pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
-            
-            try {
-                filesService.saveFile(pageText);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-            }
-        }
-        return pageText;
     }
 }
