@@ -52,7 +52,7 @@ public class EmailConfig {
 
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.transport.protocol", emailTransportProtocol);
-        javaMailProperties.put("mail.smtp.auth", emailSmtpAuth);
+        javaMailProperties.put("mail.smtp.auth", false);
         javaMailProperties.put("mail.smtp.starttls.enable", emailStartTls);
         javaMailProperties.put("mail.debug", emailDebug);
         sender.setJavaMailProperties(javaMailProperties);

@@ -9,6 +9,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 
 public interface IFilesManager {
@@ -46,5 +47,6 @@ public interface IFilesManager {
      * @throws UnstorableObjectException for exception while saving updated document
      */
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
-
+    
+    public abstract void changeFileProcessingStatus(IFile file, ProcessingStatus status);
 }
