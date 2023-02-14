@@ -114,7 +114,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
      */
     protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileId) {
         IFile requestedFile;
-        if(documentPage != null && documentPage.getImageFileId() != null && !documentPage.getImageFileId().isEmpty()) {
+        if(documentPage != null && getFileId.apply(documentPage) != null && !getFileId.apply(documentPage).isEmpty()) {
             requestedFile = filesService.getFileById(getFileId.apply(documentPage));
         } else {
             requestedFile = createFile(file, document, contentType, size, fileName, requestPrefix);
