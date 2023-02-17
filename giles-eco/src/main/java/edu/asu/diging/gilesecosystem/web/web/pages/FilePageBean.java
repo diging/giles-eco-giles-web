@@ -199,4 +199,12 @@ public class FilePageBean implements IFile, BeanWithAdditionalFiles {
         // TODO Auto-generated method stub
         return null;
     }
+    @Override
+    public void setOldFileVersionIds(List<String> fileVersionIds) {
+        
+    }
+    @Override
+    public List<String> getOldFileVersionIds() {
+        return null;
+    }
 }
