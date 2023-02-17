@@ -17,14 +17,13 @@ import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
-import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.impl.StorageRequestProcessingInfo;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 /**
- * This class handles the reprocessing of the uploaded document in case of any failures.
+ * This class handles the reprocessing of the uploaded document.
 */
 @Service
 public class ReprocessingService implements IReprocessingService {
@@ -54,15 +53,15 @@ public class ReprocessingService implements IReprocessingService {
     private ProcessingRequestRepository processingRequestRepository;
     
     /**
-     * This method initiates the reprocessing of the dcument by marking the files as unprocessed and calling the process coordinator.
-     * @param document document which needs to be reprocessed
+     * This method initiates the reprocessing of the document by marking the files as unprocessed and calling the process coordinator.
+     * @param document - document which needs to be reprocessed
      * @return 
     */
     
     @Override
     public void reprocessDocument(IDocument document) {
         markFilesAsUnprocessed(document);
-        deletePreviousRequests(document);
+        deletePreviousProcessingRequests(document);
         try {
             processCoordinator.processFile(fileService.getFileById(document.getUploadedFileId()), getStorageInfo(document));
         } catch (GilesProcessingException e) {
@@ -72,7 +71,7 @@ public class ReprocessingService implements IReprocessingService {
     
     /**
      * This method returns the storage information of the already created document.
-     * @param document document for which we need the storage information
+     * @param document - document for which we need the storage information
      * @return returns the storage information of the document
     */
     private StorageRequestProcessingInfo getStorageInfo(IDocument document) {
@@ -90,21 +89,25 @@ public class ReprocessingService implements IReprocessingService {
     
     /**
      * This method marks all the files of the document as unprocessed.
-     * @param document document who's files status needs to be changed to unprocessed
+     * @param document - document whose file's status needs to be changed to unprocessed
      * @return 
     */
     private void markFilesAsUnprocessed(IDocument document) {
         List<IFile> files = filesManager.getFilesOfDocument(document);
         for(IFile file : files) {
+            System.out.println(file);
             filesManager.changeFileProcessingStatus(file, ProcessingStatus.UNPROCESSED);
         }
     }
     
-    private void deletePreviousRequests(IDocument document) {
+    /**
+     * This method deletes the previous processing requests of the file before reprocessing.
+     * @param document - document whose file's processing requests need to be deleted
+     * @return 
+    */
+    private void deletePreviousProcessingRequests(IDocument document) {
         List<IProcessingRequest> pRequests = procReqDbClient.getRequestByDocumentId(document.getId());
-        System.out.println("Diya test " + pRequests);
         for (IProcessingRequest request : pRequests) {
-            System.out.println("Diya test " + request);
             processingRequestRepository.deleteById(request.getId());
         }
     }
