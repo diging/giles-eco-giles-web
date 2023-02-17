@@ -252,15 +252,4 @@ public class V2FilesController {
 
         return new ResponseEntity<String>(HttpStatus.OK);
     }
-    
-    @RequestMapping(value = "/documents/{documentId}/reprocess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> reprocessDocument(@PathVariable("documentId") String documentId) {
-        IDocument document = documentService.getDocument(documentId);
-        if (document == null) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-        }
-        reprocessingService.reprocessDocument(document);
-        return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
 }
