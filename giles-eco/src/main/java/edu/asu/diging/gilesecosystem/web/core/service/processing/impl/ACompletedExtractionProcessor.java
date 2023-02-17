@@ -108,47 +108,62 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     /**
      * 
-     * This method will return a file if its already present in case of reprocessing else it will create a new file
-     * @param ipage, document, file, contentType, size, fileName, requestPrefix, function to find file of particular type
+     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * @param ipage : The document page being processed
+     * @param document : The document associated with the page
+     * @param file : The file associated with the page
+     * @param contentType : The content type of the file
+     * @param size : the size of the file
+     * @param fileName : the file name
+     * @param requestPrefix : the request prefix for example text request will have TXTREQ
+     * @param getFileIdFunction : the function that returns the required file id
      * @return existing file or newly created file
      */
-    protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileId) {
+    protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileIdFunction) {
         IFile requestedFile;
-        if(documentPage != null && getFileId.apply(documentPage) != null && !getFileId.apply(documentPage).isEmpty()) {
-            requestedFile = filesService.getFileById(getFileId.apply(documentPage));
-        } else {
-            requestedFile = createFile(file, document, contentType, size, fileName, requestPrefix);
-            try {
-                filesService.saveFile(requestedFile);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        if(documentPage != null) {
+            String fileId = getFileIdFunction.apply(documentPage);
+            if (fileId != null && !fileId.isEmpty()) {
+                requestedFile = filesService.getFileById(fileId);
+            } else {
+                requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
             }
+            
+        } else {
+            requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
         }    
         return requestedFile;
     }
     /**
      * 
-     * This method will return a file if its already present in case of reprocessing else it will create a new file
-     * @param file, document, contentType, size, fileName, requestPrefix
+     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * @param file : The file associated with the page
+     * @param document : The document associated with the page
+     * @param contentType : The content type of the file
+     * @param size : the size of the file
+     * @param fileName : the file name
+     * @param requestPrefix : the request prefix for example text request will have TXTREQ
      * @return existing file or newly created file
      */
-    protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
+    protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix, Function<IDocument, String> getFileIdFunction) {
         IFile completeText;
-        if (document.getExtractedTextFileId() != null && !document.getExtractedTextFileId().isEmpty()) {
-            completeText = filesService.getFileById(document.getExtractedTextFileId());
+        String fileId = getFileIdFunction.apply(document);
+        if (fileId != null && !fileId.isEmpty()) {
+            completeText = filesService.getFileById(fileId);
         } else {
-            completeText = createFile(file, document, contentType, size, fileName, requestPrefix);
-            
-            try {
-                filesService.saveFile(completeText);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-            }
-            
-            
+            completeText = createNewFile(file, document, contentType, size, fileName, requestPrefix);
         }
         return completeText;
+    }
+    
+    private IFile createNewFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
+        IFile newFile = createFile(file, document, contentType, size, fileName, requestPrefix);
+        try {
+            filesService.saveFile(newFile);
+        } catch (UnstorableObjectException e) {
+            // should never happen, we're setting the id
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        }
+        return newFile;
     }
 }

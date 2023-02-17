@@ -58,11 +58,10 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         IFile file = filesService.getFileById(document.getUploadedFileId());
         
         String completeTextDownload = request.getDownloadUrl();
-        IFile completeText;
         // text was extracted
         if (completeTextDownload != null && !completeTextDownload.isEmpty()) {
-            
-            completeText = getFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+            Function<IDocument, String> getTextFileIdFunction = docPage -> docPage.getExtractedTextFileId();
+            IFile completeText = getFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getTextFileIdFunction);
             document.setExtractedTextFileId(completeText.getId());
             sendStorageRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } 
@@ -72,8 +71,8 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IPage documentPage = pageMap.get(page.getPageNr());
-                Function<IPage, String> getFileId = docPage -> docPage.getTextFileId();
-                IFile pageText = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileId);
+                Function<IPage, String> getFileIdFunction = docPage -> docPage.getTextFileId();
+                IFile pageText = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileIdFunction);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setDocument(document);

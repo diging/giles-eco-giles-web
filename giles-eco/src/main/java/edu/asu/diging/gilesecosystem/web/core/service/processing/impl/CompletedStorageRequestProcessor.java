@@ -94,7 +94,6 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
                 file.setOldFileVersionIds(new ArrayList<>());
             }
             file.getOldFileVersionIds().add(file.getStorageId());
-            file.setOldFileVersionIds(file.getOldFileVersionIds());
         }
     }
 }

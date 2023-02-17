@@ -65,8 +65,8 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         Map<String, IPage> pages = getPageMap(document.getPages());
         Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
         IPage documentPage = pages.get(request.getFilename());
-        Function<IPage, String> getFileId = docPage -> docPage.getOcrFileId();
-        IFile textFile = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getFileId);
+        Function<IPage, String> getFileIdFunction = docPage -> docPage.getOcrFileId();
+        IFile textFile = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getFileIdFunction);
         
         // we are looking for the image that was ocred
         if (documentPage != null) {

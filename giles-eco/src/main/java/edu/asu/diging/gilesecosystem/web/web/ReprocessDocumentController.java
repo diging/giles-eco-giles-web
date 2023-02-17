@@ -28,6 +28,6 @@ public class ReprocessDocumentController {
         IDocument document = documentService.getDocument(documentId);
         reprocessingService.reprocessDocument(document);
 
-        return "redirect:/documents/" + documentId; 
+        return "redirect:/documents/{documentId}"; 
     }
 }

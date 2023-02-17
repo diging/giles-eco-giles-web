@@ -62,8 +62,8 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
                 IPage documentPage = pages.get(page.getPageNr());
-                Function<IPage, String> getFileId = docPage -> docPage.getImageFileId();
-                IFile pageText = getFile(documentPage, document, file, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileId);
+                Function<IPage, String> getFileIdFunction = docPage -> docPage.getImageFileId();
+                IFile pageText = getFile(documentPage, document, file, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileIdFunction);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setPageNr(page.getPageNr());
