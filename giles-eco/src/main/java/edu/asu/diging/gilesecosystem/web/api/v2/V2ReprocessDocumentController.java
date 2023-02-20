@@ -20,7 +20,7 @@ public class V2ReprocessDocumentController {
     @Autowired
     private ITransactionalDocumentService documentService;
     
-    @RequestMapping(value = "/documents/{documentId}/reprocess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/api/v2/resources/documents/{documentId}/reprocess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> reprocessDocument(@PathVariable("documentId") String documentId) {
         IDocument document = documentService.getDocument(documentId);
         if (document == null) {
