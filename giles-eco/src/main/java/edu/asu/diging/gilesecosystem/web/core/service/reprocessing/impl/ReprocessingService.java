@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.reprocessing.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
@@ -60,6 +61,7 @@ public class ReprocessingService implements IReprocessingService {
     */
     
     @Override
+    @Async
     public void reprocessDocument(IDocument document) {
         markFilesAsUnprocessed(document);
         deletePreviousProcessingRequests(document);
