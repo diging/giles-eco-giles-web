@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,14 +32,12 @@ import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
-import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
-import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.web.util.DigilibHelper;
@@ -61,9 +58,6 @@ public class V2FilesController {
     public final static String UPLOAD_ID_PLACEHOLDER = "{uploadId}";
     public final static String GET_UPLOAD_PATH = "/api/v2/resources/files/upload/"
             + UPLOAD_ID_PLACEHOLDER;
-    
-    public final static String POST_REPROCESS_DOCUMENT_PATH = "/api/v2/resources/documents/"
-            + DOCUMENT_ID_PLACEHOLDER + "reprocess";
 
     @Autowired
     private IFilesManager filesManager;
@@ -88,9 +82,6 @@ public class V2FilesController {
 
     @Autowired
     private DigilibHelper digilibHelper;
-    
-    @Autowired
-    private IReprocessingService reprocessingService;
 
     @RequestMapping(value = "/api/v2/resources/files/uploads", produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> getAllUploadsOfUser(
