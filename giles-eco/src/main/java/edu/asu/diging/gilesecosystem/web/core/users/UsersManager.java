@@ -147,6 +147,14 @@ public class UsersManager implements IUserManager {
             user.getRoles().add(GilesRole.ROLE_USER.name());
         }
         client.update(user);
+        try {
+            if (user.getEmail() != null && !user.getEmail().equals("")) {
+                emailManager.sendAccountApprovalEmail(user.getName(), user.getUsername(), user.getEmail());
+            }
+        } catch (GilesNotificationException e) {
+            messageHandler.handleMessage("Email to " + user.getUsername() + " could not be sent.", e, MessageType.WARNING);
+        }
+        
     }
     
     @Override
@@ -155,6 +163,14 @@ public class UsersManager implements IUserManager {
         user.setAccountStatus(AccountStatus.REVOKED);
         user.setRoles(new ArrayList<String>());
         client.update(user);
+        try {
+            if (user.getEmail() != null && !user.getEmail().equals("")) {
+                emailManager.sendAccountRevokedEmail(user.getName(), user.getUsername(), user.getEmail());
+            }
+        } catch (GilesNotificationException e) {
+            messageHandler.handleMessage("Email to " + user.getUsername() + " could not be sent.", e, MessageType.WARNING);
+        }
+        
     }
     
     @Override
