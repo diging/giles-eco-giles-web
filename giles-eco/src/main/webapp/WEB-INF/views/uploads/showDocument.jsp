@@ -24,10 +24,32 @@
 	</c:if>
 
 	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
-
+	<button type="button" class="btn btn-link" title="Reprocess" data-toggle="modal" data-docid="${document.id}" data-target="#deleteDocument">
+		Delete Document
+	</button>
+	
 </p>
 
-
+<div class="modal fade" id="deleteDocument" tabindex="-1" role="dialog">
+  	<div class="modal-dialog">
+    	<div class="modal-content">
+      		<div class="modal-header">
+        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        		<h4 class="modal-title">Delete Document</h4>
+      		</div>
+      		<div class="modal-body">
+       			<p>Are you sure you want to delete this document.</p>
+      		</div>
+      		<div class="modal-footer">
+         		<form class="form-inline" method="DELETE" id="submitDeleteDocument" action="">
+         			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	       			<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
+	        		<button type="submit" class="btn btn-primary">Yes!</button>
+      			</form>
+      		</div>
+    	</div>
+  	</div>
+</div>
 <p>Uploaded on <span class="date">${document.createdDate}</span>.</p>
 
 
@@ -130,3 +152,15 @@
 </c:if>
 </div>
 </div>
+<script>
+$('#deleteDocument').on('show.bs.modal', function (event) {
+	  var button = $(event.relatedTarget); // Button that triggered the modal
+	  var docId = button.data('docid'); // Extract info from data-* attributes
+	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+	  var modal = $(this)
+	  var url = '<c:url value="/documents/" />';
+	  url += docId;
+	  modal.find("#submitDeleteDocument").attr('action', url);
+	})
+</script>
