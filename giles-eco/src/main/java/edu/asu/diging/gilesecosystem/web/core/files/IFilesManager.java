@@ -46,5 +46,12 @@ public interface IFilesManager {
      * @throws UnstorableObjectException for exception while saving updated document
      */
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
+    
+    /**
+     * Delete a file given the file ID.
+     * @param fileId 
+     *         ID of the file to be deleted
+     */
 
+    public abstract void deleteFile(String fileId);
 }

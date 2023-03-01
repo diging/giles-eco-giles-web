@@ -108,5 +108,10 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     protected EntityManager getClient() {
         return em;
     }
+    
+    @Override
+    public void deleteFile(String fileId) {
+        em.remove(getById(fileId));
+    }
 
 }

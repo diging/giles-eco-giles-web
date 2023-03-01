@@ -107,4 +107,9 @@ public class TransactionalFileService implements ITransactionalFileService {
     public List<IFile> getFilesByDerivedFrom(String derivedFromId) {
         return filesDbClient.getFilesByDerivedFrom(derivedFromId);
     }
+
+    @Override
+    public void deleteFile(String fileId) {
+        filesDbClient.deleteFile(fileId);
+    }
 }

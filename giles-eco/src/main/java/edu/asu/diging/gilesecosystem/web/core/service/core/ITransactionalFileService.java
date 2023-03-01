@@ -28,5 +28,13 @@ public interface ITransactionalFileService {
     Map<String, IFile> getFilesForPage(IPage page);
 
     Map<String, IFile> getFilesForIds(List<String> ids);
+    
+    /**
+     * Delete a file given the file ID.
+     * @param fileId 
+     *         ID of the file to be deleted
+     */
+
+    public abstract void deleteFile(String fileId);
 
 }
