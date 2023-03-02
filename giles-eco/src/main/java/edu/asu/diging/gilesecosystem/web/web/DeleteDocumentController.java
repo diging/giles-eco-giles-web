@@ -24,10 +24,8 @@ public class DeleteDocumentController {
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
     @RequestMapping(value = "/documents/{documentId}", method = RequestMethod.DELETE)
-    public String deleteDocument(@PathVariable("documentId") String documentId) {
+    public void deleteDocument(@PathVariable("documentId") String documentId) {
         IDocument document = documentService.getDocument(documentId);
         deleteDocumentService.deleteDocument(document);
-
-        return "redirect:/documents/"; 
     }
 }

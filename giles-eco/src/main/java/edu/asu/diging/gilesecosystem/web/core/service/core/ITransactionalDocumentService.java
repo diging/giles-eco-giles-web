@@ -22,4 +22,6 @@ public interface ITransactionalDocumentService {
     IDocument createDocument(String uploadId, String uploadDate, DocumentAccess access, DocumentType docType,
             String username);
 
+    public abstract void deleteDocument(String documentId);
+
 }

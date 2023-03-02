@@ -28,6 +28,9 @@ import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.service.IFileTypeHandler;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 
@@ -54,6 +57,15 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Autowired
     private IPropertiesManager propertyManager;
     
+    @Autowired
+    private ITransactionalFileService fileService;
+    
+    @Autowired
+    private ITransactionalUploadService uploadService;
+    
+    @Autowired
+    private ITransactionalDocumentService documentService;
+    
     private Map<String, FileType> fileTypes;
     
     @PostConstruct
@@ -71,6 +83,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
                 fileTypes.put(type, handler.getHandledFileType());
             }
         }
+        requestFactory.config(StorageDeletionRequest.class);
     }
     
     @Override
@@ -78,9 +91,10 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     public void deleteDocument(IDocument document) {
         List<IFile> files = filesManager.getFilesOfDocument(document);
         for(IFile file : files) {
-            deleteFile(file);
-            
+            processDeleteFileRequest(file);
         }
+        deleteUploadForDocument(document);
+        documentService.deleteDocument(document.getId());
     }
     
     private void sendDeleteRequest(IFile file) {
@@ -91,6 +105,11 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
         }
         
+    }
+    
+    private void processDeleteFileRequest(IFile file) {
+        deleteOldFileVersions(file);
+        deleteFile(file);
     }
     
     private void deleteFile(IFile file) {
@@ -108,7 +127,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             storageDeletionRequest.setUploadId(file.getUploadId());
             storageDeletionRequest.setUsername(file.getUsernameForStorage());
             storageDeletionRequest.setFileType(fileTypes.get(file.getContentType()));
-            
+            storageDeletionRequest.setStorageFileId(file.getStorageId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
@@ -117,5 +136,16 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
+    }
+    
+    private void deleteOldFileVersions(IFile file) {
+        for(String oldFileId : file.getOldFileVersionIds()) {
+            IFile oldFile = fileService.getFileById(oldFileId);
+            deleteFile(oldFile);
+        }
+    }
+    
+    private void deleteUploadForDocument(IDocument document) {
+        uploadService.deleteUpload(document.getUploadId());
     }
 }

@@ -158,18 +158,19 @@
 const modal = document.getElementById('deleteDocument');
 const confirmBtn = document.getElementById('deleteDocumentConfirm');
 confirmBtn.addEventListener('click', function() {
-	  var docId = "${document.id}"; // Extract info from data-* attributes
-	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-	  var modal = $(this)
-	  var url = '/giles/documents/';
-	  url += docId;
-	  fetch(url, {
-		    method: 'DELETE',
-		   
-		  }).catch(error => {
-			    console.log(error);
-		  });
-	  /* modal.find("#submitDeleteDocument").attr('action', url); */
+	  var docId = "${document.id}";
+	  var modal = $(this);
+	  var deleteUrl = "/giles/documents/${document.id}?${_csrf.parameterName}=${_csrf.token}";
+	  $.ajax({
+		  url: deleteUrl,
+		  method: "DELETE",
+		  success: function (result) {   
+              console.log(result);  
+              window.location = '/giles/documents'; // redirect          
+          },
+          error: function (e) {
+              console.log(e);
+          }
+	  });
 	})
 </script>

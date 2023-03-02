@@ -90,4 +90,9 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
     protected EntityManager getClient() {
         return em;
     }
+    
+    @Override
+    public void deleteDocument(String documentId) {
+        em.remove(getDocumentById(documentId));
+    }
 }
