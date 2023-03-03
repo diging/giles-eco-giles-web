@@ -37,4 +37,6 @@ public interface ITransactionalFileService {
 
     public abstract void deleteFile(String fileId);
 
+    public abstract IFile getFileByoldFileVesrionId(String oldFileVersionId);
+
 }

@@ -112,4 +112,9 @@ public class TransactionalFileService implements ITransactionalFileService {
     public void deleteFile(String fileId) {
         filesDbClient.deleteFile(fileId);
     }
+    
+    @Override
+    public IFile getFileByoldFileVesrionId(String oldFileVersionId) {
+        return filesDbClient.getFileByoldFileVesrionId(oldFileVersionId);
+    }
 }

@@ -140,7 +140,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private void deleteOldFileVersions(IFile file) {
         for(String oldFileId : file.getOldFileVersionIds()) {
-            IFile oldFile = fileService.getFileById(oldFileId);
+            IFile oldFile = fileService.getFileByoldFileVesrionId(oldFileId);
             deleteFile(oldFile);
         }
     }

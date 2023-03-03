@@ -113,5 +113,10 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     public void deleteFile(String fileId) {
         em.remove(getById(fileId));
     }
-
+    
+    @Override
+    public IFile getFileByoldFileVesrionId(String oldFileVersionId) {
+        TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE " + oldFileVersionId + "IN t.oldfileVersionIds", IFile.class);
+        return query.getSingleResult();
+    }
 }

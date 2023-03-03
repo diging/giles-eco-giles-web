@@ -163,10 +163,10 @@ confirmBtn.addEventListener('click', function() {
 	  var deleteUrl = "/giles/documents/${document.id}?${_csrf.parameterName}=${_csrf.token}";
 	  $.ajax({
 		  url: deleteUrl,
-		  method: "DELETE",
+		  method: "POST",
 		  success: function (result) {   
               console.log(result);  
-              window.location = '/giles/documents'; // redirect          
+              window.location.href = '/giles/uploads'; // redirect          
           },
           error: function (e) {
               console.log(e);
