@@ -116,7 +116,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     
     @Override
     public IFile getFileByoldFileVesrionId(String oldFileVersionId) {
-        TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE " + oldFileVersionId + "IN t.oldfileVersionIds", IFile.class);
+        TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE " + oldFileVersionId + " IN t.oldfileVersionIds", IFile.class);
         return query.getSingleResult();
     }
 }

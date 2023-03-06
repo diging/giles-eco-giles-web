@@ -51,7 +51,7 @@ public class KafkaProcessingListener {
     }
    
     @Transactional("transactionManager")
-    @KafkaListener(id="giles.listener", topics = {"${topic_storage_request_complete}", "${topic_image_extraction_request_complete}", "${topic_orc_request_complete}", "${topic_text_extraction_request_complete}", "${topic_completion_notification}"})
+    @KafkaListener(id="giles.listener", topics = {"${topic_storage_request_complete}", "${topic_image_extraction_request_complete}", "${topic_orc_request_complete}", "${topic_text_extraction_request_complete}", "${topic_completion_notification}", "${topic_delete_storage_request_complete}"})
     public void receiveMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         
         RequestProcessor<? extends IRequest> processor = requestProcessors.get(topic);

@@ -122,11 +122,6 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
             storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
-            storageDeletionRequest.setDocumentId(file.getDocumentId());
-            storageDeletionRequest.setFileId(file.getId());
-            storageDeletionRequest.setUploadId(file.getUploadId());
-            storageDeletionRequest.setUsername(file.getUsernameForStorage());
-            storageDeletionRequest.setFileType(fileTypes.get(file.getContentType()));
             storageDeletionRequest.setStorageFileId(file.getStorageId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
@@ -141,7 +136,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     private void deleteOldFileVersions(IFile file) {
         for(String oldFileId : file.getOldFileVersionIds()) {
             IFile oldFile = fileService.getFileByoldFileVesrionId(oldFileId);
-            deleteFile(oldFile);
+            sendDeleteRequest(oldFile);
         }
     }
     
