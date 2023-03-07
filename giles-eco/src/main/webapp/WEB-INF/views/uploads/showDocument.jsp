@@ -43,11 +43,6 @@
       		<div class="modal-footer">
       			<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
 	        	<button type="button" id="deleteDocumentConfirm" data-docid="${document.id}" class="btn btn-primary">Yes!</button>
-         		<<%-- form class="form-inline" method="DELETE" id="submitDeleteDocument" action="">
-         			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	       			<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
-	        		<button type="submit" class="btn btn-primary">Yes!</button>
-      			</form> --%>
       		</div>
     	</div>
   	</div>

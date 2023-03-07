@@ -93,13 +93,21 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         for(IFile file : files) {
             processDeleteFileRequest(file);
         }
-        deleteUploadForDocument(document);
-        documentService.deleteDocument(document.getId());
     }
     
     private void sendDeleteRequest(IFile file) {
         try {
             IRequest storageDeletionRequest = createRequest(file);
+            requestProducer.sendRequest(storageDeletionRequest, getTopic());
+        } catch (GilesProcessingException | MessageCreationException e) {
+            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
+        }
+        
+    }
+    
+    private void sendDeleteRequest(IFile file, String oldFileId) {
+        try {
+            IRequest storageDeletionRequest = createRequest(file, oldFileId);
             requestProducer.sendRequest(storageDeletionRequest, getTopic());
         } catch (GilesProcessingException | MessageCreationException e) {
             messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
@@ -129,18 +137,36 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         return storageDeletionRequest;
     }
     
+    private IRequest createRequest(IFile file, String oldFileId) throws GilesProcessingException {
+        IStorageDeletionRequest storageDeletionRequest = null;
+        try {
+            storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
+            storageDeletionRequest.setStorageFileId(oldFileId);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new GilesProcessingException(e);
+        }
+        return storageDeletionRequest;
+    }
+    
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
     }
     
     private void deleteOldFileVersions(IFile file) {
         for(String oldFileId : file.getOldFileVersionIds()) {
-            IFile oldFile = fileService.getFileByoldFileVesrionId(oldFileId);
-            sendDeleteRequest(oldFile);
+            sendDeleteRequest(file, oldFileId);
         }
     }
     
     private void deleteUploadForDocument(IDocument document) {
         uploadService.deleteUpload(document.getUploadId());
+    }
+
+    @Override
+    public void deleteDocumentAfterStorageDeletion(IDocument document) {
+        if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
+            deleteUploadForDocument(document);
+        }
+        documentService.deleteDocument(document.getId());
     }
 }
