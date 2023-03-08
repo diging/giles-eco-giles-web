@@ -90,9 +90,11 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Async
     public void deleteDocument(IDocument document) {
         List<IFile> files = filesManager.getFilesOfDocument(document);
-        for(IFile file : files) {
-            processDeleteFileRequest(file);
-        }
+        System.out.println("FileTest " + files);
+//        for(IFile file : files) {
+//            System.out.println("Diya test"+ file.getId());
+//            processDeleteFileRequest(file);
+//        }
     }
     
     private void sendDeleteRequest(IFile file) {
@@ -153,8 +155,11 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     }
     
     private void deleteOldFileVersions(IFile file) {
-        for(String oldFileId : file.getOldFileVersionIds()) {
-            sendDeleteRequest(file, oldFileId);
+        System.out.println("DiyaTest"+ file.getOldFileVersionIds());
+        if (!file.getOldFileVersionIds().isEmpty()) {
+            for(String oldFileId : file.getOldFileVersionIds()) {
+                sendDeleteRequest(file, oldFileId);
+            }
         }
     }
     
