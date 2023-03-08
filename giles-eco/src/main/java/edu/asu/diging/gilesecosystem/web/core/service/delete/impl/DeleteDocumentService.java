@@ -89,12 +89,12 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Override
     @Async
     public void deleteDocument(IDocument document) {
-        List<IFile> files = filesManager.getFilesOfDocument(document);
+        List<IFile> files = fileService.getFilesByDocumentId(document.getId());
         System.out.println("FileTest " + files);
-//        for(IFile file : files) {
-//            System.out.println("Diya test"+ file.getId());
-//            processDeleteFileRequest(file);
-//        }
+        for(IFile file : files) {
+            System.out.println("Diya test"+ file.getId());
+            processDeleteFileRequest(file);
+        }
     }
     
     private void sendDeleteRequest(IFile file) {
@@ -133,6 +133,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         try {
             storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
             storageDeletionRequest.setStorageFileId(file.getStorageId());
+            storageDeletionRequest.setIsOldFileVersion(false);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
@@ -144,6 +145,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         try {
             storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
             storageDeletionRequest.setStorageFileId(oldFileId);
+            storageDeletionRequest.setIsOldFileVersion(true);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
@@ -169,9 +171,10 @@ public class DeleteDocumentService implements IDeleteDocumentService {
 
     @Override
     public void deleteDocumentAfterStorageDeletion(IDocument document) {
+        documentService.deleteDocument(document.getId());
+        // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
         if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
             deleteUploadForDocument(document);
         }
-        documentService.deleteDocument(document.getId());
     }
 }

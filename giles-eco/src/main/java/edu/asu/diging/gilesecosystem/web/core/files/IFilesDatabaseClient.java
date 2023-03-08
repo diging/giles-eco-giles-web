@@ -34,4 +34,6 @@ public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
     public abstract void deleteFile(String fileId);
 
     public abstract IFile getFileByoldFileVesrionId(String oldFileVersionId);
+
+    public abstract List<IFile> getFilesByDocumentId(String documentId);
 }

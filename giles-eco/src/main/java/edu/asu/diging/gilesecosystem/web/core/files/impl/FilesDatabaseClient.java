@@ -119,4 +119,9 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE " + oldFileVersionId + " IN t.oldfileVersionIds", IFile.class);
         return query.getSingleResult();
     }
+    
+    @Override
+    public List<IFile> getFilesByDocumentId(String documentId) {
+        return searchByProperty("documentId", documentId, File.class);
+    }
 }

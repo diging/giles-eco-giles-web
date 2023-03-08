@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.asu.diging.gilesecosystem.requests.ICompletedStorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
+import edu.asu.diging.gilesecosystem.requests.impl.CompletedStorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.core.service.IProcessingRequestService;
@@ -85,18 +87,13 @@ public class KafkaProcessingListener {
         processor.handleRequest(request);
     }
 
-    @KafkaListener(id = "giles.deletion.topic.listener", topics = {"${topic_delete_storage_request_complete}"})
+    @KafkaListener(id = "giles.deletion.topic.listener", topics = "${topic_delete_storage_request_complete}")
     public void receiveDeletionCompletedMessageMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        RequestProcessor<? extends IRequest> processor = requestProcessors.get(topic);
-        if (processor == null) {
-            return;
-        }
-        
         ObjectMapper mapper = new ObjectMapper();
         
-        IRequest request = null;
+        ICompletedStorageDeletionRequest request = null;
         try {
-            request = mapper.readValue(message, processor.getRequestClass());
+            request = mapper.readValue(message, CompletedStorageDeletionRequest.class);
         } catch (IOException e) {
             messageHandler.handleMessage("Could not unmarshall request.", e, MessageType.ERROR);
             // FIXME: handle this case

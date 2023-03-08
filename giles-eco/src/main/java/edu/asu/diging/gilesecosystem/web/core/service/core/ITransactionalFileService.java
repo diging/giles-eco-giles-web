@@ -39,4 +39,6 @@ public interface ITransactionalFileService {
 
     public abstract IFile getFileByoldFileVesrionId(String oldFileVersionId);
 
+    public abstract List<IFile> getFilesByDocumentId(String documentId);
+
 }
