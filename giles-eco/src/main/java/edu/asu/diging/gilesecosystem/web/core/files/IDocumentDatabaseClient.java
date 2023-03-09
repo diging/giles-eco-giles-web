@@ -16,5 +16,10 @@ public interface IDocumentDatabaseClient extends IDatabaseClient<IDocument> {
 
     public abstract List<IDocument> getDocumentsByUsername(String username);
 
+    /**
+     * Delete a document given the document ID.
+     * @param documentId 
+     *         ID of the document to be deleted
+     */
     public abstract void deleteDocument(String documentId);
 }

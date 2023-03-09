@@ -114,11 +114,6 @@ public class TransactionalFileService implements ITransactionalFileService {
     }
     
     @Override
-    public IFile getFileByoldFileVesrionId(String oldFileVersionId) {
-        return filesDbClient.getFileByoldFileVesrionId(oldFileVersionId);
-    }
-    
-    @Override
     public List<IFile> getFilesByDocumentId(String documentId) {
         return filesDbClient.getFilesByDocumentId(documentId);
     }

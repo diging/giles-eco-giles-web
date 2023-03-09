@@ -34,6 +34,10 @@ import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadS
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 
+/**
+ * This class handles the deletion of a document.
+*/
+
 @Service
 public class DeleteDocumentService implements IDeleteDocumentService {
     
@@ -92,6 +96,15 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         List<IFile> files = fileService.getFilesByDocumentId(document.getId());
         for(IFile file : files) {
             processDeleteFileRequest(file);
+        }
+    }
+    
+    @Override
+    public void deleteDocumentAfterStorageDeletion(IDocument document) {
+        documentService.deleteDocument(document.getId());
+        // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
+        if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
+            deleteUploadForDocument(document);
         }
     }
     
@@ -155,7 +168,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     }
     
     private void deleteOldFileVersions(IFile file) {
-        if (!file.getOldFileVersionIds().isEmpty()) {
+        if ((file.getOldFileVersionIds()!=null) && (!file.getOldFileVersionIds().isEmpty())) {
             for(String oldFileId : file.getOldFileVersionIds()) {
                 sendDeleteRequest(file, oldFileId);
             }
@@ -164,14 +177,5 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private void deleteUploadForDocument(IDocument document) {
         uploadService.deleteUpload(document.getUploadId());
-    }
-
-    @Override
-    public void deleteDocumentAfterStorageDeletion(IDocument document) {
-        documentService.deleteDocument(document.getId());
-        // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
-        if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
-            deleteUploadForDocument(document);
-        }
     }
 }

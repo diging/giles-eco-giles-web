@@ -47,6 +47,8 @@ public class KafkaProcessingListener {
     
     @Autowired
     private ITransactionalDocumentService documentService;
+    
+    private ObjectMapper mapper;
 
     @PostConstruct
     public void init() {
@@ -58,6 +60,7 @@ public class KafkaProcessingListener {
             Entry<String, RequestProcessor> entry = iter.next();
             requestProcessors.put(entry.getValue().getProcessedTopic(), entry.getValue());
         }
+        mapper = new ObjectMapper();
     }
 
     @Transactional("transactionManager")
@@ -71,8 +74,6 @@ public class KafkaProcessingListener {
         if (processor == null) {
             return;
         }
-
-        ObjectMapper mapper = new ObjectMapper();
 
         IRequest request = null;
         try {
@@ -89,8 +90,6 @@ public class KafkaProcessingListener {
 
     @KafkaListener(id = "giles.deletion.topic.listener", topics = "${topic_delete_storage_request_complete}")
     public void receiveDeletionCompletedMessageMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        ObjectMapper mapper = new ObjectMapper();
-        
         ICompletedStorageDeletionRequest request = null;
         try {
             request = mapper.readValue(message, CompletedStorageDeletionRequest.class);

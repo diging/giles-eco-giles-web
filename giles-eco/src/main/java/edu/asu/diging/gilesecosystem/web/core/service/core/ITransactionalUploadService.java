@@ -40,6 +40,11 @@ public interface ITransactionalUploadService {
 
     long getUploadsCount();
 
+    /**
+     * Delete an upload given the upload ID.
+     * @param uploadId 
+     *         ID of the upload to be deleted
+     */
     public abstract void deleteUpload(String uploadId);
 
 }
