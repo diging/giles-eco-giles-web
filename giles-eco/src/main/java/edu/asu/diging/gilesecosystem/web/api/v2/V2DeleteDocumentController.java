@@ -22,12 +22,12 @@ public class V2DeleteDocumentController {
     private ITransactionalDocumentService documentService;
     
     @RequestMapping(value = "/api/v2/resources/documents/{documentId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> reprocessDocument(@PathVariable("documentId") String documentId) {
+    public ResponseEntity<String> deleteDocument(@PathVariable("documentId") String documentId) {
         IDocument document = documentService.getDocument(documentId);
         if (document == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
         deleteDocumentService.deleteDocument(document);
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<String>(HttpStatus.ACCEPTED);
     }
 }
