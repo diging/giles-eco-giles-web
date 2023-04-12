@@ -81,6 +81,33 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         }
     }
     
+    protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, int pageNr) {
+        IStorageRequest storageRequest;
+        try {
+            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), pageNr);
+        } catch (GilesProcessingException e) {
+            // should not happen
+            // FIXME: send to monitor app
+            messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
+            return;
+        }
+        
+        IProcessingRequest procReq = new ProcessingRequest();
+        procReq.setDocumentId(file.getDocumentId());
+        procReq.setFileId(file.getId());
+        procReq.setSentRequest(storageRequest);
+        procReq.setRequestId(storageRequest.getRequestId());
+        processingRequestService.saveNewProcessingRequest(procReq);
+        
+        requestService.addSentRequest(storageRequest);
+        try {
+            requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
+        } catch (MessageCreationException e) {
+            // FIXME: send to monitor app
+            messageHandler.handleMessage("Could not send message.", e, MessageType.ERROR);
+        }
+    }
+    
     protected IFile createFile(IFile file, IDocument document, String contentType, long size, String filename, String requestPrefix) {
         IFile pagefile = new File();
         pagefile.setAccess(document.getAccess());

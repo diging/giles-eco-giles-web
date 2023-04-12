@@ -82,7 +82,7 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                 documentPage.setImageFileErrorMsg(page.getErrorMsg());
                 
                 if (page.getStatus() == edu.asu.diging.gilesecosystem.requests.PageStatus.COMPLETE) {
-                    sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE);
+                    sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.IMAGE, documentPage.getPageNr());
                 }
            }
         } 
