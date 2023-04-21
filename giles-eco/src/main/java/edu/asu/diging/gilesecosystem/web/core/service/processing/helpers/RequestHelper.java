@@ -45,6 +45,26 @@ public class RequestHelper {
     }
     
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
+            FileType filetype, String requestId, boolean imageExtracted) throws GilesProcessingException {
+        IStorageRequest request = null;
+        try {
+            request = requestFactory.createRequest(requestId, file.getUploadId());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new GilesProcessingException(e);
+        }
+        request.setDocumentId(file.getDocumentId());
+        request.setFileId(file.getId());
+        request.setDownloadPath(pathToFile);
+        request.setDownloadUrl(downloadUrl);
+        request.setFileType(filetype);
+        request.setUploadDate(file.getUploadDate());
+        request.setFilename(file.getFilename());
+        request.setUsername(file.getUsernameForStorage());
+        request.setImageExtracted(imageExtracted);
+        return request;
+    }
+    
+    public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
             FileType filetype, String requestId, int pageNr) throws GilesProcessingException {
         IStorageRequest request = null;
         try {
