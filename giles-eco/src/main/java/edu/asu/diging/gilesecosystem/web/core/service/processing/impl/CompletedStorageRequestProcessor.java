@@ -45,6 +45,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
      */
     @Override
     public void processRequest(ICompletedStorageRequest request) {
+        System.out.println(request);
         IFile file = filesService.getFileById(request.getFileId());
         
         file.setStorageId(request.getStoredFileId());
