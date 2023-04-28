@@ -110,6 +110,7 @@ public class ViewDocumentController {
         
         List<String> ids = new ArrayList<>();
         docBean.getTasks().forEach(t -> {
+            System.out.println(t.getTaskHandlerId());
             if (t.getResultFileId() != null) {
                 ids.add(t.getResultFileId());
             }
@@ -140,6 +141,7 @@ public class ViewDocumentController {
                 IFile additionalFile = pageFiles.get(additionalFileId);
                 
                 Optional<ITask> task = docBean.getTasks().stream().filter(t -> t.getResultFileId().equals(additionalFile.getId())).findFirst();
+                System.out.println(task.get().getTaskHandlerId());
                 if (task.isPresent()) {
                     createAdditionalFileBean(bean, requestsByFileId, task.get(), additionalFile);
                 }
