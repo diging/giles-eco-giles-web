@@ -81,6 +81,15 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         }
     }
     
+    /**
+
+    Sends a storage request for the specified file.
+    @param file The file to be stored.
+    @param downloadPath The path where the file should be downloaded.
+    @param downloadUrl The URL for downloading the file.
+    @param type The type of the file.
+    @param imageExtracted {@code true} if the image has been extracted, {@code false} otherwise.
+    */
     protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, boolean imageExtracted) {
         IStorageRequest storageRequest;
         try {
@@ -108,6 +117,15 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         }
     }
     
+    /**
+
+    Sends a storage request for the specified file.
+    @param file The file to be stored.
+    @param downloadPath The path where the file should be downloaded.
+    @param downloadUrl The URL for downloading the file.
+    @param type The type of the file.
+    @param pageNr The page number within the document.
+    */
     protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, int pageNr) {
         IStorageRequest storageRequest;
         try {

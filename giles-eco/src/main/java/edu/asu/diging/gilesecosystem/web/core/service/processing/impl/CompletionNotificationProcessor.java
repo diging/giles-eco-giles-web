@@ -58,7 +58,6 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         if (document.getTasks() == null) {
             document.setTasks(new ArrayList<ITask>());
         }
-        System.out.println(request.getImageExtracted());
         // if there was a new file created
         saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.getImageExtracted());
         
@@ -131,9 +130,6 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                     fileType = FileType.PDF;
                 }
             }
-            System.out.println(imageExtracted);
-            System.out.println(contentType);
-            System.out.println(fileType);
             if (fileType.equals(FileType.IMAGE) && imageExtracted) {
                 sendStorageRequest(additionalFile, "", downloadUrl, fileType, imageExtracted);
             } else {

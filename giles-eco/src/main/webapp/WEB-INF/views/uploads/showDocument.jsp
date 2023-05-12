@@ -102,12 +102,6 @@
 	</dd>
 	<dt> Additional Files: </dt>
     <dd>
-    	<script>
-    		console.log(${page.imageFile.additionalFiles});
-    		console.log(${page.textFile.additionalFiles});
-    		console.log(${page.ocrFile.additionalFiles});
-    		console.log(${page.additionalFiles});
-    	</script>
         <c:if test="${not empty page.imageFile.additionalFiles}">
             <tiles:insertTemplate template="additionalFileTemplate.jsp" flush="true" ><tiles:putAttribute name="fileBean" value="${page.imageFile}" type="object" /></tiles:insertTemplate>
         </c:if>

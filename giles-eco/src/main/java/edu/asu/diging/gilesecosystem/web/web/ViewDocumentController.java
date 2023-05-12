@@ -78,7 +78,6 @@ public class ViewDocumentController {
         DocumentPageBean docBean = docMappingService.convertToT2(doc,
                 new DocumentPageBean());
         model.addAttribute("document", docBean);
-        System.out.println(docBean.getPages().get(0));
         List<IProcessingRequest> procRequests = procReqDbClient
                 .getRequestByDocumentId(doc.getId());
         Map<String, List<IProcessingRequest>> requestsByFileId = new HashMap<String, List<IProcessingRequest>>();
@@ -110,7 +109,6 @@ public class ViewDocumentController {
         
         List<String> ids = new ArrayList<>();
         docBean.getTasks().forEach(t -> {
-            System.out.println(t.getTaskHandlerId());
             if (t.getResultFileId() != null) {
                 ids.add(t.getResultFileId());
             }
@@ -141,7 +139,6 @@ public class ViewDocumentController {
                 IFile additionalFile = pageFiles.get(additionalFileId);
                 
                 Optional<ITask> task = docBean.getTasks().stream().filter(t -> t.getResultFileId().equals(additionalFile.getId())).findFirst();
-                System.out.println(task.get().getTaskHandlerId());
                 if (task.isPresent()) {
                     createAdditionalFileBean(bean, requestsByFileId, task.get(), additionalFile);
                 }
