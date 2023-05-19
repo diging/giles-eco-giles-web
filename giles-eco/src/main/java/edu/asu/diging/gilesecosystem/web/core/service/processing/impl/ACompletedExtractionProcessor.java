@@ -95,8 +95,6 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         try {
             storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), imageExtracted);
         } catch (GilesProcessingException e) {
-            // should not happen
-            // FIXME: send to monitor app
             messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
             return;
         }
@@ -112,7 +110,6 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         try {
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
         } catch (MessageCreationException e) {
-            // FIXME: send to monitor app
             messageHandler.handleMessage("Could not send message.", e, MessageType.ERROR);
         }
     }
@@ -131,8 +128,6 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         try {
             storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), pageNr);
         } catch (GilesProcessingException e) {
-            // should not happen
-            // FIXME: send to monitor app
             messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
             return;
         }
@@ -148,7 +143,6 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         try {
             requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
         } catch (MessageCreationException e) {
-            // FIXME: send to monitor app
             messageHandler.handleMessage("Could not send message.", e, MessageType.ERROR);
         }
     }
