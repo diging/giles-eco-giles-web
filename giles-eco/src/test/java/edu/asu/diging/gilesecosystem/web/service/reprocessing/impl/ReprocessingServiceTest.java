@@ -64,7 +64,7 @@ public class ReprocessingServiceTest {
     private IUploadDatabaseClient uploadDatabaseClient;
     
     @InjectMocks
-    private IReprocessingService factoryToTest;
+    private IReprocessingService reprocessingService;
     
     private String FILE_ID = "fileId";
     private String CONTENT_TYPE = "contentType";
@@ -75,15 +75,15 @@ public class ReprocessingServiceTest {
     private String UPLOAD_ID = "uploadId";
     private String PROCESSING_REQUEST_ID = "processingRequestId";
     private DocumentAccess access = DocumentAccess.PRIVATE;
-    IDocument document;
-    IFile file;
-    IProcessingRequest request;
-    User user;
-    IUpload upload;
+    private IDocument document;
+    private IFile file;
+    private IProcessingRequest request;
+    private User user;
+    private IUpload upload;
     
     @Before
     public void setUp() {
-        factoryToTest = new ReprocessingService();
+        reprocessingService = new ReprocessingService();
         MockitoAnnotations.initMocks(this);
         user = createUser();
         upload = createUpload();
@@ -99,7 +99,7 @@ public class ReprocessingServiceTest {
     
     @Test
     public void test_reprocessDocument_success() {
-        factoryToTest.reprocessDocument(document);
+        reprocessingService.reprocessDocument(document);
         Mockito.verify(filesManager, times(1)).changeFileProcessingStatus(file, ProcessingStatus.UNPROCESSED);
         Mockito.verify(processingRequestRepository, times(1)).deleteById(PROCESSING_REQUEST_ID);
     }

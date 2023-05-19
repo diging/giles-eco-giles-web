@@ -120,19 +120,13 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
      * @return existing file or newly created file
      */
     protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileIdFunction) {
-        IFile requestedFile;
         if(documentPage != null) {
             String fileId = getFileIdFunction.apply(documentPage);
             if (fileId != null && !fileId.isEmpty()) {
-                requestedFile = filesService.getFileById(fileId);
-            } else {
-                requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
+                return filesService.getFileById(fileId);
             }
-            
-        } else {
-            requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
         }    
-        return requestedFile;
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
     }
     /**
      * 
@@ -146,14 +140,11 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
      * @return existing file or newly created file
      */
     protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix, Function<IDocument, String> getFileIdFunction) {
-        IFile completeText;
         String fileId = getFileIdFunction.apply(document);
         if (fileId != null && !fileId.isEmpty()) {
-            completeText = filesService.getFileById(fileId);
-        } else {
-            completeText = createNewFile(file, document, contentType, size, fileName, requestPrefix);
+            return filesService.getFileById(fileId);
         }
-        return completeText;
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
     }
     
     private IFile createNewFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
