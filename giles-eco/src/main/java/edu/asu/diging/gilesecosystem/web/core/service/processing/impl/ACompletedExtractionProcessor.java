@@ -83,7 +83,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     /**
 
-    Sends a storage request for the specified file.
+    Sends a storage request for the specified image file after receiving the completion notification event and sets imageExtracted property in the request.
     @param file The file to be stored.
     @param downloadPath The path where the file should be downloaded.
     @param downloadUrl The URL for downloading the file.
@@ -119,7 +119,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     /**
 
-    Sends a storage request for the specified file.
+    Sends a storage request for the specified file after receiving the completed image extraction event and sets the pageNr property in the request.
     @param file The file to be stored.
     @param downloadPath The path where the file should be downloaded.
     @param downloadUrl The URL for downloading the file.
