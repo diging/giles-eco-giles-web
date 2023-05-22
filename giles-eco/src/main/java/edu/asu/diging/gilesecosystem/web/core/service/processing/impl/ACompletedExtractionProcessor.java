@@ -108,7 +108,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     /**
      * 
-     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * Retrieves a file based on the provided parameters. If the document page is not null, it attempts to retrieve the file using the file ID obtained from the provided document page and the getFileIdFunction. If the file ID is valid and not empty, the corresponding file is fetched from the files service. If the file ID is not available or empty, a new file is created using the specified parameters.
      * @param ipage : The document page being processed
      * @param document : The document associated with the page
      * @param file : The file associated with the page
@@ -130,7 +130,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     }
     /**
      * 
-     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * Retrieves a file based on the provided parameters. It first attempts to retrieve the file using the file ID obtained from the getFileIdFunction applied to the provided document. If the file ID is valid and not empty, the corresponding file is fetched from the files service. If the file ID is not available or empty, a new file is created using the specified parameters.
      * @param file : The file associated with the page
      * @param document : The document associated with the page
      * @param contentType : The content type of the file
