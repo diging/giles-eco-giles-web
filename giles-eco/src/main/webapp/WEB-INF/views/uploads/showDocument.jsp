@@ -25,6 +25,7 @@
 
 	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
 	<button type="button" class="btn btn-link" title="Reprocess" data-toggle="modal" data-docid="${document.id}" data-target="#reProcessDocument">
+     	<i class="fa fa-redo"></i>
      	Re-process
      </button>
 	<div class="modal fade" id="reProcessDocument" tabindex="-1" role="dialog">
