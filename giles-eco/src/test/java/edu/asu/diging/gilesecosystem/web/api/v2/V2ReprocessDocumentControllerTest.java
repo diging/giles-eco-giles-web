@@ -1,6 +1,8 @@
 package edu.asu.diging.gilesecosystem.web.api.v2;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,10 +14,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 
 public class V2ReprocessDocumentControllerTest {
@@ -25,6 +30,12 @@ public class V2ReprocessDocumentControllerTest {
     
     @Mock
     private ITransactionalDocumentService documentService;
+    
+    @Mock
+    private IPropertiesManager propertyManager;
+    
+    @Mock
+    private IResponseHelper responseHelper;
     
     @InjectMocks
     private V2ReprocessDocumentController v2ReprocessDocumentController;
@@ -46,15 +57,27 @@ public class V2ReprocessDocumentControllerTest {
     @Test
     public void test_reprocessDocument_success() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
+        Mockito.when(propertyManager.getProperty(Properties.GILES_URL)).thenReturn("http://localhost:8085/giles");
+        Map<String, String> msgs = new HashMap<String, String>();
+        msgs.put("id", DOCUMENT_ID);
+        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + "/api/v2/files/upload/check/" + UPLOAD_ID);
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.OK));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID);
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response.getBody());
+        Assert.assertEquals(msgs.toString(), response.getBody());
     }
     
     @Test
     public void test_reprocessDocument_notFound() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(null);
+        Map<String, String> msgs = new HashMap<String, String>();
+        msgs.put("errorMsg", "Document Id: " + DOCUMENT_ID + " does not exist.");
+        msgs.put("errorCode", "404");
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.NOT_FOUND));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID);
         Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assert.assertEquals(msgs.toString(), response.getBody());
     }
     
     private Document createDocument() {
