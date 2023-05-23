@@ -99,12 +99,12 @@ public class DeleteDocumentServiceTest {
         files.add(file2);
 
         storageDeletionRequest1 = createStorageDeletionRequest(REQUEST_ID_1, UPLOAD_ID);
-        storageDeletionRequest1.setStorageFileId(STORAGE_ID_1);
-        storageDeletionRequest1.setIsOldFileVersion(false);
-        
-        storageDeletionRequest2 = createStorageDeletionRequest(REQUEST_ID_2, UPLOAD_ID);
-        storageDeletionRequest2.setStorageFileId(STORAGE_ID_2);
-        storageDeletionRequest2.setIsOldFileVersion(false);
+//        storageDeletionRequest1.setStorageFileId(STORAGE_ID_1);
+//        storageDeletionRequest1.setIsOldFileVersion(false);
+//        
+//        storageDeletionRequest2 = createStorageDeletionRequest(REQUEST_ID_2, UPLOAD_ID);
+//        storageDeletionRequest2.setStorageFileId(STORAGE_ID_2);
+//        storageDeletionRequest2.setIsOldFileVersion(false);
         
         MockitoAnnotations.initMocks(this);
         
