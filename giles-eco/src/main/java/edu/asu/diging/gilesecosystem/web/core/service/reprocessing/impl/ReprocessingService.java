@@ -95,7 +95,6 @@ public class ReprocessingService implements IReprocessingService {
     private void markFilesAsUnprocessed(IDocument document) {
         List<IFile> files = filesManager.getFilesOfDocument(document);
         for(IFile file : files) {
-            System.out.println(file);
             filesManager.changeFileProcessingStatus(file, ProcessingStatus.UNPROCESSED);
         }
     }

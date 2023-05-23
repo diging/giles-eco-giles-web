@@ -25,6 +25,7 @@
 
 	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
 	<button type="button" class="btn btn-link" title="Reprocess" data-toggle="modal" data-docid="${document.id}" data-target="#reProcessDocument">
+     	<i class="fa fa-redo"></i>
      	Re-process
      </button>
 	<div class="modal fade" id="reProcessDocument" tabindex="-1" role="dialog">
@@ -38,7 +39,7 @@
        				<p>Are you sure you want to re-process this document.</p>
       			</div>
       			<div class="modal-footer">
-         			<form class="form-inline" method="POST" id="submitReprocessDocument" action="">
+         			<form class="form-inline" method="POST" id="submitReprocessDocument" action="<c:url value='/documents/${document.id}/reprocess' />">
          				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	       				<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
 	        			<button type="submit" class="btn btn-primary">Yes!</button>
@@ -153,16 +154,3 @@
 </c:if>
 </div>
 </div>
-<script>
-$('#reProcessDocument').on('show.bs.modal', function (event) {
-	  var button = $(event.relatedTarget); // Button that triggered the modal
-	  var docId = button.data('docid'); // Extract info from data-* attributes
-	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-	  var modal = $(this)
-	  var url = '<c:url value="/documents/" />';
-	  url += docId;
-	  url += "/reprocess";
-	  modal.find("#submitReprocessDocument").attr('action', url);
-	})
-</script>

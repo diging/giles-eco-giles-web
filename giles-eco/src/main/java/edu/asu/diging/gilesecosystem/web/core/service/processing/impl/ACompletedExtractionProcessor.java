@@ -108,7 +108,7 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     /**
      * 
-     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * Retrieves a file based on the provided parameters. If the document page is not null, it attempts to retrieve the file using the file ID obtained from the provided document page and the getFileIdFunction. If the file ID is valid and not empty, the corresponding file is fetched from the files service. If the file ID is not available or empty, a new file is created using the specified parameters.
      * @param ipage : The document page being processed
      * @param document : The document associated with the page
      * @param file : The file associated with the page
@@ -120,23 +120,17 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
      * @return existing file or newly created file
      */
     protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileIdFunction) {
-        IFile requestedFile;
         if(documentPage != null) {
             String fileId = getFileIdFunction.apply(documentPage);
             if (fileId != null && !fileId.isEmpty()) {
-                requestedFile = filesService.getFileById(fileId);
-            } else {
-                requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
+                return filesService.getFileById(fileId);
             }
-            
-        } else {
-            requestedFile = createNewFile(file, document, contentType, size, fileName, requestPrefix);
         }    
-        return requestedFile;
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
     }
     /**
      * 
-     * This method will return a file if it's already present in case of reprocessing else it will create a new file
+     * Retrieves a file based on the provided parameters. It first attempts to retrieve the file using the file ID obtained from the getFileIdFunction applied to the provided document. If the file ID is valid and not empty, the corresponding file is fetched from the files service. If the file ID is not available or empty, a new file is created using the specified parameters.
      * @param file : The file associated with the page
      * @param document : The document associated with the page
      * @param contentType : The content type of the file
@@ -146,14 +140,11 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
      * @return existing file or newly created file
      */
     protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix, Function<IDocument, String> getFileIdFunction) {
-        IFile completeText;
         String fileId = getFileIdFunction.apply(document);
         if (fileId != null && !fileId.isEmpty()) {
-            completeText = filesService.getFileById(fileId);
-        } else {
-            completeText = createNewFile(file, document, contentType, size, fileName, requestPrefix);
+            return filesService.getFileById(fileId);
         }
-        return completeText;
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
     }
     
     private IFile createNewFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
