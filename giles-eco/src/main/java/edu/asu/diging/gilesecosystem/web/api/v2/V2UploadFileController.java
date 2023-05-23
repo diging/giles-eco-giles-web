@@ -148,7 +148,7 @@ public class V2UploadFileController {
             messageHandler.handleMessage("Could not store non login user.", e,
                     MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("errorMsg", "An erro occurred. Request could not be processed.");
+            msgs.put("errorMsg", "An error occurred. Request could not be processed.");
             msgs.put("errorCode", "500");
 
             return responseHelper.generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);

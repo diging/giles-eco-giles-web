@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 
@@ -33,6 +35,9 @@ public class V2ReprocessDocumentController {
     @Autowired
     private IPropertiesManager propertyManager;
     
+    @Autowired
+    private ITransactionalUploadService uploadService;
+    
     @Value("${giles_check_upload_endpoint_v2}")
     private String uploadEndpoint;
     
@@ -46,8 +51,9 @@ public class V2ReprocessDocumentController {
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
         reprocessingService.reprocessDocument(document);
+        IUpload upload = uploadService.getUpload(document.getUploadId());
         msgs.put("id", documentId);
-        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + document.getUploadId());
+        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + upload.getUploadProgressId());
         return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
 }
