@@ -28,5 +28,12 @@ public interface ITransactionalDocumentService {
      *         ID of the document to be deleted
      */
     public abstract void deleteDocument(String documentId);
+    
+    /**
+     * Generate Request Id for the document.
+     * @param prefix 
+     *         The prefix for the type of request.
+     */
+    public abstract String generateRequestId(String prefix);
 
 }

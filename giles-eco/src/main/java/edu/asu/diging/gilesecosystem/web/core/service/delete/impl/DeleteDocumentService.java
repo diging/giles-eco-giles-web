@@ -41,7 +41,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 @Service
 public class DeleteDocumentService implements IDeleteDocumentService {
     
-    public final static String REQUEST_PREFIX = "";
+    public final static String REQUEST_PREFIX = "DELREQ";
     
     @Autowired
     private IFilesManager filesManager;
@@ -93,15 +93,12 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Override
     @Async
     public void deleteDocument(IDocument document) {
-//        List<IFile> files = fileService.getFilesByDocumentId(document.getId());
-//        for(IFile file : files) {
-//            processDeleteFileRequest(file);
-//        }
-        processDeleteDocumentRequest(document);
+        sendDeleteRequest(document);
     }
     
     @Override
     public void deleteDocumentAfterStorageDeletion(IDocument document) {
+        processDeleteFilesOfDocument(document);
         documentService.deleteDocument(document.getId());
         // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
         if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
@@ -109,94 +106,36 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         }
     }
     
-//    private void sendDeleteRequest(IFile file) {
-//        try {
-//            IRequest storageDeletionRequest = createRequest(file);
-//            requestProducer.sendRequest(storageDeletionRequest, getTopic());
-//        } catch (GilesProcessingException | MessageCreationException e) {
-//            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
-//        }
-//        
-//    }
-    
-//    private void sendDeleteRequest(IFile file, String oldFileId) {
-//        try {
-//            IRequest storageDeletionRequest = createRequest(file, oldFileId);
-//            requestProducer.sendRequest(storageDeletionRequest, getTopic());
-//        } catch (GilesProcessingException | MessageCreationException e) {
-//            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
-//        }
-//        
-//    }
+    private void processDeleteFilesOfDocument(IDocument document) {
+        List<IFile> files = fileService.getFilesByDocumentId(document.getId());
+        for(IFile file : files) {
+            filesManager.deleteFile(file.getId());
+        }
+    }
+
     private void sendDeleteRequest(IDocument document) {
         try {
             IRequest storageDeletionRequest = createRequest(document);
             requestProducer.sendRequest(storageDeletionRequest, getTopic());
         } catch (GilesProcessingException | MessageCreationException e) {
           messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
-      }
+        }
     }
-    
-    private void processDeleteDocumentRequest(IDocument document) {
-        sendDeleteRequest(document);
-    }
-    
-//    private void processDeleteFileRequest(IFile file) {
-//        deleteOldFileVersions(file);
-//        deleteFile(file);
-//    }
-    
-//    private void deleteFile(IFile file) {
-//        sendDeleteRequest(file);
-//        
-//        filesManager.deleteFile(file.getId());
-//    }
-    
-//    private IRequest createRequest(IFile file) throws GilesProcessingException {
-//        IStorageDeletionRequest storageDeletionRequest = null;
-//        try {
-//            storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
-//            storageDeletionRequest.setStorageFileId(file.getStorageId());
-//            storageDeletionRequest.setIsOldFileVersion(false);
-//        } catch (InstantiationException | IllegalAccessException e) {
-//            throw new GilesProcessingException(e);
-//        }
-//        return storageDeletionRequest;
-//    }
     
     private IRequest createRequest(IDocument document) throws GilesProcessingException {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
-            storageDeletionRequest = requestFactory.createRequest(document.getId(), document.getUploadId());
+            storageDeletionRequest = requestFactory.createRequest(documentService.generateRequestId(REQUEST_PREFIX), document.getUploadId());
+            storageDeletionRequest.setDocumentId(document.getId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         } 
         return storageDeletionRequest;
     }
     
-//    private IRequest createRequest(IFile file, String oldFileId) throws GilesProcessingException {
-//        IStorageDeletionRequest storageDeletionRequest = null;
-//        try {
-//            storageDeletionRequest = requestFactory.createRequest(file.getRequestId(), file.getUploadId());
-//            storageDeletionRequest.setStorageFileId(oldFileId);
-//            storageDeletionRequest.setIsOldFileVersion(true);
-//        } catch (InstantiationException | IllegalAccessException e) {
-//            throw new GilesProcessingException(e);
-//        }
-//        return storageDeletionRequest;
-//    }
-    
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
     }
-    
-//    private void deleteOldFileVersions(IFile file) {
-//        if ((file.getOldFileVersionIds()!=null) && (!file.getOldFileVersionIds().isEmpty())) {
-//            for(String oldFileId : file.getOldFileVersionIds()) {
-//                sendDeleteRequest(file, oldFileId);
-//            }
-//        }
-//    }
     
     private void deleteUploadForDocument(IDocument document) {
         uploadService.deleteUpload(document.getUploadId());
