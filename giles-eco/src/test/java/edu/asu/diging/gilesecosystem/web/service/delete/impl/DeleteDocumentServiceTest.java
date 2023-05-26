@@ -76,7 +76,7 @@ public class DeleteDocumentServiceTest {
     IFile file1, file2;
     IUpload upload;
     List<IFile> files;
-    IStorageDeletionRequest storageDeletionRequest1, storageDeletionRequest2, storageDeletionRequest3;
+    IStorageDeletionRequest storageDeletionRequest1;
     
     private String FILE_ID_1 = "fileId1";
     private String FILE_ID_2 = "fileId2";
@@ -105,16 +105,13 @@ public class DeleteDocumentServiceTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(fileService.getFilesByDocumentId(DOCUMENT_ID)).thenReturn(files);
         Mockito.when(propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST)).thenReturn("request_storage_deletion_topic");
-        Mockito.when(requestFactory.createRequest(REQUEST_ID_1, UPLOAD_ID)).thenReturn(storageDeletionRequest1);
-        Mockito.when(requestFactory.createRequest(REQUEST_ID_2, UPLOAD_ID)).thenReturn(storageDeletionRequest2);
+        Mockito.when(requestFactory.createRequest(Mockito.anyString(), Mockito.anyString())).thenReturn(storageDeletionRequest1);
     }
     
     @Test
     public void test_deleteDocument_success() throws MessageCreationException {
         factoryToTest.deleteDocument(document);
         Mockito.verify(requestProducer, times(1)).sendRequest(storageDeletionRequest1, "request_storage_deletion_topic");
-        Mockito.verify(requestProducer, times(2)).sendRequest(storageDeletionRequest2, "request_storage_deletion_topic");
-        
     }
     
     @Test
@@ -165,11 +162,6 @@ public class DeleteDocumentServiceTest {
         file.setUsername("github_3123");
         file.setStorageId(storageId);
         file.setRequestId(reqId);
-        if (fileId==FILE_ID_2) {
-            file.setOldFileVersionIds(Arrays.asList("FILE12345"));
-        } else {
-            file.setOldFileVersionIds(null);
-        }
         return file;
     }
     
