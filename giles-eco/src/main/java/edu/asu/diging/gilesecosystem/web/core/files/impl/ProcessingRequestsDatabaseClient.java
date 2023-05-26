@@ -73,5 +73,14 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     protected EntityManager getClient() {
        return em;
     }
+    
+    @Override
+    public void deleteProcessingRequestsForDocumentId(String documentId) {
+        TypedQuery<IProcessingRequest> query = getClient().createQuery("SELECT t FROM " + IProcessingRequest.class.getName()  + " t WHERE t.documentId = '" + documentId + "'", IProcessingRequest.class);
+        List<IProcessingRequest> requests = query.getResultList();
+        for (IProcessingRequest request : requests) {
+            delete(request);
+        }
+    }
 
 }

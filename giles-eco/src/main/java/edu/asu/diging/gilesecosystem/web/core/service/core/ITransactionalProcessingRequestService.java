@@ -14,5 +14,12 @@ public interface ITransactionalProcessingRequestService {
     void save(IProcessingRequest request) throws UnstorableObjectException;
 
     List<IProcessingRequest> getIncompleteRequests();
+    
+    /**
+
+    Deletes processing requests associated with the specified document ID.
+    @param documentId The ID of the document for which processing requests should be deleted.
+    */
+    void deleteProcessingRequestsForDocumentId(String documentId);
 
 }

@@ -14,5 +14,12 @@ public interface IProcessingRequestsDatabaseClient extends IDatabaseClient<IProc
     public abstract List<IProcessingRequest> getProcRequestsByRequestId(String procReqId);
 
     public abstract List<IProcessingRequest> getIncompleteRequests();
+    
+    /**
+
+    Deletes processing requests associated with the specified document ID.
+    @param documentId The ID of the document for which processing requests should be deleted.
+    */
+    public abstract void deleteProcessingRequestsForDocumentId(String documentId);
 
 }

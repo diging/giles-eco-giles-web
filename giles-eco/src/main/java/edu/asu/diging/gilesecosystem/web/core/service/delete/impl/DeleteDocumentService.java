@@ -30,6 +30,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
@@ -70,6 +71,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Autowired
     private ITransactionalDocumentService documentService;
     
+    @Autowired
+    private ITransactionalProcessingRequestService processingRequestService;
+    
     private Map<String, FileType> fileTypes;
     
     @PostConstruct
@@ -99,17 +103,27 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Override
     public void deleteDocumentAfterStorageDeletion(IDocument document) {
         processDeleteFilesOfDocument(document);
+        processDeleteProcessingRequestsOfDocument(document);
         documentService.deleteDocument(document.getId());
-        // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
-        if(documentService.getDocumentsByUploadId(document.getUploadId()).isEmpty()) {
-            deleteUploadForDocument(document);
-        }
+        processDeleteUploadOfDocument(document.getUploadId());
+        
+    }
+    
+    private void processDeleteProcessingRequestsOfDocument(IDocument document) {
+        processingRequestService.deleteProcessingRequestsForDocumentId(document.getId());
     }
     
     private void processDeleteFilesOfDocument(IDocument document) {
         List<IFile> files = fileService.getFilesByDocumentId(document.getId());
         for(IFile file : files) {
             filesManager.deleteFile(file.getId());
+        }
+    }
+    
+    private void processDeleteUploadOfDocument(String uploadId) {
+     // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
+        if(documentService.getDocumentsByUploadId(uploadId).isEmpty()) {
+            uploadService.deleteUpload(uploadId);
         }
     }
 
@@ -135,9 +149,5 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
-    }
-    
-    private void deleteUploadForDocument(IDocument document) {
-        uploadService.deleteUpload(document.getUploadId());
     }
 }

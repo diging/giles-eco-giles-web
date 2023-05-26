@@ -40,4 +40,9 @@ public class TransactionalProcessingRequestService implements ITransactionalProc
     public List<IProcessingRequest> getIncompleteRequests() {
         return pReqDbClient.getIncompleteRequests();
     }
+    
+    @Override
+    public void deleteProcessingRequestsForDocumentId(String documentId) {
+        pReqDbClient.deleteProcessingRequestsForDocumentId(documentId);
+    }
 }
