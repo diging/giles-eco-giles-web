@@ -25,6 +25,7 @@
 
 	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
 	<button type="button" class="btn btn-link" title="Delete" data-toggle="modal" data-docid="${document.id}" data-target="#deleteDocument">
+		<i class="fa fa-trash" aria-hidden="true"></i>
 		Delete Document
 	</button>
 	

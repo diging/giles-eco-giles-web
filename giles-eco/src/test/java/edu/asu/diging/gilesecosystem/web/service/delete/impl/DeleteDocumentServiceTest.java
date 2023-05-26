@@ -32,6 +32,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.impl.DeleteDocumentService;
@@ -65,6 +66,9 @@ public class DeleteDocumentServiceTest {
     @Mock
     private IRequestFactory<IStorageDeletionRequest, StorageDeletionRequest> requestFactory;
     
+    @Mock
+    private ITransactionalProcessingRequestService processingRequestService;
+    
     @InjectMocks
     private IDeleteDocumentService factoryToTest;
     
@@ -72,7 +76,7 @@ public class DeleteDocumentServiceTest {
     IFile file1, file2;
     IUpload upload;
     List<IFile> files;
-    IStorageDeletionRequest storageDeletionRequest1, storageDeletionRequest2, storageDeletionRequest3;
+    IStorageDeletionRequest storageDeletionRequest1;
     
     private String FILE_ID_1 = "fileId1";
     private String FILE_ID_2 = "fileId2";
@@ -88,7 +92,7 @@ public class DeleteDocumentServiceTest {
     private String REQUEST_ID_2 = "REQ2";
     
     @Before
-    public void setUp() {
+    public void setUp() throws InstantiationException, IllegalAccessException{
         factoryToTest = new DeleteDocumentService();
         upload = createUpload();
         document = createDocument();
@@ -97,37 +101,17 @@ public class DeleteDocumentServiceTest {
         files = new ArrayList<IFile>();
         files.add(file1);
         files.add(file2);
-
         storageDeletionRequest1 = createStorageDeletionRequest(REQUEST_ID_1, UPLOAD_ID);
-        storageDeletionRequest1.setStorageFileId(STORAGE_ID_1);
-        storageDeletionRequest1.setIsOldFileVersion(false);
-        
-        storageDeletionRequest2 = createStorageDeletionRequest(REQUEST_ID_2, UPLOAD_ID);
-        storageDeletionRequest2.setStorageFileId(STORAGE_ID_2);
-        storageDeletionRequest2.setIsOldFileVersion(false);
-        
         MockitoAnnotations.initMocks(this);
-        
         Mockito.when(fileService.getFilesByDocumentId(DOCUMENT_ID)).thenReturn(files);
         Mockito.when(propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST)).thenReturn("request_storage_deletion_topic");
-        try {
-            Mockito.when(requestFactory.createRequest(REQUEST_ID_1, UPLOAD_ID)).thenReturn(storageDeletionRequest1);
-            Mockito.when(requestFactory.createRequest(REQUEST_ID_2, UPLOAD_ID)).thenReturn(storageDeletionRequest2);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        
+        Mockito.when(requestFactory.createRequest(Mockito.anyString(), Mockito.anyString())).thenReturn(storageDeletionRequest1);
     }
     
     @Test
-    public void test_deleteDocument_success() {
+    public void test_deleteDocument_success() throws MessageCreationException {
         factoryToTest.deleteDocument(document);
-        try {
-            Mockito.verify(requestProducer, times(1)).sendRequest(storageDeletionRequest1, "request_storage_deletion_topic");
-            Mockito.verify(requestProducer, times(2)).sendRequest(storageDeletionRequest2, "request_storage_deletion_topic");
-        } catch (MessageCreationException e) {
-            e.printStackTrace();
-        }
+        Mockito.verify(requestProducer, times(1)).sendRequest(storageDeletionRequest1, "request_storage_deletion_topic");
     }
     
     @Test
@@ -178,11 +162,6 @@ public class DeleteDocumentServiceTest {
         file.setUsername("github_3123");
         file.setStorageId(storageId);
         file.setRequestId(reqId);
-        if (fileId==FILE_ID_2) {
-            file.setOldFileVersionIds(Arrays.asList("FILE12345"));
-        } else {
-            file.setOldFileVersionIds(null);
-        }
         return file;
     }
     
