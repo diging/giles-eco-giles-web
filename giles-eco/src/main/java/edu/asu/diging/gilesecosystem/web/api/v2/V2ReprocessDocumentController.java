@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
+import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
+import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
@@ -38,17 +40,23 @@ public class V2ReprocessDocumentController {
     @Autowired
     private ITransactionalUploadService uploadService;
     
+    @Autowired
+    private IUserHelper userHelper;
+    
     @Value("${giles_check_upload_endpoint_v2}")
     private String uploadEndpoint;
     
     @RequestMapping(value = "/api/v2/resources/documents/{documentId}/reprocess", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> reprocessDocument(@PathVariable("documentId") String documentId) {
+    public ResponseEntity<String> reprocessDocument(@PathVariable("documentId") String documentId, CitesphereToken citesphereToken) {
         IDocument document = documentService.getDocument(documentId);
         Map<String, String> msgs = new HashMap<String, String>();
         if (document == null) {
             msgs.put("errorMsg", "Document Id: " + documentId + " does not exist.");
             msgs.put("errorCode", "404");
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
+        }
+        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+            return userHelper.generateUnauthorizedUserResponse();
         }
         reprocessingService.reprocessDocument(document);
         IUpload upload = uploadService.getUpload(document.getUploadId());
