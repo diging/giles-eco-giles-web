@@ -46,13 +46,16 @@ public class V2DeleteDocumentController {
     private String deleteEndpoint;
     
     @RequestMapping(value = "/api/v2/resources/documents/{documentId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> deleteDocument(@PathVariable("documentId") String documentId) {
+    public ResponseEntity<String> deleteDocument(@PathVariable("documentId") String documentId, CitesphereToken citesphereToken) {
         IDocument document = documentService.getDocument(documentId);
         Map<String, String> msgs = new HashMap<String, String>();
         if (document == null) {
             msgs.put("errorMsg", "Document Id: " + documentId + " does not exist.");
             msgs.put("errorCode", "404");
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
+        }
+        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+            return userHelper.generateUnauthorizedUserResponse();
         }
         deleteDocumentService.deleteDocument(document);
         msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + deleteEndpoint + documentId);
@@ -64,19 +67,15 @@ public class V2DeleteDocumentController {
     public ResponseEntity<String> checkDocumentDeletion(HttpServletRequest request,
             @PathVariable String documentId, CitesphereToken citesphereToken) {
         IDocument document = documentService.getDocument(documentId);
-        String username = document.getUsername();
-        Map<String, String> msgs = new HashMap<String, String>();
-        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        String usernameInSystem = userHelper.createUsername(user.getUsername(), user.getAuthorizingClient());
-        if (!usernameInSystem.equals(username)) {
-            msgs.put("errorMsg", "User is not authorized to check status.");
-            msgs.put("errorCode", "401");
-
-            return responseHelper.generateResponse(msgs, HttpStatus.UNAUTHORIZED);
-        } else if (document == null) {
-            msgs.put("successMessage", "Document Id: " + documentId + " is deleted.");
-            return responseHelper.generateResponse(msgs, HttpStatus.OK);
+        if (document == null) {
+            Map<String, String> successMsgs = new HashMap<String, String>();
+            successMsgs.put("successMessage", "Document Id: " + documentId + " is deleted.");
+            return responseHelper.generateResponse(successMsgs, HttpStatus.OK);
         }
+        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+            return userHelper.generateUnauthorizedUserResponse();
+        }
+        Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");
         return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
