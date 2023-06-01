@@ -22,7 +22,6 @@ import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
-import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 @Controller
 public class V2DeleteDocumentController {
@@ -43,7 +42,7 @@ public class V2DeleteDocumentController {
     private IUserHelper userHelper;
     
     @Value("${giles_check_deletion_endpoint_v2}")
-    private String deleteEndpoint;
+    private String checkDeleteEndpoint;
     
     @RequestMapping(value = "/api/v2/resources/documents/{documentId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> deleteDocument(@PathVariable("documentId") String documentId, CitesphereToken citesphereToken) {
@@ -58,8 +57,8 @@ public class V2DeleteDocumentController {
             return userHelper.generateUnauthorizedUserResponse();
         }
         deleteDocumentService.deleteDocument(document);
-        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + deleteEndpoint + documentId);
-        
+        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + checkDeleteEndpoint + documentId);
+ 
         return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
     
