@@ -39,13 +39,13 @@ public class RequestHelperTest {
     @Test
     public void test_createStorageRequest_withImageExtracted_asFalse() throws GilesProcessingException {
         IStorageRequest request = requestHelper.createStorageRequest(file, "pdfs/github_37469232/UPzabVVEAlajNL/DOCuEO0La7renx9/HW1.jpg", "http://localhost:8082/nepomuk/rest/files/FILEl17JlMz3axqi", FileType.IMAGE, "STREQqyx8EJZwmqaE", false);
-        Assert.assertEquals(request.getImageExtracted(), false);
+        Assert.assertEquals(request.isImageExtracted(), false);
     }
     
     @Test
     public void test_createStorageRequest_withImageExtracted_asTrue() throws GilesProcessingException {
         IStorageRequest request = requestHelper.createStorageRequest(file, "pdfs/github_37469232/UPzabVVEAlajNL/DOCuEO0La7renx9/HW1.jpg", "http://localhost:8082/nepomuk/rest/files/FILEl17JlMz3axqi", FileType.IMAGE, "STREQqyx8EJZwmqaE", true);
-        Assert.assertEquals(request.getImageExtracted(), true);
+        Assert.assertEquals(request.isImageExtracted(), true);
     }
     
     @Test

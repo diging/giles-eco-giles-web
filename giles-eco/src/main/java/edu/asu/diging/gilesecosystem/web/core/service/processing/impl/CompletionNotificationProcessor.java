@@ -59,7 +59,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             document.setTasks(new ArrayList<ITask>());
         }
         // if there was a new file created
-        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.getImageExtracted());
+        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isImageExtracted());
         
         
         if (request.getPages() != null && !request.getPages().isEmpty()) {
@@ -77,12 +77,12 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                 }
                 document.getPages().add(documentPage);
                 
-                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.getImageExtracted());  
+                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.isImageExtracted());  
                 if (additionalFile != null) {
                     documentPage.getAdditionalFileIds().add(additionalFile.getId());
                 }
                 for (PageElement element : page.getPageElements()) {
-                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.getImageExtracted());
+                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.isImageExtracted());
                     if (elementFile != null) {
                         documentPage.getAdditionalFileIds().add(elementFile.getId());
                     }
