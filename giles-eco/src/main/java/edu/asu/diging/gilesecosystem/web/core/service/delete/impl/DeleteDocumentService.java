@@ -101,7 +101,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             IRequest storageDeletionRequest = createRequest(document);
             requestProducer.sendRequest(storageDeletionRequest, getTopic());
         } catch (GilesProcessingException | MessageCreationException e) {
-          messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
+            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
         }
     }
     
