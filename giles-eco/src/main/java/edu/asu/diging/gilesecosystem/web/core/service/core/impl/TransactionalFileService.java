@@ -109,12 +109,7 @@ public class TransactionalFileService implements ITransactionalFileService {
     }
 
     @Override
-    public void deleteFile(String fileId) {
-        filesDbClient.deleteFile(fileId);
-    }
-    
-    @Override
-    public List<IFile> getFilesByDocumentId(String documentId) {
-        return filesDbClient.getFilesByDocumentId(documentId);
+    public void deleteFiles(String documentId) {
+        filesDbClient.deleteFiles(documentId);
     }
 }

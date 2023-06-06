@@ -27,16 +27,9 @@ public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
     List<IFile> getFilesForIds(List<String> ids);
     
     /**
-     * Delete a file given the file ID.
-     * @param fileId 
-     *         ID of the file to be deleted
-     */
-    public abstract void deleteFile(String fileId);
-    
-    /**
-     * Get all the files associated with a document
+     * Delete files given the document ID.
      * @param documentId 
-     *         ID of the document
+     *         Document ID of the files to be deleted
      */
-    public abstract List<IFile> getFilesByDocumentId(String documentId);
+    public abstract void deleteFiles(String documentId);
 }

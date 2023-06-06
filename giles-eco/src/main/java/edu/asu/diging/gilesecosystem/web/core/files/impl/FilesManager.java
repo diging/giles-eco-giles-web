@@ -238,9 +238,4 @@ public class FilesManager implements IFilesManager {
         }
         return true;
     }
-
-    @Override
-    public void deleteFile(String fileId) {
-        fileService.deleteFile(fileId);   
-    } 
 }

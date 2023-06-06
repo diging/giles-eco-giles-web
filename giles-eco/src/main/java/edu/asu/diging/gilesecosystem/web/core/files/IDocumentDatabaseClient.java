@@ -22,4 +22,6 @@ public interface IDocumentDatabaseClient extends IDatabaseClient<IDocument> {
      *         ID of the document to be deleted
      */
     public abstract void deleteDocument(String documentId);
+    
+    public abstract IDocument getDocumentByRequestId(String requestId);
 }

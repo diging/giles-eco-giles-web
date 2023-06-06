@@ -86,6 +86,6 @@ public class TransactionalDocumentService implements ITransactionalDocumentServi
     
     @Override
     public String generateRequestId(String prefix) {
-        return documentDatabaseClient.generateId(prefix, null);
+        return documentDatabaseClient.generateId(prefix, documentDatabaseClient::getDocumentByRequestId);
     }
 }

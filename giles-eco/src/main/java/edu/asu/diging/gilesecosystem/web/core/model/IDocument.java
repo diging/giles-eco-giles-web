@@ -62,4 +62,7 @@ public interface IDocument extends IStorableObject {
 
     public abstract List<ITask> getTasks();
 
+    public abstract void setRequestId(String requestId);
+
+    public abstract String getRequestId();
 }
