@@ -24,9 +24,9 @@ import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 
 @Entity
 @Table(indexes={
-   @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
-   @Index(columnList="username", name="IDX_USERNAME"),
-   @Index(columnList="requestId", name="IDX_REQUEST_ID")
+    @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
+    @Index(columnList="username", name="IDX_USERNAME"),
+    @Index(columnList="requestId", name="IDX_REQUEST_ID")
 })
 public class Document implements IDocument {
 
