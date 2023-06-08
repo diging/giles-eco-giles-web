@@ -140,4 +140,5 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     protected EntityManager getClient() {
        return em;
     }
+
 }

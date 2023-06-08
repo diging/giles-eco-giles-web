@@ -26,43 +26,42 @@ import edu.asu.diging.gilesecosystem.web.core.service.processing.RequestProcesso
 
 @PropertySource("classpath:/config.properties")
 public class KafkaProcessingListener {
-
+    
     @Autowired
     private ApplicationContext ctx;
-
+    
     @Autowired
     private IProcessingRequestService processingRequestService;
-
+    
     private Map<String, RequestProcessor<? extends IRequest>> requestProcessors;
 
     @Autowired
     private ISystemMessageHandler messageHandler;
     
-    private ObjectMapper mapper;
-
     @PostConstruct
     public void init() {
         requestProcessors = new HashMap<String, RequestProcessor<? extends IRequest>>();
         Map<String, RequestProcessor> ctxMap = ctx.getBeansOfType(RequestProcessor.class);
         Iterator<Entry<String, RequestProcessor>> iter = ctxMap.entrySet().iterator();
-
-        while (iter.hasNext()) {
+        
+        while(iter.hasNext()){
             Entry<String, RequestProcessor> entry = iter.next();
             requestProcessors.put(entry.getValue().getProcessedTopic(), entry.getValue());
         }
-        mapper = new ObjectMapper();
     }
-
+   
     @Transactional("transactionManager")
     @KafkaListener(id="giles.listener", topics = {"${topic_storage_request_complete}", "${topic_image_extraction_request_complete}", "${topic_orc_request_complete}", "${topic_text_extraction_request_complete}", "${topic_completion_notification}"})
     public void receiveMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-
+        
         RequestProcessor<? extends IRequest> processor = requestProcessors.get(topic);
         // no registered processor
         if (processor == null) {
             return;
         }
-
+        
+        ObjectMapper mapper = new ObjectMapper();
+        
         IRequest request = null;
         try {
             request = mapper.readValue(message, processor.getRequestClass());
@@ -71,7 +70,7 @@ public class KafkaProcessingListener {
             // FIXME: handle this case
             return;
         }
-
+        
         processingRequestService.addReceivedRequest(request);
         processor.handleRequest(request);
     }

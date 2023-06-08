@@ -29,4 +29,5 @@ public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
     List<IUpload> getUploads();
 
     List<IUpload> getUploads(int page, int pageSize, String sortBy, int sortDirection);
+
 }

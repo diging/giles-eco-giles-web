@@ -92,11 +92,6 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
     }
     
     @Override
-    public void deleteDocument(String documentId) {
-        em.remove(getDocumentById(documentId));
-    }
-    
-    @Override
     public IDocument getDocumentByRequestId(String requestId) {
         List<IDocument> documents = searchByProperty("requestId", requestId, Document.class);
         if (documents != null && !documents.isEmpty()) {

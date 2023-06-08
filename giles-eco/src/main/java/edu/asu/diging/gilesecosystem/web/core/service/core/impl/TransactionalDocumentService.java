@@ -81,7 +81,8 @@ public class TransactionalDocumentService implements ITransactionalDocumentServi
     
     @Override
     public void deleteDocument(String documentId) {
-        documentDatabaseClient.deleteDocument(documentId);
+        IDocument document = getDocument(documentId);
+        documentDatabaseClient.delete(document);
     }
     
     @Override
