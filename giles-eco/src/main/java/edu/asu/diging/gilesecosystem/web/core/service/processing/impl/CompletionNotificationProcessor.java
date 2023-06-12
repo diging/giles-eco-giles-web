@@ -59,7 +59,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             document.setTasks(new ArrayList<ITask>());
         }
         // if there was a new file created
-        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isImageExtracted());
+        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
         
         
         if (request.getPages() != null && !request.getPages().isEmpty()) {
@@ -77,12 +77,12 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                 }
                 document.getPages().add(documentPage);
                 
-                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.isImageExtracted());  
+                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.isDerivedFile());  
                 if (additionalFile != null) {
                     documentPage.getAdditionalFileIds().add(additionalFile.getId());
                 }
                 for (PageElement element : page.getPageElements()) {
-                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.isImageExtracted());
+                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.isDerivedFile());
                     if (elementFile != null) {
                         documentPage.getAdditionalFileIds().add(elementFile.getId());
                     }
@@ -108,7 +108,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         return pageMap;
     }
 
-    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename, boolean imageExtracted) {
+    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename, boolean derivedFile) {
         // if there was a new file created
         if (downloadUrl != null && !downloadUrl.isEmpty()) {
             IFile additionalFile = createFile(file, document, contentType, size, filename, REQUEST_PREFIX);
@@ -130,8 +130,8 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                     fileType = FileType.PDF;
                 }
             }
-            if (fileType.equals(FileType.IMAGE) && imageExtracted) {
-                sendStorageRequest(additionalFile, "", downloadUrl, fileType, imageExtracted);
+            if (derivedFile) {
+                sendStorageRequest(additionalFile, "", downloadUrl, fileType, derivedFile);
             } else {
                 sendStorageRequest(additionalFile, "", downloadUrl, fileType);
             }

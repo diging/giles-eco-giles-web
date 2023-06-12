@@ -45,7 +45,7 @@ public class RequestHelper {
     }
     
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
-            FileType filetype, String requestId, boolean imageExtracted) throws GilesProcessingException {
+            FileType filetype, String requestId, boolean derivedFile) throws GilesProcessingException {
         IStorageRequest request = null;
         try {
             request = requestFactory.createRequest(requestId, file.getUploadId());
@@ -60,7 +60,7 @@ public class RequestHelper {
         request.setUploadDate(file.getUploadDate());
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
-        request.setImageExtracted(imageExtracted);
+        request.setDerivedFile(derivedFile);
         return request;
     }
     
