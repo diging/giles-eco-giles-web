@@ -119,14 +119,14 @@ public class ViewDocumentController {
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap);
+                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap, true);
             docBean.setUploadedFile(bean);
         }
 
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap);
+                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap, true);
             docBean.setExtractedTextFile(bean);
         }
         
@@ -150,7 +150,7 @@ public class ViewDocumentController {
             IFile imageFile = pageFiles.get(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean pageBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks(), additionalFilesMap, true);
                 bean.setImageFile(pageBean);
 
             }
@@ -158,14 +158,14 @@ public class ViewDocumentController {
             IFile pageTextFile = pageFiles.get(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap, true);
                 bean.setTextFile(textBean);
             }
 
             IFile ocrFile = pageFiles.get(page.getOcrFileId());
             if (ocrFile != null) {
                 FilePageBean ocrBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks(), additionalFilesMap, true);
                 bean.setOcrFile(ocrBean);
             }
         }
@@ -176,19 +176,22 @@ public class ViewDocumentController {
     private FilePageBean createFilePageBean(
             IGilesMappingService<IFile, FilePageBean> fileMappingService,
             Map<String, List<IProcessingRequest>> requestsByFileId,
-            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks, Map<String, IFile> additionalFiles)
+            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents)
             throws GilesMappingException {
         FilePageBean pageBean = fileMappingService.convertToT2(file, new FilePageBean());
         pageBean.setMetadataLink(metadataService.getFileLink(file));
         setRequestStatus(pageBean, requestsByFileId);
         pageBean.setBadges(badgesByFile.get(pageBean.getId()));
-        addAdditionalFiles(pageBean, tasks, requestsByFileId, additionalFiles);
+        addAdditionalFiles(pageBean, tasks, requestsByFileId, additionalFiles, ignoreFilesByNonCoreComponents);
         return pageBean;
     }
 
     private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, 
-            Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles) {
+            Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents) {
         tasks.forEach(t -> {
+            if (ignoreFilesByNonCoreComponents && !t.getTaskHandlerId().isEmpty()) {
+                return;
+            }
             IFile additionalFile = additionalFiles.get(t.getResultFileId());
             if (additionalFile != null) {   
                 if (bean.getId().equals(additionalFile.getDerivedFrom())) {
