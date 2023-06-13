@@ -189,6 +189,7 @@ public class ViewDocumentController {
     private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, 
             Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents) {
         tasks.forEach(t -> {
+            // if ignoreFilesByNonCoreComponents is true and since only tasks by non core componets have taskHandlerId set we dont add additional files as createAdditionalFileBean is already called for the page above.
             if (ignoreFilesByNonCoreComponents && !t.getTaskHandlerId().isEmpty()) {
                 return;
             }
