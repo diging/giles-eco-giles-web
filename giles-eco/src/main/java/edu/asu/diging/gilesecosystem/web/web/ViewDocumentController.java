@@ -63,6 +63,8 @@ public class ViewDocumentController {
 
     @Autowired
     private IPropertiesManager propertiesManager;
+    
+    private final static List<String> SERVICES_TO_IGNORE_ADDITIONAL_FILES_FOR_ORIG_FILE = List.of("imogen", "ocr"); 
 
     @AccountCheck
     @DocumentIdAccessCheck
@@ -119,14 +121,14 @@ public class ViewDocumentController {
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap, true);
+                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap, false);
             docBean.setUploadedFile(bean);
         }
 
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap, true);
+                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap, false);
             docBean.setExtractedTextFile(bean);
         }
         
@@ -158,7 +160,7 @@ public class ViewDocumentController {
             IFile pageTextFile = pageFiles.get(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap, true);
+                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap, false);
                 bean.setTextFile(textBean);
             }
 
@@ -190,7 +192,7 @@ public class ViewDocumentController {
             Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents) {
         tasks.forEach(t -> {
             // if ignoreFilesByNonCoreComponents is true and since only tasks by non core componets have taskHandlerId set we dont add additional files as createAdditionalFileBean is already called for the page above.
-            if (ignoreFilesByNonCoreComponents && !t.getTaskHandlerId().isEmpty()) {
+            if ((ignoreFilesByNonCoreComponents || SERVICES_TO_IGNORE_ADDITIONAL_FILES_FOR_ORIG_FILE.contains(t.getTaskHandlerId())) && !t.getTaskHandlerId().isEmpty()) {
                 return;
             }
             IFile additionalFile = additionalFiles.get(t.getResultFileId());
