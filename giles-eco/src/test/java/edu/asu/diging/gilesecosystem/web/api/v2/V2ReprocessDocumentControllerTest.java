@@ -57,7 +57,7 @@ public class V2ReprocessDocumentControllerTest {
     private String UPLOAD_PROGRESS_ID = "uploadProgressId";
     private CitesphereToken citesphereToken = new CitesphereToken("71b9cc36-939d-4e28-89e9-e5bfca1b26c3");
     
-    IDocument document;
+    private IDocument document;
     
     @Before
     public void setUp() {
@@ -88,7 +88,7 @@ public class V2ReprocessDocumentControllerTest {
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("errorMsg", "User is not authorized to check status.");
         msgs.put("errorCode", "401");
-        Mockito.when(userHelper.generateUnauthorizedUserResponse()).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.UNAUTHORIZED));
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.UNAUTHORIZED));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID, citesphereToken);
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         Assert.assertEquals(msgs.toString(), response.getBody());

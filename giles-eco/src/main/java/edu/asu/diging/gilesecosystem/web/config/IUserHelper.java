@@ -23,11 +23,4 @@ public interface IUserHelper {
         @return {@code true} if the user has permission to access the document, {@code false} otherwise.
     */
     public abstract boolean checkUserPermission(IDocument document, CitesphereToken citesphereToken);
-    
-    /**
-        Generates a ResponseEntity with an unauthorized status code (401) and a corresponding error message.
-        @return The generated ResponseEntity containing the unauthorized error message.
-    */
-    public abstract ResponseEntity<String> generateUnauthorizedUserResponse();
-
 }

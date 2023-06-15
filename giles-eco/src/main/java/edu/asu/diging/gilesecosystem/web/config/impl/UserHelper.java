@@ -70,12 +70,4 @@ public class UserHelper implements IUserHelper {
 
         return username.equals(usernameInSystem);
     }
-
-    @Override
-    public ResponseEntity<String> generateUnauthorizedUserResponse() {
-        Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-        unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
-        unauthorizedMsgs.put("errorCode", "401");
-        return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED);
-    }
 }

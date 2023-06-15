@@ -17,12 +17,15 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 
+/**
+A helper class that generates HTTP responses with JSON content.
+*/
 @Component
 public class ResponseHelper implements IResponseHelper {
     
     @Autowired
     private ISystemMessageHandler messageHandler;
-    
+
     @Override
     public ResponseEntity<String> generateResponse(Map<String, String> msgs,
             HttpStatus status) {

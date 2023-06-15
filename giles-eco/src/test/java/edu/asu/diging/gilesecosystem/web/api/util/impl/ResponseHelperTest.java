@@ -36,4 +36,11 @@ public class ResponseHelperTest {
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assert.assertTrue(response.getBody().contains("\"id\" : \"DOC12345\""));
     }
+    
+    @Test
+    public void test_generateResponse_whenPassingEmptyMessage() {
+        Map<String, String> msgs = new HashMap<String, String>();
+        ResponseEntity<String> response = responseHelper.generateResponse(msgs, HttpStatus.OK);
+        Assert.assertEquals("{ }", response.getBody());
+    }
 }
