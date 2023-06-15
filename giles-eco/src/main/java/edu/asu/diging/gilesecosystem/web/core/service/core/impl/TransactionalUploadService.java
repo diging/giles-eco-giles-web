@@ -124,10 +124,10 @@ public class TransactionalUploadService implements ITransactionalUploadService {
         upload.setUploadingApp(uploadingApp);
         return upload;
     }
-    
+
     @Override
     public void deleteUpload(String uploadId) {
-        uploadDatabaseClient.deleteUpload(uploadId);
+        IUpload upload = getUpload(uploadId);
+        uploadDatabaseClient.delete(upload);
     }
-
 }

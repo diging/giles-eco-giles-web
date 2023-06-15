@@ -103,7 +103,6 @@ public class DeleteDocumentServiceTest {
         files.add(file2);
         storageDeletionRequest1 = createStorageDeletionRequest(REQUEST_ID_1, UPLOAD_ID);
         MockitoAnnotations.initMocks(this);
-        Mockito.when(fileService.getFilesByDocumentId(DOCUMENT_ID)).thenReturn(files);
         Mockito.when(propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST)).thenReturn("request_storage_deletion_topic");
         Mockito.when(requestFactory.createRequest(Mockito.anyString(), Mockito.anyString())).thenReturn(storageDeletionRequest1);
     }

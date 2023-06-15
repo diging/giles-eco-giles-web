@@ -8,12 +8,12 @@ public interface IDeleteDocumentService {
      * @param document
      *         The document to be deleted.
      */
-    public abstract void deleteDocument(IDocument document);
+    void deleteDocument(IDocument document);
     
     /**
      * Handles the deletion of the document and upload once nepomuk has deleted all the files.
      * @param document
      *         The document to be deleted.
      */
-    public abstract void deleteDocumentAfterStorageDeletion(IDocument document);
+    void deleteDocumentAfterStorageDeletion(IDocument document);
 }

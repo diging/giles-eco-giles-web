@@ -24,8 +24,9 @@ import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 
 @Entity
 @Table(indexes={
-        @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
-        @Index(columnList="username", name="IDX_USERNAME")
+    @Index(columnList="uploadId", name="IDX_UPLOAD_ID"),
+    @Index(columnList="username", name="IDX_USERNAME"),
+    @Index(columnList="requestId", name="IDX_REQUEST_ID")
 })
 public class Document implements IDocument {
 
@@ -53,6 +54,8 @@ public class Document implements IDocument {
     @LazyCollection(LazyCollectionOption.FALSE) 
     @JoinTable(name="Document_Task")
     private List<ITask> tasks;
+    
+    private String requestId;
 
     /*
      * (non-Javadoc)
@@ -257,5 +260,15 @@ public class Document implements IDocument {
     @Override
     public void setTasks(List<ITask> tasks) {
         this.tasks = tasks;
+    }
+    
+    @Override
+    public String getRequestId() {
+        return requestId;
+    }
+
+    @Override
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }

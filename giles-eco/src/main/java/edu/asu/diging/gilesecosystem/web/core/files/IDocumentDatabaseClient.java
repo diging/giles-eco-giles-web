@@ -15,11 +15,12 @@ public interface IDocumentDatabaseClient extends IDatabaseClient<IDocument> {
     public abstract List<IDocument> getDocumentByUploadId(String uploadId);
 
     public abstract List<IDocument> getDocumentsByUsername(String username);
-
+    
     /**
-     * Delete a document given the document ID.
-     * @param documentId 
-     *         ID of the document to be deleted
+     * Retrieves a document by its request ID.
+     *
+     * @param requestId The unique identifier of the request.
+     * @return The document associated with the specified request ID, or null if no document is found.
      */
-    public abstract void deleteDocument(String documentId);
+    public abstract IDocument getDocumentByRequestId(String requestId);
 }

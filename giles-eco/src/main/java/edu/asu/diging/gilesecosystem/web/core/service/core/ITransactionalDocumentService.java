@@ -35,5 +35,4 @@ public interface ITransactionalDocumentService {
      *         The prefix for the type of request.
      */
     public abstract String generateRequestId(String prefix);
-
 }

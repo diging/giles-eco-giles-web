@@ -140,10 +140,5 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     protected EntityManager getClient() {
        return em;
     }
-    
-    @Override
-    public void deleteUpload(String uploadId) {
-        em.remove(getById(uploadId));
-    }
 
 }

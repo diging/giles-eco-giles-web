@@ -9,7 +9,7 @@
 
     <properties>
         <geco.giles.version>0.4-SNAPSHOT</geco.giles.version>
-        <java-version>1.8</java-version>
+        <java-version>11</java-version>
         <org.springframework-version>5.3.0</org.springframework-version>
         <spring-data.version>Neumann-SR5</spring-data.version>
         <spring-security-version>5.5.7</spring-security-version>
@@ -18,7 +18,7 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.12.7</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.13</geco.requests.version>
+        <geco.requests.version>0.15</geco.requests.version>
         <geco.util.version>0.6</geco.util.version>
         <geco.september.util.version>0.3</geco.september.util.version>
         <geco.kafka-util.version>0.2</geco.kafka-util.version>
@@ -27,8 +27,8 @@
         <tomcat.app.name>geco-giles</tomcat.app.name>
         <tomcat.server.id>TomcatServer</tomcat.server.id>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
 
         <!-- application properties -->
         <giles.base.url>http://localhost:8080/giles</giles.base.url>
@@ -238,7 +238,11 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
         </dependency>
-
+        <dependency>
+    		<groupId>javax.servlet.jsp</groupId>
+    		<artifactId>javax.servlet.jsp-api</artifactId>
+    		<version>2.2.1</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>

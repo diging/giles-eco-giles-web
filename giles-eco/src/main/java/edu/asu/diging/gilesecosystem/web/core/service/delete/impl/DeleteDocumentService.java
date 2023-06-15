@@ -22,8 +22,10 @@ import edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
@@ -43,9 +45,6 @@ import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 public class DeleteDocumentService implements IDeleteDocumentService {
     
     public final static String REQUEST_PREFIX = "DELREQ";
-    
-    @Autowired
-    private IFilesManager filesManager;
     
     @Autowired
     private IRequestFactory<IStorageDeletionRequest, StorageDeletionRequest> requestFactory;
@@ -101,7 +100,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             IRequest storageDeletionRequest = createRequest(document);
             requestProducer.sendRequest(storageDeletionRequest, getTopic());
         } catch (GilesProcessingException | MessageCreationException e) {
-          messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
+            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
         }
     }
     
@@ -111,7 +110,6 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         processDeleteProcessingRequestsOfDocument(document);
         documentService.deleteDocument(document.getId());
         processDeleteUploadOfDocument(document.getUploadId());
-        
     }
     
     private void processDeleteProcessingRequestsOfDocument(IDocument document) {
@@ -119,10 +117,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     }
     
     private void processDeleteFilesOfDocument(IDocument document) {
-        List<IFile> files = fileService.getFilesByDocumentId(document.getId());
-        for(IFile file : files) {
-            filesManager.deleteFile(file.getId());
-        }
+        fileService.deleteFiles(document.getId());
     }
     
     private void processDeleteUploadOfDocument(String uploadId) {
@@ -135,7 +130,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     private IRequest createRequest(IDocument document) throws GilesProcessingException {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
-            storageDeletionRequest = requestFactory.createRequest(documentService.generateRequestId(REQUEST_PREFIX), document.getUploadId());
+            String requestId = documentService.generateRequestId(REQUEST_PREFIX);
+            storeRequestId(requestId, document);
+            storageDeletionRequest = requestFactory.createRequest(requestId, document.getUploadId());
             storageDeletionRequest.setDocumentId(document.getId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
@@ -145,5 +142,14 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
+    }
+    
+    private void storeRequestId(String requestId, IDocument document) {
+        document.setRequestId(requestId);
+        try {
+            documentService.saveDocument(document);
+        } catch (UnstorableObjectException e) {
+            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
+        }
     }
 }

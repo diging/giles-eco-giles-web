@@ -6,6 +6,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -76,11 +79,10 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     
     @Override
     public void deleteProcessingRequestsForDocumentId(String documentId) {
-        TypedQuery<IProcessingRequest> query = getClient().createQuery("SELECT t FROM " + IProcessingRequest.class.getName()  + " t WHERE t.documentId = '" + documentId + "'", IProcessingRequest.class);
-        List<IProcessingRequest> requests = query.getResultList();
-        for (IProcessingRequest request : requests) {
-            delete(request);
-        }
+        CriteriaBuilder builder = getClient().getCriteriaBuilder();
+        CriteriaDelete<ProcessingRequest> deleteQuery = builder.createCriteriaDelete(ProcessingRequest.class);
+        Root<ProcessingRequest> root = deleteQuery.from(ProcessingRequest.class);
+        deleteQuery.where(builder.equal(root.get("documentId"), documentId));
+        getClient().createQuery(deleteQuery).executeUpdate();
     }
-
 }
