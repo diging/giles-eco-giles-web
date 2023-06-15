@@ -210,13 +210,16 @@ public class ViewDocumentController {
                 
         
         List<IProcessingRequest> reqs = requestsByFileId.get(additionalFileBean.getFileId());
-        // for now we are going to assume additional files are only being stored
-        for (IProcessingRequest req : reqs) {
-            if (req.getSentRequest() instanceof StorageRequest) {
-                additionalFileBean.setStatus(req.getRequestStatus());
+        
+        // adding the check since we delete all processing requests before reprocessing.
+        if (reqs != null) {
+            for (IProcessingRequest req : reqs) {
+                if (req.getSentRequest() instanceof StorageRequest) {
+                    additionalFileBean.setStatus(req.getRequestStatus());
+                }
             }
         }
-        
+        // for now we are going to assume additional files are only being stored
         if (bean.getAdditionalFiles().get(t.getTaskHandlerId()) == null) {
             bean.getAdditionalFiles().put(t.getTaskHandlerId(), new ArrayList<>()); 
         }
