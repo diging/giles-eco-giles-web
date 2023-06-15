@@ -219,7 +219,6 @@ public class ViewDocumentController {
                 }
             }
         }
-        // for now we are going to assume additional files are only being stored
         if (bean.getAdditionalFiles().get(t.getTaskHandlerId()) == null) {
             bean.getAdditionalFiles().put(t.getTaskHandlerId(), new ArrayList<>()); 
         }
