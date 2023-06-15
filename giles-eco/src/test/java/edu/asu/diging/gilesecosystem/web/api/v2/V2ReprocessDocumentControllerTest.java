@@ -86,7 +86,7 @@ public class V2ReprocessDocumentControllerTest {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
         Mockito.when(userHelper.checkUserPermission(document, citesphereToken)).thenReturn(false);
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("errorMsg", "User is not authorized to check status.");
+        msgs.put("errorMsg", "User is not authorized to reprocess the document.");
         msgs.put("errorCode", "401");
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.UNAUTHORIZED));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID, citesphereToken);
