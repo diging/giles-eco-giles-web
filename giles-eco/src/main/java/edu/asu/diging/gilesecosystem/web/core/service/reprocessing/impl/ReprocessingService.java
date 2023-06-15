@@ -92,6 +92,7 @@ public class ReprocessingService implements IReprocessingService {
             messageHandler.handleMessage("Could not store uploaded files.", e, MessageType.ERROR);
         }
     }
+
     /**
      * This method returns the storage information of the already created document.
      * @param document - document for which we need the storage information
@@ -113,6 +114,7 @@ public class ReprocessingService implements IReprocessingService {
         info.setUpload(uploadDatabaseClient.getUpload(document.getUploadId()));
         return info;
     }
+
     /**
      * This method marks all the files of the document as unprocessed.
      * @param document - document whose file's status needs to be changed to unprocessed

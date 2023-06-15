@@ -248,5 +248,5 @@ public class FilesManager implements IFilesManager {
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
     }
-    
+ 
 }

@@ -49,5 +49,5 @@ public interface IFilesManager {
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
     
     public abstract void changeFileProcessingStatus(IFile file, ProcessingStatus status);
-    
+
 }

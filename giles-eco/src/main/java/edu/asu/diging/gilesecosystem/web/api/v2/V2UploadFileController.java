@@ -104,7 +104,7 @@ public class V2UploadFileController {
             Map<String, String> msgs = new HashMap<String, String>();
             msgs.put("errorMsg", "Access type: " + access + " does not exist.");
             msgs.put("errorCode", "400");
-            
+
             return responseHelper.generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
 
