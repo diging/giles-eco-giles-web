@@ -2,13 +2,18 @@ package edu.asu.diging.gilesecosystem.web.core.service.reprocessing.impl;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.core.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IUploadDatabaseClient;
@@ -17,9 +22,11 @@ import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
+import edu.asu.diging.gilesecosystem.web.core.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.impl.StorageRequestProcessingInfo;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
@@ -53,6 +60,21 @@ public class ReprocessingService implements IReprocessingService {
     @Autowired
     private ProcessingRequestRepository processingRequestRepository;
     
+    @Autowired
+    private IFileContentHelper filesHelper;
+    
+    @Autowired
+    @Qualifier("tmpStorageManager") 
+    private IFileStorageManager storageManager;
+    
+    @Autowired
+    private IPropertiesManager propertyManager;
+    
+    @PostConstruct
+    public void init() {
+        storageManager.setBaseDirectory(propertyManager.getProperty(Properties.GILES_TMP_FOLDER));
+    }
+    
     /**
      * This method initiates the reprocessing of the document by marking the files as unprocessed and calling the process coordinator.
      * @param document - document which needs to be reprocessed
@@ -79,7 +101,11 @@ public class ReprocessingService implements IReprocessingService {
         IFile file = fileService.getFileById(document.getUploadedFileId());
         User user = userManager.findUser(file.getUsername());
         StorageRequestProcessingInfo info = new StorageRequestProcessingInfo();
-        info.setContent(filesManager.getFileContent(file));
+        byte[] content = filesManager.getFileContent(file);
+        if (content == null) {
+            content = filesHelper.getFileContent(file, storageManager);
+        }
+        info.setContent(content);
         info.setDocument(document);
         info.setFile(file);
         info.setProvider(user.getProvider());

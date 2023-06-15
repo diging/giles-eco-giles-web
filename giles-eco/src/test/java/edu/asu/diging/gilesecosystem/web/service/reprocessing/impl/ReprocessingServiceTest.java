@@ -14,7 +14,9 @@ import org.mockito.MockitoAnnotations;
 
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
+import edu.asu.diging.gilesecosystem.web.core.files.IFileStorageManager;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IUploadDatabaseClient;
@@ -29,9 +31,11 @@ import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
+import edu.asu.diging.gilesecosystem.web.core.service.IFileContentHelper;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.IProcessingCoordinator;
 import edu.asu.diging.gilesecosystem.web.core.service.processing.impl.StorageRequestProcessingInfo;
+import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.impl.ReprocessingService;
 import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
@@ -62,6 +66,15 @@ public class ReprocessingServiceTest {
     
     @Mock
     private IUploadDatabaseClient uploadDatabaseClient;
+    
+    @Mock
+    private IFileStorageManager storageManager;
+    
+    @Mock
+    private IPropertiesManager propertyManager;
+    
+    @Mock
+    private IFileContentHelper filesHelper;
     
     @InjectMocks
     private IReprocessingService reprocessingService;
@@ -95,11 +108,23 @@ public class ReprocessingServiceTest {
         Mockito.when(procReqDbClient.getRequestByDocumentId(document.getId())).thenReturn(Arrays.asList(request));
         Mockito.when(userManager.findUser(file.getUsername())).thenReturn(user);
         Mockito.when(uploadDatabaseClient.getUpload(document.getUploadId())).thenReturn(upload);
+        Mockito.when(propertyManager.getProperty(Properties.GILES_TMP_FOLDER)).thenReturn("/Users/diyabiju/Desktop/Dig/Giles/uploaded");
+        Mockito.when(filesManager.getFileContent(file)).thenReturn(new byte[0]);
     }
     
     @Test
-    public void test_reprocessDocument_success() {
+    public void test_reprocessDocument_success_whenContentIsNull() {
+        Mockito.when(filesManager.getFileContent(file)).thenReturn(null);
         reprocessingService.reprocessDocument(document);
+        Mockito.verify(filesHelper, times(1)).getFileContent(file, storageManager);
+        Mockito.verify(filesManager, times(1)).changeFileProcessingStatus(file, ProcessingStatus.UNPROCESSED);
+        Mockito.verify(processingRequestRepository, times(1)).deleteById(PROCESSING_REQUEST_ID);
+    }
+    
+    @Test
+    public void test_reprocessDocument_success_whenContentIsPresentInNepomuk() {
+        reprocessingService.reprocessDocument(document);
+        Mockito.verify(filesHelper, times(0)).getFileContent(file, storageManager);
         Mockito.verify(filesManager, times(1)).changeFileProcessingStatus(file, ProcessingStatus.UNPROCESSED);
         Mockito.verify(processingRequestRepository, times(1)).deleteById(PROCESSING_REQUEST_ID);
     }
