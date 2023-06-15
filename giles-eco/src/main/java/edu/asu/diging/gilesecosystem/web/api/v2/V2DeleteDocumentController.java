@@ -54,7 +54,10 @@ public class V2DeleteDocumentController {
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
         if (!userHelper.checkUserPermission(document, citesphereToken)) {
-            return userHelper.generateUnauthorizedUserResponse();
+            Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
+            unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document.");
+            unauthorizedMsgs.put("errorCode", "401");
+            return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED);
         }
         deleteDocumentService.deleteDocument(document);
         msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + checkDeleteEndpoint + documentId);
@@ -72,7 +75,10 @@ public class V2DeleteDocumentController {
             return responseHelper.generateResponse(successMsgs, HttpStatus.OK);
         }
         if (!userHelper.checkUserPermission(document, citesphereToken)) {
-            return userHelper.generateUnauthorizedUserResponse();
+            Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
+            unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
+            unauthorizedMsgs.put("errorCode", "401");
+            return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED);
         }
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");

@@ -142,16 +142,6 @@ public class UserHelperTest {
         Assert.assertFalse(helperToTest.checkUserPermission(document, citesphereToken));
     }
     
-    @Test
-    public void test_generateUnauthorizedUserResponse() {
-        Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-        unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
-        unauthorizedMsgs.put("errorCode", "401");
-        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
-        ResponseEntity<String> response = helperToTest.generateUnauthorizedUserResponse();
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-    }
-    
     private Document createDocument(String username) {
         Document document = new Document();
         document.setId(DOCUMENT_ID);
@@ -161,26 +151,5 @@ public class UserHelperTest {
         document.setUploadedFileId(FILE_ID);
         document.setUsername(username);
         return document;
-    }
-    
-    private ResponseEntity<String> generateResponse(Map<String, String> msgs,
-            HttpStatus status) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        ObjectNode root = mapper.createObjectNode();
-        for (String key : msgs.keySet()) {
-            root.put(key, msgs.get(key));
-        }
-
-        StringWriter sw = new StringWriter();
-        try {
-            mapper.writeValue(sw, root);
-        } catch (IOException e) {
-            return new ResponseEntity<String>(
-                    "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(sw.toString(), status);
     }
 }

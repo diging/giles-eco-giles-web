@@ -83,9 +83,9 @@ public class V2DeleteDocumentControllerTest {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
         Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-        unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
+        unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document.");
         unauthorizedMsgs.put("errorCode", "401");      
-        Mockito.when(userHelper.generateUnauthorizedUserResponse()).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
         ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -128,8 +128,8 @@ public class V2DeleteDocumentControllerTest {
         Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
         unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
-        unauthorizedMsgs.put("errorCode", "401");      
-        Mockito.when(userHelper.generateUnauthorizedUserResponse()).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
+        unauthorizedMsgs.put("errorCode", "401");
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
         ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
