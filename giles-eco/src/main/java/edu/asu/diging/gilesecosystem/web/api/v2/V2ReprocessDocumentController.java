@@ -57,7 +57,7 @@ public class V2ReprocessDocumentController {
         }
         if (!userHelper.checkUserPermission(document, citesphereToken)) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-            unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
+            unauthorizedMsgs.put("errorMsg", "User is not authorized to reprocess the document.");
             unauthorizedMsgs.put("errorCode", "401");
             return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED);
         }
