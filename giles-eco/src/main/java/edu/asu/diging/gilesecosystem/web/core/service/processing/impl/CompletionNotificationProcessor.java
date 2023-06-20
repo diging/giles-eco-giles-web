@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -51,17 +52,24 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
     @Override
     public void processRequest(ICompletionNotificationRequest request) {
         IDocument document = documentService.getDocument(request.getDocumentId());
-        
         IFile file = filesService.getFileById(request.getFileId());
         String fileDownloadUrl = request.getDownloadUrl();
-        
         if (document.getTasks() == null) {
             document.setTasks(new ArrayList<ITask>());
         }
         // if there was a new file created
-        saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
-        
-        
+        IFile newFile = saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
+        System.out.println(request.getNotifier());
+        System.out.println(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID));
+        if (request.getNotifier().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID))) {
+            System.out.println(file.getId());
+            Optional<IPage> optionalPage = document.getPages().stream().filter(page -> page != null && page.getImageFileId() != null && page.getImageFileId().equals(file.getId())).findFirst();
+            if (optionalPage.isPresent()) {
+                IPage page = optionalPage.get();
+                System.out.println(page.getPageNr());
+                page.getAdditionalFileIds().add(newFile.getId());
+            }
+        }
         if (request.getPages() != null && !request.getPages().isEmpty()) {
             Map<Integer, IPage> pageMap = getPageMap(document);
             for (Page page : request.getPages()) {
@@ -87,18 +95,15 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                         documentPage.getAdditionalFileIds().add(elementFile.getId());
                     }
                 }
-                
-               
             }
         }
-        
         try {
             documentService.saveDocument(document);
         } catch (UnstorableObjectException e) {
             // should never happen
             messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
-     }
+    }
     
     private Map<Integer, IPage> getPageMap(IDocument doc) {
         Map<Integer, IPage> pageMap = new HashMap<>();

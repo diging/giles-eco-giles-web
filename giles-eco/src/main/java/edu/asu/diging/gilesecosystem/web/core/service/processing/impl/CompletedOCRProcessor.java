@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -73,40 +74,44 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
-        
-        // we are looking for the image that was ocred
-        IPage documentPage = pages.get(request.getFilename());
-        if (documentPage != null) {
-            documentPage.setOcrFileId(textFile.getId());
-            if (request.getStatus() != null) {
-                documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
-            } else {
-                documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+        Optional<ITask> optionalTask = document.getTasks().stream().filter(task -> task != null && task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID)) && task.getResultFileId().equals(request.getFileId())).findFirst();
+        System.out.println(request.getFileId());
+        System.out.println(optionalTask.isPresent());
+        System.out.println(document.getUploadedFileId().equals(request.getFileId()));
+        if (!document.getUploadedFileId().equals(request.getFileId())) {
+            if (!optionalTask.isPresent()) {
+                // we are looking for the image that was ocred
+                IPage documentPage = pages.get(request.getFilename());
+                if (documentPage != null) {
+                    documentPage.setOcrFileId(textFile.getId());
+                    if (request.getStatus() != null) {
+                        documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+                    } else {
+                        documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+                    }
+                    documentPage.setOcrFileErrorMsg(request.getErrorMsg());
+                } else {
+                    // maybe its an ocr of an additional file
+                    documentPage = additionalFilesPagesMap.get(request.getFilename());
+                    if (documentPage == null) {
+                        documentPage = new Page();
+                        document.getPages().add(documentPage);
+                        documentPage.setDocument(document);
+                    }
+                    if (documentPage.getAdditionalFileIds() == null) {
+                        documentPage.setAdditionalFileIds(new ArrayList<>());
+                    }
+                    documentPage.getAdditionalFileIds().add(textFile.getId());
+                }
             }
-            documentPage.setOcrFileErrorMsg(request.getErrorMsg());
-        } else {
-            // maybe its an ocr of an additional file
-            documentPage = additionalFilesPagesMap.get(request.getFilename());
-            if (documentPage == null) {
-                documentPage = new Page();
-                document.getPages().add(documentPage);
-                documentPage.setDocument(document);
-            }
-            if (documentPage.getAdditionalFileIds() == null) {
-                documentPage.setAdditionalFileIds(new ArrayList<>());
-            }
-            documentPage.getAdditionalFileIds().add(textFile.getId());
-            
-            ITask task = new Task();
-            task.setFileId(file.getId());
-            task.setStatus(request.getStatus());
-            task.setTaskHandlerId(OCR_PROVIDER_ID);
-            task.setResultFileId(textFile.getId());
-            
-            document.getTasks().add(task);
         }
+        ITask task = new Task();
+        task.setFileId(file.getId());
+        task.setStatus(request.getStatus());
+        task.setTaskHandlerId(OCR_PROVIDER_ID);
+        task.setResultFileId(textFile.getId());
         
-        
+        document.getTasks().add(task);
         if (request.getDownloadPath() != null && !request.getDownloadPath().isEmpty()
                 && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty() && request.getStatus() != RequestStatus.FAILED) {
             request.setStatus(RequestStatus.COMPLETE);
