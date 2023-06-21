@@ -59,8 +59,6 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         }
         // if there was a new file created
         IFile newFile = saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
-        System.out.println(request.getNotifier());
-        System.out.println(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID));
         if (request.getNotifier().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID))) {
             System.out.println(file.getId());
             Optional<IPage> optionalPage = document.getPages().stream().filter(page -> page != null && page.getImageFileId() != null && page.getImageFileId().equals(file.getId())).findFirst();

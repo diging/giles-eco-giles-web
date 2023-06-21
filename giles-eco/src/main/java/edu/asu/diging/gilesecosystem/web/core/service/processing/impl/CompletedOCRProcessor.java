@@ -78,31 +78,32 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         System.out.println(request.getFileId());
         System.out.println(optionalTask.isPresent());
         System.out.println(document.getUploadedFileId().equals(request.getFileId()));
-        if (!document.getUploadedFileId().equals(request.getFileId())) {
-            if (!optionalTask.isPresent()) {
-                // we are looking for the image that was ocred
-                IPage documentPage = pages.get(request.getFilename());
-                if (documentPage != null) {
-                    documentPage.setOcrFileId(textFile.getId());
-                    if (request.getStatus() != null) {
-                        documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
-                    } else {
-                        documentPage.setOcrFileStatus(PageStatus.COMPLETE);
-                    }
-                    documentPage.setOcrFileErrorMsg(request.getErrorMsg());
+        if (!document.getUploadedFileId().equals(request.getFileId()) && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+            // we are looking for the image that was ocred
+            IPage documentPage = pages.get(request.getFilename());
+            if (documentPage != null) {
+                documentPage.setOcrFileId(textFile.getId());
+                if (request.getStatus() != null) {
+                    documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
                 } else {
-                    // maybe its an ocr of an additional file
-                    documentPage = additionalFilesPagesMap.get(request.getFilename());
-                    if (documentPage == null) {
-                        documentPage = new Page();
-                        document.getPages().add(documentPage);
-                        documentPage.setDocument(document);
-                    }
+                    documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+                }
+                documentPage.setOcrFileErrorMsg(request.getErrorMsg());
+            } else {
+                // maybe its an ocr of an additional file
+                documentPage = additionalFilesPagesMap.get(request.getFilename());
+                if (documentPage == null && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+                    documentPage = new Page();
+                    document.getPages().add(documentPage);
+                    documentPage.setDocument(document);
+                }
+                if (documentPage != null) {
                     if (documentPage.getAdditionalFileIds() == null) {
                         documentPage.setAdditionalFileIds(new ArrayList<>());
                     }
                     documentPage.getAdditionalFileIds().add(textFile.getId());
                 }
+                
             }
         }
         ITask task = new Task();

@@ -1,12 +1,14 @@
 package edu.asu.diging.gilesecosystem.web.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -63,14 +65,14 @@ public class ViewDocumentController {
 
     @Autowired
     private IPropertiesManager propertiesManager;
-    
-    private final static List<String> SERVICES_TO_IGNORE_ADDITIONAL_FILES_FOR_ORIG_FILE = List.of("imogen", "ocr"); 
 
     @AccountCheck
     @DocumentIdAccessCheck
     @RequestMapping(value = {"/documents/{docId}"}, method = RequestMethod.GET)
     public String showDocument(@PathVariable String docId, Model model, Locale locale)
             throws GilesMappingException {
+        List<String> nonCoreComponentsToIgnoreForOriginalFile = Arrays.asList(propertiesManager.getProperty(Properties.NON_CORE_COMPONENTS_TO_IGNORE_FOR_ORIGINAL_PDF_FILE).split(","));
+        List<String> nonCoreComponents = Arrays.asList(propertiesManager.getProperty(Properties.NON_CORE_COMPONENTS).split(","));
         IDocument doc = documentService.getDocument(docId);
 
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
@@ -80,6 +82,7 @@ public class ViewDocumentController {
         DocumentPageBean docBean = docMappingService.convertToT2(doc,
                 new DocumentPageBean());
         model.addAttribute("document", docBean);
+
         List<IProcessingRequest> procRequests = procReqDbClient
                 .getRequestByDocumentId(doc.getId());
         Map<String, List<IProcessingRequest>> requestsByFileId = new HashMap<String, List<IProcessingRequest>>();
@@ -117,18 +120,26 @@ public class ViewDocumentController {
         });
         Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
         
-        
+        List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && task.getTaskHandlerId() != propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID)).collect(Collectors.toList());
+        List<ITask> tasksForOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponentsToIgnoreForOriginalFile.contains(task.getTaskHandlerId())).collect(Collectors.toList());
+        List<ITask> tasksForOtherFiles = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponents.contains(task.getTaskHandlerId())).collect(Collectors.toList());
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
-            FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap, false);
+            FilePageBean bean;
+            if (origFile.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+                bean = createFilePageBean(fileMappingService, requestsByFileId,
+                        badgesByFile, origFile, tasksForImageOriginalFile, additionalFilesMap);
+            } else {
+                bean = createFilePageBean(fileMappingService, requestsByFileId,
+                        badgesByFile, origFile, tasksForOriginalFile, additionalFilesMap);
+            }
             docBean.setUploadedFile(bean);
         }
 
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap, false);
+                    badgesByFile, textFile, tasksForOriginalFile, additionalFilesMap);
             docBean.setExtractedTextFile(bean);
         }
         
@@ -152,7 +163,7 @@ public class ViewDocumentController {
             IFile imageFile = pageFiles.get(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean pageBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks(), additionalFilesMap, true);
+                        requestsByFileId, badgesByFile, imageFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setImageFile(pageBean);
 
             }
@@ -160,14 +171,14 @@ public class ViewDocumentController {
             IFile pageTextFile = pageFiles.get(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap, false);
+                        requestsByFileId, badgesByFile, pageTextFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setTextFile(textBean);
             }
 
             IFile ocrFile = pageFiles.get(page.getOcrFileId());
             if (ocrFile != null) {
                 FilePageBean ocrBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks(), additionalFilesMap, true);
+                        requestsByFileId, badgesByFile, ocrFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setOcrFile(ocrBean);
             }
         }
@@ -178,23 +189,19 @@ public class ViewDocumentController {
     private FilePageBean createFilePageBean(
             IGilesMappingService<IFile, FilePageBean> fileMappingService,
             Map<String, List<IProcessingRequest>> requestsByFileId,
-            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents)
+            Map<String, List<Badge>> badgesByFile, IFile file, List<ITask> tasks, Map<String, IFile> additionalFiles)
             throws GilesMappingException {
         FilePageBean pageBean = fileMappingService.convertToT2(file, new FilePageBean());
         pageBean.setMetadataLink(metadataService.getFileLink(file));
         setRequestStatus(pageBean, requestsByFileId);
         pageBean.setBadges(badgesByFile.get(pageBean.getId()));
-        addAdditionalFiles(pageBean, tasks, requestsByFileId, additionalFiles, ignoreFilesByNonCoreComponents);
+        addAdditionalFiles(pageBean, tasks, requestsByFileId, additionalFiles);
         return pageBean;
     }
 
     private void addAdditionalFiles(FilePageBean bean, List<ITask> tasks, 
-            Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles, boolean ignoreFilesByNonCoreComponents) {
+            Map<String, List<IProcessingRequest>> requestsByFileId, Map<String, IFile> additionalFiles) {
         tasks.forEach(t -> {
-            // if ignoreFilesByNonCoreComponents is true and since only tasks by non core componets have taskHandlerId set we dont add additional files as createAdditionalFileBean is already called for the page above.
-            if ((ignoreFilesByNonCoreComponents || SERVICES_TO_IGNORE_ADDITIONAL_FILES_FOR_ORIG_FILE.contains(t.getTaskHandlerId())) && !t.getTaskHandlerId().isEmpty()) {
-                return;
-            }
             IFile additionalFile = additionalFiles.get(t.getResultFileId());
             if (additionalFile != null) {   
                 if (bean.getId().equals(additionalFile.getDerivedFrom())) {
