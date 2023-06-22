@@ -119,8 +119,7 @@ public class ViewDocumentController {
             }
         });
         Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
-        
-        List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && task.getTaskHandlerId() != propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID)).collect(Collectors.toList());
+        List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID))).collect(Collectors.toList());
         List<ITask> tasksForOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponentsToIgnoreForOriginalFile.contains(task.getTaskHandlerId())).collect(Collectors.toList());
         List<ITask> tasksForOtherFiles = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponents.contains(task.getTaskHandlerId())).collect(Collectors.toList());
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
@@ -158,14 +157,12 @@ public class ViewDocumentController {
             }
             
             docBean.getPages().add(bean);
-            
-            
+
             IFile imageFile = pageFiles.get(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean pageBean = createFilePageBean(fileMappingService,
                         requestsByFileId, badgesByFile, imageFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setImageFile(pageBean);
-
             }
 
             IFile pageTextFile = pageFiles.get(page.getTextFileId());

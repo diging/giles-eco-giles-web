@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -74,10 +73,6 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
-        Optional<ITask> optionalTask = document.getTasks().stream().filter(task -> task != null && task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID)) && task.getResultFileId().equals(request.getFileId())).findFirst();
-        System.out.println(request.getFileId());
-        System.out.println(optionalTask.isPresent());
-        System.out.println(document.getUploadedFileId().equals(request.getFileId()));
         if (!document.getUploadedFileId().equals(request.getFileId()) && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
             // we are looking for the image that was ocred
             IPage documentPage = pages.get(request.getFilename());
