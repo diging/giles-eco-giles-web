@@ -75,12 +75,6 @@ public class ReprocessingService implements IReprocessingService {
         storageManager.setBaseDirectory(propertyManager.getProperty(Properties.GILES_TMP_FOLDER));
     }
     
-    /**
-     * This method initiates the reprocessing of the document by marking the files as unprocessed and calling the process coordinator.
-     * @param document - document which needs to be reprocessed
-     * @return 
-    */
-    
     @Override
     @Async
     public void reprocessDocument(IDocument document) {

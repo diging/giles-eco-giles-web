@@ -48,6 +48,11 @@ public interface IFilesManager {
      */
     public abstract boolean changeDocumentAccess(IDocument doc, DocumentAccess docAccess) throws UnstorableObjectException;
     
+    /**
+    * Changes the processing status of the specified file.
+    * @param file The file to update the processing status for.
+    * @param status The new processing status to assign to the file.
+    */
     public abstract void changeFileProcessingStatus(IFile file, ProcessingStatus status);
 
 }
