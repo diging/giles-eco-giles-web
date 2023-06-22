@@ -51,11 +51,11 @@ public class V2ReprocessDocumentController {
         IDocument document = documentService.getDocument(documentId);
         Map<String, String> msgs = new HashMap<String, String>();
         if (document == null) {
-            msgs.put("errorMsg", "Document Id: " + documentId + " does not exist.");
+            msgs.put("errorMsg", "Document with id: " + documentId + " does not exist.");
             msgs.put("errorCode", "404");
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
-        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+        if (!userHelper.isUserPermittedToAccessDocument(document, citesphereToken)) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
             unauthorizedMsgs.put("errorMsg", "User is not authorized to reprocess the document.");
             unauthorizedMsgs.put("errorCode", "401");

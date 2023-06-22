@@ -70,7 +70,7 @@ public class V2ReprocessDocumentControllerTest {
     public void test_reprocessDocument_success() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
         Mockito.when(propertyManager.getProperty(Properties.GILES_URL)).thenReturn("http://localhost:8085/giles");
-        Mockito.when(userHelper.checkUserPermission(document, citesphereToken)).thenReturn(true);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, citesphereToken)).thenReturn(true);
         Mockito.when(uploadService.getUpload(Mockito.anyString())).thenReturn(createUpload());
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", DOCUMENT_ID);
@@ -84,7 +84,7 @@ public class V2ReprocessDocumentControllerTest {
     @Test
     public void test_reprocessDocument_whenUserDoesNotHavePermission() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.checkUserPermission(document, citesphereToken)).thenReturn(false);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, citesphereToken)).thenReturn(false);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("errorMsg", "User is not authorized to reprocess the document.");
         msgs.put("errorCode", "401");
@@ -98,7 +98,7 @@ public class V2ReprocessDocumentControllerTest {
     public void test_reprocessDocument_notFound() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(null);
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("errorMsg", "Document Id: " + DOCUMENT_ID + " does not exist.");
+        msgs.put("errorMsg", "Document with id: " + DOCUMENT_ID + " does not exist.");
         msgs.put("errorCode", "404");
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.NOT_FOUND));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID, citesphereToken);
