@@ -48,7 +48,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
     @Override
     public void processRequest(ICompletedStorageRequest request) {
         IFile file = filesService.getFileById(request.getFileId());
-        setOldFileVersionsIfReprocessing(file);
+        setOldFileVersions(file);
         file.setStorageId(request.getStoredFileId());
         file.setDownloadUrl(request.getDownloadUrl());
         if (request.getDownloadUrl() != null && !request.getDownloadUrl().isEmpty()) {
@@ -88,7 +88,7 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
         return CompletedStorageRequest.class;
     }
     
-    private void setOldFileVersionsIfReprocessing(IFile file) {
+    private void setOldFileVersions(IFile file) {
         if (file.getStorageId() != null && !file.getStorageId().isEmpty()) {
             if (file.getOldFileVersionIds() == null) {
                 file.setOldFileVersionIds(new ArrayList<>());

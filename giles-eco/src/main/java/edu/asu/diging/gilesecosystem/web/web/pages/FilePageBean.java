@@ -200,9 +200,7 @@ public class FilePageBean implements IFile, BeanWithAdditionalFiles {
         return null;
     }
     @Override
-    public void setOldFileVersionIds(List<String> fileVersionIds) {
-        
-    }
+    public void setOldFileVersionIds(List<String> fileVersionIds) {}
     @Override
     public List<String> getOldFileVersionIds() {
         return null;

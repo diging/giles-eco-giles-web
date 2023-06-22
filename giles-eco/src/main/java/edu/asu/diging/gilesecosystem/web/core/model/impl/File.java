@@ -48,6 +48,9 @@ public class File implements IFile {
     private ProcessingStatus processingStatus;
     private String groupId;
     private String recordId;
+    /**
+    * This is the list of old file version IDs for the file if the file was reprocessed.
+    */
     @ElementCollection 
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<String> oldFileVersionIds;
