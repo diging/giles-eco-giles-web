@@ -73,40 +73,42 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
-        
-        // we are looking for the image that was ocred
-        IPage documentPage = pages.get(request.getFilename());
-        if (documentPage != null) {
-            documentPage.setOcrFileId(textFile.getId());
-            if (request.getStatus() != null) {
-                documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+        // if the uploaded file is an image file tardis and ocr will run on the file and in this case we dont want a new documentPage created as it should be linked as additional files to the original file.
+        if (!document.getUploadedFileId().equals(request.getFileId()) && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+            // we are looking for the image that was ocred
+            IPage documentPage = pages.get(request.getFilename());
+            if (documentPage != null) {
+                documentPage.setOcrFileId(textFile.getId());
+                if (request.getStatus() != null) {
+                    documentPage.setOcrFileStatus(PageStatus.valueOf(request.getStatus().toString())); 
+                } else {
+                    documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+                }
+                documentPage.setOcrFileErrorMsg(request.getErrorMsg());
             } else {
-                documentPage.setOcrFileStatus(PageStatus.COMPLETE);
+                // maybe its an ocr of an additional file
+                documentPage = additionalFilesPagesMap.get(request.getFilename());
+                if (documentPage == null && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+                    documentPage = new Page();
+                    document.getPages().add(documentPage);
+                    documentPage.setDocument(document);
+                }
+                if (documentPage != null) {
+                    if (documentPage.getAdditionalFileIds() == null) {
+                        documentPage.setAdditionalFileIds(new ArrayList<>());
+                    }
+                    documentPage.getAdditionalFileIds().add(textFile.getId());
+                }
+                
             }
-            documentPage.setOcrFileErrorMsg(request.getErrorMsg());
-        } else {
-            // maybe its an ocr of an additional file
-            documentPage = additionalFilesPagesMap.get(request.getFilename());
-            if (documentPage == null) {
-                documentPage = new Page();
-                document.getPages().add(documentPage);
-                documentPage.setDocument(document);
-            }
-            if (documentPage.getAdditionalFileIds() == null) {
-                documentPage.setAdditionalFileIds(new ArrayList<>());
-            }
-            documentPage.getAdditionalFileIds().add(textFile.getId());
-            
-            ITask task = new Task();
-            task.setFileId(file.getId());
-            task.setStatus(request.getStatus());
-            task.setTaskHandlerId(OCR_PROVIDER_ID);
-            task.setResultFileId(textFile.getId());
-            
-            document.getTasks().add(task);
         }
+        ITask task = new Task();
+        task.setFileId(file.getId());
+        task.setStatus(request.getStatus());
+        task.setTaskHandlerId(OCR_PROVIDER_ID);
+        task.setResultFileId(textFile.getId());
         
-        
+        document.getTasks().add(task);
         if (request.getDownloadPath() != null && !request.getDownloadPath().isEmpty()
                 && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty() && request.getStatus() != RequestStatus.FAILED) {
             request.setStatus(RequestStatus.COMPLETE);

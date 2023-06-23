@@ -4,6 +4,7 @@
 
 
 <tilesx:useAttribute name="fileBean" id="fileBean"/>
+
   <c:forEach items="${fileBean.additionalFiles}" var="entry" >
   <c:forEach items="${entry.value}" var="componentFile">
    ${componentFile.processor}: <c:if test="${componentFile.status == 'COMPLETE'}"><i class="fas fa-hdd" aria-hidden="true" title="File has been stored."></i></c:if>

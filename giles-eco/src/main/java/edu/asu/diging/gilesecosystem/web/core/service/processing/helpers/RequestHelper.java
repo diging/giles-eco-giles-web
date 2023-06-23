@@ -24,6 +24,16 @@ public class RequestHelper {
         requestFactory.config(StorageRequest.class);
     }
 
+    /**
+     * Creates a storage request object for the specified file and associated details.
+     * @param file The file for which the storage request is created.
+     * @param pathToFile The path to the file in the storage system.
+     * @param downloadUrl The download URL for the file.
+     * @param filetype The type of the file.
+     * @param requestId The ID of the request.
+     * @return An instance of {@link IStorageRequest} representing the storage request.
+     * @throws GilesProcessingException If there is an error during the creation of the storage request.
+     */
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
             FileType filetype, String requestId) throws GilesProcessingException {
         IStorageRequest request = null;
@@ -43,7 +53,18 @@ public class RequestHelper {
         
         return request;
     }
-    
+
+    /**
+    * Creates a storage request object for the specified file and associated details.
+    * @param file The file for which the storage request is created.
+    * @param pathToFile The path to the file in the storage system.
+    * @param downloadUrl The download URL for the file.
+    * @param filetype The type of the file.
+    * @param requestId The ID of the request.
+    * @param derivedFile Indicates if the file is a derived file thats processed by a non-core component.
+    * @return An instance of {@link IStorageRequest} representing the storage request.
+    * @throws GilesProcessingException If there is an error during the creation of the storage request.
+    */
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
             FileType filetype, String requestId, boolean derivedFile) throws GilesProcessingException {
         IStorageRequest request = null;
@@ -61,27 +82,6 @@ public class RequestHelper {
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
         request.setDerivedFile(derivedFile);
-        return request;
-    }
-    
-    public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
-            FileType filetype, String requestId, int pageNr) throws GilesProcessingException {
-        IStorageRequest request = null;
-        try {
-            request = requestFactory.createRequest(requestId, file.getUploadId());
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new GilesProcessingException(e);
-        }
-        request.setDocumentId(file.getDocumentId());
-        request.setFileId(file.getId());
-        request.setDownloadPath(pathToFile);
-        request.setDownloadUrl(downloadUrl);
-        request.setFileType(filetype);
-        request.setUploadDate(file.getUploadDate());
-        request.setFilename(file.getFilename());
-        request.setUsername(file.getUsernameForStorage());
-        request.setPageNr(pageNr);
-        
         return request;
     }
     
