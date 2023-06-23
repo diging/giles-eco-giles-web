@@ -73,6 +73,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
+        // if the uploaded file is an image file tardis and ocr will run on the file and in this case we dont want a new documentPage created as it should be linked as additional files to the original file.
         if (!document.getUploadedFileId().equals(request.getFileId()) && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
             // we are looking for the image that was ocred
             IPage documentPage = pages.get(request.getFilename());
