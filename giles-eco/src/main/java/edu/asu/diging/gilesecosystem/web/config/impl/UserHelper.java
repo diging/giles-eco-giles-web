@@ -1,16 +1,10 @@
 package edu.asu.diging.gilesecosystem.web.config.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.stereotype.Service;
 
-import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
@@ -24,9 +18,6 @@ public class UserHelper implements IUserHelper {
     
     @Autowired
     private IUserManager userManager;
-    
-    @Autowired
-    private IResponseHelper responseHelper;
 
     /* (non-Javadoc)
      * @see edu.asu.giles.config.IUserHelper#createUser(org.springframework.social.connect.Connection)
@@ -63,7 +54,7 @@ public class UserHelper implements IUserHelper {
     }
 
     @Override
-    public boolean checkUserPermission(IDocument document, CitesphereToken citesphereToken) {
+    public boolean isUserPermittedToAccessDocument(IDocument document, CitesphereToken citesphereToken) {
         String username = document.getUsername();
         CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
         String usernameInSystem = createUsername(user.getUsername(), user.getAuthorizingClient());

@@ -69,7 +69,7 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_deleteDocument_success() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(true);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(true);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("checkUrl", "http://localhost:8085/giles/api/v2/files/deletion/check/" + DOCUMENT_ID);
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.OK));
@@ -81,7 +81,7 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_deleteDocument_whenUserIsNotAuthorized() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(false);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
         unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document.");
         unauthorizedMsgs.put("errorCode", "401");      
@@ -94,7 +94,7 @@ public class V2DeleteDocumentControllerTest {
     public void test_deleteDocument_notFound() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(null);
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("errorMsg", "Document Id: " + DOCUMENT_ID + " does not exist.");
+        msgs.put("errorMsg", "Document with id: " + DOCUMENT_ID + " does not exist.");
         msgs.put("errorCode", "404");
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.NOT_FOUND));
         ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
@@ -114,7 +114,7 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_checkDocumentDeletion_whenDocumentIsNotDeleted() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(true);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(true);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.OK));
@@ -125,7 +125,7 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_checkDocumentDeletion_whenUserDoesNotHavePermissionToCheckDocumentStatus() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.checkUserPermission(document, CITESPHERE_TOKEN)).thenReturn(false);
+        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
         unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
         unauthorizedMsgs.put("errorCode", "401");

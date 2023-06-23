@@ -18,5 +18,5 @@ public interface IUserHelper {
         @param citesphereToken The Citesphere token for the user.
         @return {@code true} if the user has permission to access the document, {@code false} otherwise.
     */
-    public abstract boolean checkUserPermission(IDocument document, CitesphereToken citesphereToken);
+    public abstract boolean isUserPermittedToAccessDocument(IDocument document, CitesphereToken citesphereToken);
 }

@@ -49,11 +49,11 @@ public class V2DeleteDocumentController {
         IDocument document = documentService.getDocument(documentId);
         Map<String, String> msgs = new HashMap<String, String>();
         if (document == null) {
-            msgs.put("errorMsg", "Document Id: " + documentId + " does not exist.");
+            msgs.put("errorMsg", "Document with id: " + documentId + " does not exist.");
             msgs.put("errorCode", "404");
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
-        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+        if (!userHelper.isUserPermittedToAccessDocument(document, citesphereToken)) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
             unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document.");
             unauthorizedMsgs.put("errorCode", "401");
@@ -74,7 +74,7 @@ public class V2DeleteDocumentController {
             successMsgs.put("successMessage", "Document Id: " + documentId + " is deleted.");
             return responseHelper.generateResponse(successMsgs, HttpStatus.OK);
         }
-        if (!userHelper.checkUserPermission(document, citesphereToken)) {
+        if (!userHelper.isUserPermittedToAccessDocument(document, citesphereToken)) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
             unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
             unauthorizedMsgs.put("errorCode", "401");
