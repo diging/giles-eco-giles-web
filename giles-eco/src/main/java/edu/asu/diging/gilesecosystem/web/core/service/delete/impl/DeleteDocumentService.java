@@ -121,7 +121,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     }
     
     private void processDeleteUploadOfDocument(String uploadId) {
-     // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
+        // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
         if(documentService.getDocumentsByUploadId(uploadId).isEmpty()) {
             uploadService.deleteUpload(uploadId);
         }
