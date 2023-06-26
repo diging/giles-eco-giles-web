@@ -49,7 +49,11 @@ public class File implements IFile {
     private String groupId;
     private String recordId;
     /**
-    * This is the list of old file version IDs for the file if the file was reprocessed.
+     * List of old file version IDs for the file if the file was reprocessed.
+     * When a file is reprocessed, this list is populated with the older storage IDs associated with the file in Nepomuk.
+     * While the file is updated to store the newest storage ID after reprocessing.
+     * It allows us to maintain a record of its previous versions. 
+     * Which can be used in deletion of stale records from storage in the future.
     */
     @ElementCollection 
     @LazyCollection(LazyCollectionOption.FALSE)
