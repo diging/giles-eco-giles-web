@@ -53,7 +53,7 @@ public class File implements IFile {
      * When a file is reprocessed, this list is populated with the older storage IDs associated with the file in Nepomuk.
      * While the file is updated to store the newest storage ID after reprocessing.
      * It allows us to maintain a record of its previous versions. 
-     * Which can be used in deletion of stale records from storage in the future.
+     * Which can be used in the deletion of stale records from storage in the future.
     */
     @ElementCollection 
     @LazyCollection(LazyCollectionOption.FALSE)
