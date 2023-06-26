@@ -151,7 +151,6 @@
 </div>
 </div>
 <script>
-const modal = document.getElementById('deleteDocument');
 const confirmBtn = document.getElementById('deleteDocumentConfirm');
 confirmBtn.addEventListener('click', function() {
 	  var docId = "${document.id}";
@@ -160,8 +159,7 @@ confirmBtn.addEventListener('click', function() {
 	  $.ajax({
 		  url: deleteUrl,
 		  method: "POST",
-		  success: function (result) {   
-              console.log(result);  
+		  success: function (result) {  
               window.location.href = '/giles/uploads'; // redirect          
           },
           error: function (e) {
