@@ -1,27 +1,29 @@
 package edu.asu.diging.gilesecosystem.web.core.files.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
+import edu.asu.diging.gilesecosystem.web.core.repository.DocumentRepository;
 
 @Transactional
 @Component
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
 
-    @PersistenceContext(unitName="entityManagerFactory")
-    private EntityManager em;
+    private final DocumentRepository documentRepository;
+
+    @Autowired
+    public DocumentDatabaseClient(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
     
     /*
      * (non-Javadoc)
@@ -31,14 +33,8 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      * .core.IDocument)
      */
     @Override
-    public IDocument saveDocument(IDocument document) throws UnstorableObjectException {
-        IDocument existing = getById(document.getId());
-        
-        if (existing == null) {
-            return store(document);
-        }
-        
-        return update(document);
+    public IDocument saveDocument(IDocument document) throws IllegalArgumentException {
+        return documentRepository.save(document);
     }
 
     /*
@@ -50,7 +46,7 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public IDocument getDocumentById(String id) {
-        return em.find(Document.class, id);
+        return documentRepository.findById(id).orElse(null);
     }
 
     /*
@@ -62,18 +58,12 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public List<IDocument> getDocumentByUploadId(String uploadId) {
-        return getDocumentList("uploadId", uploadId);
+        return documentRepository.findByUploadId(uploadId);
     }
     
     @Override
     public List<IDocument> getDocumentsByUsername(String username) {
-        return getDocumentList("username", username);
-    }
-    
-    protected List<IDocument> getDocumentList(String propName, String propValue) {
-        List<IDocument> docs = new ArrayList<IDocument>();
-        searchByProperty(propName, propValue, Document.class).forEach(x -> docs.add(x));
-        return docs;
+        return documentRepository.findByUsername(username);
     }
 
     @Override
@@ -88,6 +78,6 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
 
     @Override
     protected EntityManager getClient() {
-        return em;
+        return null;
     }
 }

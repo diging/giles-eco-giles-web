@@ -1,9 +1,16 @@
 package edu.asu.diging.gilesecosystem.web.core.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
-import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface DocumentRepository extends CrudRepository<Document, String> {
+import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 
+@Repository
+public interface DocumentRepository extends JpaRepository<IDocument, String> {
+
+    List<IDocument> findByUploadId(String uploadId);
+
+    List<IDocument> findByUsername(String username);
 }

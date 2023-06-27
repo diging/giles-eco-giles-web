@@ -1,51 +1,47 @@
 package edu.asu.diging.gilesecosystem.web.core.files.impl;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
-import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
-import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
 
-@Transactional
 @Component
 public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessingRequest> implements IProcessingRequestsDatabaseClient {
 
-    @PersistenceContext(unitName="entityManagerFactory")
-    private EntityManager em;
+    private final ProcessingRequestRepository processingRequestRepository;
+    
+    @Autowired
+    public ProcessingRequestsDatabaseClient(ProcessingRequestRepository processingRequestRepository) {
+        this.processingRequestRepository = processingRequestRepository;
+    }
     
     @Autowired
     private ISystemMessageHandler messageHandler;
 
     @Override
     public List<IProcessingRequest> getRequestByDocumentId(String docId) {
-        TypedQuery<IProcessingRequest> query = getClient().createQuery("SELECT t FROM " + IProcessingRequest.class.getName()  + " t WHERE t.documentId = '" + docId + "'", IProcessingRequest.class);
-        return query.getResultList();
+        return processingRequestRepository.findByDocumentId(docId);
     }
     
     @Override
     public List<IProcessingRequest> getProcRequestsByRequestId(String procReqId) {
-        return searchByProperty("requestId", procReqId, ProcessingRequest.class);
+        return processingRequestRepository.findByRequestId(procReqId);
     }
     
     @Override
     public void saveNewRequest(IProcessingRequest request) {
         request.setId(generateId());
         try {
-            store(request);
-        } catch (UnstorableObjectException e) {
+            processingRequestRepository.save(request);
+        } catch (IllegalArgumentException e) {
             // should never happen
             messageHandler.handleMessage("Could not store element.", e, MessageType.ERROR);
         }
@@ -53,10 +49,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     
     @Override
     public List<IProcessingRequest> getIncompleteRequests() {
-        List<IProcessingRequest> results = new ArrayList<IProcessingRequest>();
-        TypedQuery<ProcessingRequest> query = getClient().createQuery("SELECT t FROM " + ProcessingRequest.class.getName()  + " t WHERE t.completedRequest IS NULL", ProcessingRequest.class);
-        query.getResultList().forEach(x -> results.add(x));
-        return results;
+        return processingRequestRepository.findByCompletedRequestIsNull();
     }
     
     @Override
@@ -66,12 +59,11 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
 
     @Override
     protected IProcessingRequest getById(String id) {
-        return em.find(ProcessingRequest.class, id);
+        return processingRequestRepository.findById(id).orElse(null);
     }
 
     @Override
     protected EntityManager getClient() {
-       return em;
+        return null;
     }
-
 }

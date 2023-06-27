@@ -1,26 +1,29 @@
 package edu.asu.diging.gilesecosystem.web.core.files.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
+import edu.asu.diging.gilesecosystem.web.core.repository.FileRepository;
 
 @Component
 public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFilesDatabaseClient {
+    
+    private final FileRepository fileRepository;
 
-    @PersistenceContext(unitName="entityManagerFactory")
-    private EntityManager em;
+    @Autowired
+    public FilesDatabaseClient(FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
 
     /*
      * (non-Javadoc)
@@ -30,18 +33,13 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
      * .File)
      */
     @Override
-    public IFile saveFile(IFile file) throws UnstorableObjectException {
-        IFile existingFile = getById(file.getId());
-        if (existingFile == null) {
-            return store(file);
-        }
-        
-        return update(file);
+    public IFile saveFile(IFile file) throws IllegalArgumentException {
+        return fileRepository.save(file);
     }
 
     @Override
     public IFile getFileById(String id) {
-        return em.find(File.class, id);
+        return fileRepository.findById(id).orElse(null);
     }
     
     @Override
@@ -53,22 +51,22 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
 
     @Override
     public List<IFile> getFilesByUploadId(String uploadId) {
-        return searchByProperty("uploadId", uploadId, File.class);
+        return fileRepository.findByUploadId(uploadId);
     }
 
     @Override
     public List<IFile> getFilesByUsername(String username) {
-        return searchByProperty("username", username, File.class);
+        return fileRepository.findByUsername(username);
     }
 
     @Override
     public List<IFile> getFilesByPath(String path) {
-        return searchByProperty("filepath", path, File.class);
+        return fileRepository.findByFilepath(path);
     }
     
     @Override
     public List<IFile> getFilesByDerivedFrom(String derivedFromId) {
-        return searchByProperty("derivedFrom", derivedFromId, File.class);
+        return fileRepository.findByDerivedFrom(derivedFromId);
     }
 
     /*
@@ -78,20 +76,12 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
      */
     @Override
     public IFile getFile(String filename) {
-        List<IFile> files = searchByProperty("filename", filename, File.class);
-        if (files != null && !files.isEmpty()) {
-            return files.get(0);
-        }
-        return null;
+        return fileRepository.findByFilename(filename);
     }
 
     @Override
     public IFile getFileByRequestId(String requestId) {
-        List<IFile> files = searchByProperty("requestId", requestId, File.class);
-        if (files != null && !files.isEmpty()) {
-            return files.get(0);
-        }
-        return null;
+        return fileRepository.findByRequestId(requestId);
     }
 
     @Override
@@ -106,7 +96,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
 
     @Override
     protected EntityManager getClient() {
-        return em;
+        return null;
     }
 
 }
