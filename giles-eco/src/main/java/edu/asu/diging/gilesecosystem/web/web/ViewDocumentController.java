@@ -119,13 +119,19 @@ public class ViewDocumentController {
             }
         });
         Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
-        List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID))).collect(Collectors.toList());
+        // these are tasks filtered for files to avoid duplication of non-core component extracted files in the UI when creating the additional files bean.
+        // tasksForOriginalFile is a list of tasks to be considered for the original file while ignoring non-core components like imogen, ocr
+        // as they will be present in the page and constructed as part of createAdditionalFileBean for the page.
         List<ITask> tasksForOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponentsToIgnoreForOriginalFile.contains(task.getTaskHandlerId())).collect(Collectors.toList());
+        // tasksForOtherFiles is the list of tasks to be considered for other files like image file ocr file etc. 
+        // Here we filter non-core components like imogen, ocr, tardis as they will be present in the page and constructed as part of createAdditionalFileBean for the page.
         List<ITask> tasksForOtherFiles = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponents.contains(task.getTaskHandlerId())).collect(Collectors.toList());
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
             FilePageBean bean;
             if (origFile.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+                // tasksForImageOriginalFile is the tasks needed (tardis and cassiopeia) if the original file is an image
+                List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID))).collect(Collectors.toList());
                 bean = createFilePageBean(fileMappingService, requestsByFileId,
                         badgesByFile, origFile, tasksForImageOriginalFile, additionalFilesMap);
             } else {
