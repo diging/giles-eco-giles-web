@@ -59,6 +59,8 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         }
         // if there was a new file created
         IFile newFile = saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
+        // if the file is an image extracted by tardis and the original image is associated with a page 
+        // we need to update the additional file id's of the page with the new file id.
         if (request.getNotifier().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID))) {
             Optional<IPage> optionalPage = document.getPages().stream().filter(page -> page != null && page.getImageFileId() != null && page.getImageFileId().equals(file.getId())).findFirst();
             if (optionalPage.isPresent()) {
