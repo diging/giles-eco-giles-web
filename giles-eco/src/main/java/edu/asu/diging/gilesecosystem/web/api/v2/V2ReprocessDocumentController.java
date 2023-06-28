@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
-import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 @Controller
 public class V2ReprocessDocumentController {
@@ -41,7 +42,7 @@ public class V2ReprocessDocumentController {
     private ITransactionalUploadService uploadService;
     
     @Autowired
-    private IUserHelper userHelper;
+    private ICitesphereConnector citesphereConnector;
     
     @Value("${giles_check_upload_endpoint_v2}")
     private String uploadEndpoint;
@@ -55,11 +56,11 @@ public class V2ReprocessDocumentController {
             msgs.put("errorCode", "404");
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
-        if (!userHelper.isUserPermittedToAccessDocument(document, citesphereToken)) {
+        if (!citesphereConnector.hasAccess(document.getId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-            unauthorizedMsgs.put("errorMsg", "User is not authorized to reprocess the document.");
+            unauthorizedMsgs.put("errorMsg", "User is not authorized to reprocess the document with id " + document.getId());
             unauthorizedMsgs.put("errorCode", "401");
-            return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED);
+            return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.FORBIDDEN);
         }
         reprocessingService.reprocessDocument(document);
         IUpload upload = uploadService.getUpload(document.getUploadId());

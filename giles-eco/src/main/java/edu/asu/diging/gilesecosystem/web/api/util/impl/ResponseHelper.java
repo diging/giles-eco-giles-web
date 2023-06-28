@@ -17,9 +17,6 @@ import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 
-/**
-A helper class that generates HTTP responses with JSON content.
-*/
 @Component
 public class ResponseHelper implements IResponseHelper {
     
