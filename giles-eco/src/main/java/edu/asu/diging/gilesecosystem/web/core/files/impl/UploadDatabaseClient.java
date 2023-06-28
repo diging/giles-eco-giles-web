@@ -1,19 +1,23 @@
 package edu.asu.diging.gilesecosystem.web.core.files.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.core.repository.UploadRepository;
 
-@Transactional("transactionManager")
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
@@ -27,7 +31,7 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     
     @Override
     public IUpload saveUpload(IUpload upload) throws IllegalArgumentException {
-        return uploadRepository.save(upload);
+        return uploadRepository.save((Upload) upload);
     }
     
     /*
@@ -56,7 +60,7 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     
     @Override
     public List<IUpload> getUploads() {
-        return uploadRepository.findAll();
+        return uploadRepository.findAll().stream().map(upload -> (IUpload) upload).collect(Collectors.toList());
     }
     
     @Override
@@ -77,15 +81,22 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     @Override
     public List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection) {
-        String order = sortDirection == ASCENDING ? "ASC" : "DESC";
-        return uploadRepository.findByUsernameOrderBy(username, sortBy + " " + order, (page - 1) * pageSize, pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sortBy));
+        List<Upload> uploads =  uploadRepository.findByUsername(username, pageable);
+        return uploads.stream()
+                .map(upload -> (IUpload) upload)
+                .collect(Collectors.toList());
     }
     
     @Override
     public List<IUpload> getUploads(int page,
             int pageSize, String sortBy, int sortDirection) {
-        String order = sortDirection == ASCENDING ? "ASC" : "DESC";
-        return uploadRepository.findAllOrderBy(sortBy + " " + order, (page - 1) * pageSize, pageSize); 
+        Sort.Direction direction = sortDirection == ASCENDING ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(direction, sortBy));
+        List<Upload> uploads = uploadRepository.findAllOrderBy(sortBy, pageable);
+        return uploads.stream()
+                .map(upload -> (IUpload) upload)
+                .collect(Collectors.toList());
     }
 
 

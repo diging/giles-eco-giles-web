@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
 
 @Repository
-public interface FileRepository extends JpaRepository<IFile, String>{
+public interface FileRepository extends JpaRepository<File, String>{
 
     List<IFile> findByUploadId(String uploadId);
 

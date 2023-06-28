@@ -34,7 +34,7 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
      */
     @Override
     public IFile saveFile(IFile file) throws IllegalArgumentException {
-        return fileRepository.save(file);
+        return fileRepository.save((File) file);
     }
 
     @Override

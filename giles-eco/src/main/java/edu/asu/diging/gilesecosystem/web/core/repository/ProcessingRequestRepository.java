@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 
 @Repository
-public interface ProcessingRequestRepository extends JpaRepository<IProcessingRequest, String> {
+public interface ProcessingRequestRepository extends JpaRepository<ProcessingRequest, String> {
 
     List<IProcessingRequest> findByDocumentId(String docId);
 

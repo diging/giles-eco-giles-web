@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = {
         "edu.asu.diging.gilesecosystem.web"
 })
-@EnableTransactionManagement
+//@EnableTransactionManagement
 @PropertySource("classpath:config.properties")
 public class PersistentContext {
 
@@ -43,7 +43,7 @@ public class PersistentContext {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web.core.model", "edu.asu.diging.gilesecosystem.web.core.apps", "edu.asu.diging.gilesecosystem.web.core.users");
+        entityManagerFactoryBean.setPackagesToScan("edu.asu.diging.gilesecosystem.web.core.model", "edu.asu.diging.gilesecosystem.web.core.model.impl", "edu.asu.diging.gilesecosystem.web.core.apps", "edu.asu.diging.gilesecosystem.web.core.users", "edu.asu.diging.gilesecosystem.web.core.repository");
  
         Properties jpaProperties = new Properties();
      

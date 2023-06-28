@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.repository.DocumentRepository;
 
-@Transactional
 @Component
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
@@ -34,7 +34,7 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      */
     @Override
     public IDocument saveDocument(IDocument document) throws IllegalArgumentException {
-        return documentRepository.save(document);
+        return documentRepository.save((Document) document);
     }
 
     /*

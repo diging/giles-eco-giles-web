@@ -11,6 +11,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IProcessingRequestsDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
 
 @Component
@@ -40,7 +41,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     public void saveNewRequest(IProcessingRequest request) {
         request.setId(generateId());
         try {
-            processingRequestRepository.save(request);
+            processingRequestRepository.save((ProcessingRequest) request);
         } catch (IllegalArgumentException e) {
             // should never happen
             messageHandler.handleMessage("Could not store element.", e, MessageType.ERROR);
