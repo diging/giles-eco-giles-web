@@ -32,6 +32,9 @@ import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 /**
  * This class handles the reprocessing of the uploaded document.
+ * All the stages of processing is triggered again for the document right from the storage stage to image, text, species extraction and so on.
+ * It includes reprocessing of the document by core components like Nepomuk, Andromeda, Cepheus, Cassiopeia, 
+ * and non-core components like Imogen, Carolus, Tardis, etc.
 */
 @Service
 public class ReprocessingService implements IReprocessingService {
@@ -97,6 +100,7 @@ public class ReprocessingService implements IReprocessingService {
         User user = userManager.findUser(file.getUsername());
         StorageRequestProcessingInfo info = new StorageRequestProcessingInfo();
         byte[] content = filesManager.getFileContent(file);
+        // if the file failed at the storage processing stage the content is taken from Giles's storage.
         if (content == null) {
             content = filesHelper.getFileContent(file, storageManager);
         }
@@ -122,7 +126,7 @@ public class ReprocessingService implements IReprocessingService {
     }
     
     /**
-     * This method deletes the previous processing requests of the file before reprocessing.
+     * This method deletes the previous processing requests of the document before reprocessing.
      * @param document - document whose file's processing requests need to be deleted
      * @return 
     */
