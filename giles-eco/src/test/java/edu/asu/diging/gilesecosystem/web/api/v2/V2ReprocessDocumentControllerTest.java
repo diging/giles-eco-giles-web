@@ -1,5 +1,6 @@
 package edu.asu.diging.gilesecosystem.web.api.v2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
-import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
@@ -26,6 +27,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumen
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.reprocessing.IReprocessingService;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 public class V2ReprocessDocumentControllerTest {
     
@@ -45,7 +47,7 @@ public class V2ReprocessDocumentControllerTest {
     private ITransactionalUploadService uploadService;
     
     @Mock
-    private IUserHelper userHelper;
+    private ICitesphereConnector citesphereConnector;
     
     @InjectMocks
     private V2ReprocessDocumentController v2ReprocessDocumentController;
@@ -63,6 +65,7 @@ public class V2ReprocessDocumentControllerTest {
     public void setUp() {
         document = createDocument();
         v2ReprocessDocumentController = new V2ReprocessDocumentController();
+        citesphereToken.setPrincipal(new CitesphereUser("testUser", "oauth", new ArrayList<>()));
         MockitoAnnotations.initMocks(this);
     }
     
@@ -70,8 +73,8 @@ public class V2ReprocessDocumentControllerTest {
     public void test_reprocessDocument_success() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
         Mockito.when(propertyManager.getProperty(Properties.GILES_URL)).thenReturn("http://localhost:8085/giles");
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, citesphereToken)).thenReturn(true);
         Mockito.when(uploadService.getUpload(Mockito.anyString())).thenReturn(createUpload());
+        Mockito.when(citesphereConnector.hasAccess(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", DOCUMENT_ID);
         msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + "/api/v2/files/upload/check/" + UPLOAD_ID);
@@ -84,13 +87,13 @@ public class V2ReprocessDocumentControllerTest {
     @Test
     public void test_reprocessDocument_whenUserDoesNotHavePermission() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, citesphereToken)).thenReturn(false);
+        Mockito.when(citesphereConnector.hasAccess(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("errorMsg", "User is not authorized to reprocess the document.");
-        msgs.put("errorCode", "401");
-        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.UNAUTHORIZED));
+        msgs.put("errorMsg", "User is not authorized to reprocess the document with id " + DOCUMENT_ID);
+        msgs.put("errorCode", "403");
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(new ResponseEntity<String>(msgs.toString(), HttpStatus.FORBIDDEN));
         ResponseEntity<String> response = v2ReprocessDocumentController.reprocessDocument(DOCUMENT_ID, citesphereToken);
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assert.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         Assert.assertEquals(msgs.toString(), response.getBody());
     }
     

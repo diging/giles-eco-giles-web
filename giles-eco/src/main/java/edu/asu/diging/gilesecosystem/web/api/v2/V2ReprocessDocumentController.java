@@ -59,7 +59,7 @@ public class V2ReprocessDocumentController {
         if (!citesphereConnector.hasAccess(document.getId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
             Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
             unauthorizedMsgs.put("errorMsg", "User is not authorized to reprocess the document with id " + document.getId());
-            unauthorizedMsgs.put("errorCode", "401");
+            unauthorizedMsgs.put("errorCode", "403");
             return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.FORBIDDEN);
         }
         reprocessingService.reprocessDocument(document);
