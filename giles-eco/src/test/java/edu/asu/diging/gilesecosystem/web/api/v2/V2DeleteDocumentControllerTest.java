@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.api.v2;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +24,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
-import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
+import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 
 public class V2DeleteDocumentControllerTest {
     
@@ -40,13 +42,13 @@ public class V2DeleteDocumentControllerTest {
     private ITransactionalDocumentService documentService;
     
     @Mock
-    private IUserHelper userHelper;
-    
-    @Mock
     private IPropertiesManager propertyManager;
     
     @Mock
     private IResponseHelper responseHelper;
+    
+    @Mock
+    private ICitesphereConnector citesphereConnector;
     
     @InjectMocks
     private V2DeleteDocumentController v2DeleteDocumentController;
@@ -64,12 +66,13 @@ public class V2DeleteDocumentControllerTest {
         v2DeleteDocumentController = new V2DeleteDocumentController();
         MockitoAnnotations.initMocks(this);
         Mockito.when(propertyManager.getProperty(Properties.GILES_URL)).thenReturn("http://localhost:8085/giles/");
+        Mockito.when(citesphereConnector.hasAccess(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        CITESPHERE_TOKEN.setPrincipal(new CitesphereUser("testUser", "oauth", new ArrayList<>()));
     }
     
     @Test
     public void test_deleteDocument_success() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(true);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("checkUrl", "http://localhost:8085/giles/api/v2/files/deletion/check/" + DOCUMENT_ID);
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.OK));
@@ -81,13 +84,13 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_deleteDocument_whenUserIsNotAuthorized() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(false);
+        Mockito.when(citesphereConnector.hasAccess(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-        unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document.");
+        unauthorizedMsgs.put("errorMsg", "User is not authorized to delete the document with id " + document.getId());
         unauthorizedMsgs.put("errorCode", "401");      
-        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.FORBIDDEN));
         ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assert.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
     
     @Test
@@ -114,7 +117,6 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_checkDocumentDeletion_whenDocumentIsNotDeleted() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(true);
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");
         Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.OK));
@@ -125,13 +127,13 @@ public class V2DeleteDocumentControllerTest {
     @Test
     public void test_checkDocumentDeletion_whenUserDoesNotHavePermissionToCheckDocumentStatus() {
         Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
-        Mockito.when(userHelper.isUserPermittedToAccessDocument(document, CITESPHERE_TOKEN)).thenReturn(false);
+        Mockito.when(citesphereConnector.hasAccess(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
         Map<String, String> unauthorizedMsgs = new HashMap<String, String>();
-        unauthorizedMsgs.put("errorMsg", "User is not authorized to check status.");
+        unauthorizedMsgs.put("errorMsg", "User is not authorized to check status for document id " + document.getId());
         unauthorizedMsgs.put("errorCode", "401");
-        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.UNAUTHORIZED));
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(unauthorizedMsgs, HttpStatus.FORBIDDEN));
         ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Assert.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
     
     private Document createDocument() {

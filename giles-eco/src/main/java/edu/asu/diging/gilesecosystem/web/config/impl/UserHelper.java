@@ -5,11 +5,8 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.stereotype.Service;
 
-import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
-import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 
@@ -51,14 +48,5 @@ public class UserHelper implements IUserHelper {
     @Override
     public String createUsername(String username, String providerId) {
         return username + "_" + providerId;
-    }
-
-    @Override
-    public boolean isUserPermittedToAccessDocument(IDocument document, CitesphereToken citesphereToken) {
-        String username = document.getUsername();
-        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        String usernameInSystem = createUsername(user.getUsername(), user.getAuthorizingClient());
-
-        return username.equals(usernameInSystem);
     }
 }
