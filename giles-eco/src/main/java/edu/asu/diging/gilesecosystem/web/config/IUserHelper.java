@@ -9,4 +9,5 @@ public interface IUserHelper {
     public abstract User createUser(Connection<?> connection);
 
     String createUsername(String username, String providerId);
+
 }
