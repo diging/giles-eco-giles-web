@@ -3,9 +3,8 @@ package edu.asu.diging.gilesecosystem.web.core.apps.impl;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +12,19 @@ import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredAppDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.apps.RegisteredAppRepository;
 
 @Transactional
 @Component
 public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> implements IRegisteredAppDatabaseClient {
-
-    @PersistenceContext(unitName="entityManagerFactory")
-    private EntityManager em;
+    
+    @Autowired
+    private final RegisteredAppRepository registeredAppRepository;
+    
+    @Autowired
+    public RegisteredAppDatabaseClient(RegisteredAppRepository registeredAppRepository) {
+        this.registeredAppRepository = registeredAppRepository;
+    }
     
     @Override
     protected String getIdPrefix() {
@@ -31,7 +36,7 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
      */
     @Override
     public IRegisteredApp getAppById(String id) {
-        return em.find(RegisteredApp.class, id);
+        return registeredAppRepository.findById(id).orElse(null);
     }
     
     @Override
@@ -39,20 +44,16 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
         if (app.getId() == null) {
             throw new UnstorableObjectException("App does not have an id.");
         }
-        IRegisteredApp storedApp = getAppById(app.getId());
-        storedApp.setName(app.getName());
-        storedApp.setTokenIds(app.getTokenIds());
-        store(storedApp);
+        registeredAppRepository.save((RegisteredApp) app);
     }
     
     @Override
     public IRegisteredApp[] getAllRegisteredApps() {
-        TypedQuery<IRegisteredApp> query = em.createQuery("SELECT a FROM RegisteredApp a", IRegisteredApp.class);
-        List<IRegisteredApp> results = query.getResultList();
-        if (results == null) {
+        List<RegisteredApp> registeredApps = registeredAppRepository.findAll();
+        if (registeredApps == null) {
             return new IRegisteredApp[0];
         }
-        return results.toArray(new IRegisteredApp[results.size()]);
+        return registeredApps.toArray(new IRegisteredApp[registeredApps.size()]);
     }
 
     @Override
@@ -62,7 +63,6 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
 
     @Override
     protected EntityManager getClient() {
-        return em;
+        return null;
     }
-
 }

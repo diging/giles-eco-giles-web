@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
