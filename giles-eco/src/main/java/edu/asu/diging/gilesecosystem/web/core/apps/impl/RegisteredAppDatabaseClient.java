@@ -60,6 +60,16 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
     protected IRegisteredApp getById(String id) {
         return getAppById(id);
     }
+    
+    @Override
+    public void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException {
+        registeredAppRepository.save((RegisteredApp) app);
+    }
+    
+    @Override
+    public void deleteRegisteredApp(IRegisteredApp app) {
+        registeredAppRepository.delete((RegisteredApp) app);
+    }
 
     @Override
     protected EntityManager getClient() {

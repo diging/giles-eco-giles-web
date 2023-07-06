@@ -63,6 +63,7 @@ public class UserDatabaseClient {
         storedUser.setRoles(user.getRoles());
         storedUser.setUserIdOfProvider(user.getUserIdOfProvider());
         storedUser.setUsername(user.getUsername());
+        userRepository.save(storedUser);
     }
 
     /**

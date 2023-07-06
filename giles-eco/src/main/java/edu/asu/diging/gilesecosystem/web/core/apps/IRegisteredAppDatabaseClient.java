@@ -5,10 +5,13 @@ import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 
 public interface IRegisteredAppDatabaseClient extends IDatabaseClient<IRegisteredApp> {
 
-    public abstract IRegisteredApp getAppById(String id);
+    IRegisteredApp getAppById(String id);
 
-    public abstract void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException;
+    void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException;
 
-    public abstract IRegisteredApp[] getAllRegisteredApps();
-
+    IRegisteredApp[] getAllRegisteredApps();
+    
+    void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException;
+    
+    void deleteRegisteredApp(IRegisteredApp app);
 }

@@ -53,7 +53,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         }
 
         try {
-            databaseClient.store(app);
+            databaseClient.storeRegisteredApp(app);
         } catch (UnstorableObjectException e) {
             messageHandler.handleMessage("Could not store app.", e, MessageType.ERROR);
             return null;
@@ -69,7 +69,7 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
     @Override
     public void deleteApp(String id) {
         IRegisteredApp app = getApp(id);
-        databaseClient.delete(app);
+        databaseClient.deleteRegisteredApp(app);
     }
 
     /*
