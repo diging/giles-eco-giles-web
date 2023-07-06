@@ -1,6 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.core.files.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -44,9 +45,8 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     
     @Override
     public List<IFile> getFilesForIds(List<String> ids) {
-        TypedQuery<IFile> query = getClient().createQuery("SELECT t FROM " + File.class.getName()  + " t WHERE t.id IN (:ids)", IFile.class);
-        query.setParameter("ids", ids);
-        return query.getResultList();
+        List<File> files = fileRepository.findByIdIn(ids);
+        return files.stream().map(file -> (IFile) file).collect(Collectors.toList());
     }
 
     @Override

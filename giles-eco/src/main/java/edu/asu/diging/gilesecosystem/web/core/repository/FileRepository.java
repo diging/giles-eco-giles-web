@@ -22,4 +22,6 @@ public interface FileRepository extends JpaRepository<File, String>{
     IFile findByRequestId(String requestId);
 
     List<IFile> findByDerivedFrom(String derivedFromId);
+    
+    List<File> findByIdIn(List<String> ids);
 }

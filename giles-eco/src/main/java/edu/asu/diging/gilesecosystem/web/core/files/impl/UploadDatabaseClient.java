@@ -81,7 +81,8 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     @Override
     public List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sortBy));
+        Sort.Direction direction = sortDirection == ASCENDING ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(direction, sortBy));
         List<Upload> uploads =  uploadRepository.findByUsername(username, pageable);
         return uploads.stream()
                 .map(upload -> (IUpload) upload)
