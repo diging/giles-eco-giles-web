@@ -92,9 +92,11 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     @Override
     public List<IUpload> getUploads(int page,
             int pageSize, String sortBy, int sortDirection) {
-        Sort.Direction direction = (sortDirection == IUploadDatabaseClient.ASCENDING) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageable = PageRequest.of(page - 1, pageSize, Sort.by(direction, sortBy));
-        List<Upload> uploads = uploadRepository.findAllOrderBy(sortBy, pageable);
+        Sort.Direction direction = (sortDirection == IUploadDatabaseClient.ASCENDING)
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, sort);
+        List<Upload> uploads = uploadRepository.findAll(pageRequest).getContent();
         return uploads.stream()
                 .map(upload -> (IUpload) upload)
                 .collect(Collectors.toList());

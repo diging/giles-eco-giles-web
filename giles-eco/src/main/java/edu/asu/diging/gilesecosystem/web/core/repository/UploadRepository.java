@@ -11,7 +11,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 
 @Repository
-public interface UploadRepository extends JpaRepository<Upload, String>{
+public interface UploadRepository extends JpaRepository<Upload, String> {
     List<IUpload> findByUsername(String username);
     long countByUsername(String username);
     Upload findByUploadProgressId(String progressId);
