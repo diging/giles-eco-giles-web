@@ -28,7 +28,7 @@ public class TransactionalProcessingRequestService implements ITransactionalProc
     
     @Override
     public void save(IProcessingRequest request) throws UnstorableObjectException {
-        pReqDbClient.saveNewRequest(request);
+        pReqDbClient.saveRequest(request);
     }
     
     @Override

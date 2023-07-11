@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.apps.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -18,14 +19,13 @@ import org.mockito.MockitoAnnotations;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredApp;
 import edu.asu.diging.gilesecosystem.web.core.apps.IRegisteredAppDatabaseClient;
+import edu.asu.diging.gilesecosystem.web.core.apps.RegisteredAppRepository;
 import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredApp;
 import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredAppDatabaseClient;
 
 public class RegisteredAppDatabaseClientTest {
-
-    @Mock private EntityManager em;
-    
-    @Mock private TypedQuery<IRegisteredApp> query;
+    @Mock
+    private RegisteredAppRepository registeredAppRepository;
     
     @InjectMocks private IRegisteredAppDatabaseClient dbClientToTest;
     
@@ -36,14 +36,13 @@ public class RegisteredAppDatabaseClientTest {
     
     @Before
     public void setUp() {
-        dbClientToTest = new RegisteredAppDatabaseClient();
+        dbClientToTest = new RegisteredAppDatabaseClient(registeredAppRepository);
         MockitoAnnotations.initMocks(this);
         
         app1 = new RegisteredApp();
         app1.setId(APP_ID_1);
         app1.setName("App 1");
-        
-        Mockito.when(em.find(RegisteredApp.class, APP_ID_1)).thenReturn(app1);
+        Mockito.when(registeredAppRepository.findById(APP_ID_1)).thenReturn(Optional.of(app1));
     }
     
     @Test
@@ -79,16 +78,15 @@ public class RegisteredAppDatabaseClientTest {
     
     @Test
     public void test_getAllRegisteredApps_results() {
-        List<IRegisteredApp> apps = new ArrayList<IRegisteredApp>();
+        List<RegisteredApp> apps = new ArrayList<RegisteredApp>();
         apps.add(app1);
         
-        IRegisteredApp app2 = new RegisteredApp();
+        RegisteredApp app2 = new RegisteredApp();
         app2.setName("New App 2");
         app2.setId(APP_ID_2);
         apps.add(app2);
 
-        Mockito.when(em.createQuery("SELECT a FROM RegisteredApp a", IRegisteredApp.class)).thenReturn(query);
-        Mockito.when(query.getResultList()).thenReturn(apps);
+        Mockito.when(registeredAppRepository.findAll()).thenReturn(apps);
         
         IRegisteredApp[] allApps = dbClientToTest.getAllRegisteredApps();
         Assert.assertEquals(2, allApps.length);
@@ -98,8 +96,7 @@ public class RegisteredAppDatabaseClientTest {
     public void test_getAllRegisteredApps_noResults() {
         List<IRegisteredApp> apps = new ArrayList<IRegisteredApp>();
         
-        Mockito.when(em.createQuery("SELECT a FROM RegisteredApp a", IRegisteredApp.class)).thenReturn(query);
-        Mockito.when(query.getResultList()).thenReturn(apps);
+        Mockito.when(registeredAppRepository.findAll()).thenReturn(null);
        
         IRegisteredApp[] allApps = dbClientToTest.getAllRegisteredApps();
         Assert.assertEquals(0, allApps.length);
@@ -116,6 +113,5 @@ public class RegisteredAppDatabaseClientTest {
     public void test_getById_doesNotExists() {
         IRegisteredApp app = dbClientToTest.getAppById(APP_ID_2);
         Assert.assertNull(app);
-    }
-    
+    } 
 }

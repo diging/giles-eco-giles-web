@@ -14,4 +14,6 @@ public interface IProcessingRequestsDatabaseClient extends IDatabaseClient<IProc
     public abstract List<IProcessingRequest> getProcRequestsByRequestId(String procReqId);
 
     public abstract List<IProcessingRequest> getIncompleteRequests();
+    
+    public abstract void saveRequest(IProcessingRequest request);
 }
