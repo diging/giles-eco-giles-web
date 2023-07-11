@@ -11,9 +11,9 @@ import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 @Repository
 public interface ProcessingRequestRepository extends JpaRepository<ProcessingRequest, String> {
 
-    List<IProcessingRequest> findByDocumentId(String docId);
+    List<ProcessingRequest> findByDocumentId(String docId);
 
-    List<IProcessingRequest> findByRequestId(String procReqId);
+    List<ProcessingRequest> findByRequestId(String procReqId);
 
-    List<IProcessingRequest> findByCompletedRequestIsNull();
+    List<ProcessingRequest> findByCompletedRequestIsNull();
 }
