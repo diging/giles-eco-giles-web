@@ -24,6 +24,7 @@ import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredApp;
 import edu.asu.diging.gilesecosystem.web.core.apps.impl.RegisteredAppDatabaseClient;
 
 public class RegisteredAppDatabaseClientTest {
+
     @Mock
     private RegisteredAppRepository registeredAppRepository;
     
@@ -54,6 +55,7 @@ public class RegisteredAppDatabaseClientTest {
     
     @Test
     public void test_getAppById_doesNotExists() {
+        Mockito.when(registeredAppRepository.findById(APP_ID_2)).thenReturn(Optional.empty());
         IRegisteredApp app = dbClientToTest.getAppById(APP_ID_2);
         Assert.assertNull(app);
     }
@@ -111,6 +113,7 @@ public class RegisteredAppDatabaseClientTest {
     
     @Test
     public void test_getById_doesNotExists() {
+        Mockito.when(registeredAppRepository.findById(APP_ID_2)).thenReturn(Optional.empty());
         IRegisteredApp app = dbClientToTest.getAppById(APP_ID_2);
         Assert.assertNull(app);
     } 

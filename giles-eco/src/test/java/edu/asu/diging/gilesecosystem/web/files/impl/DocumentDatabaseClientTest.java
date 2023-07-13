@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.files.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -23,14 +24,16 @@ import edu.asu.diging.gilesecosystem.web.core.files.impl.DocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
+import edu.asu.diging.gilesecosystem.web.core.repository.DocumentRepository;
 
 public class DocumentDatabaseClientTest {
     
     Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-
-    @Mock private EntityManager em;
     
     @Mock private IPropertiesCopier copier;
+    
+    @Mock
+    private DocumentRepository documentRepository;
      
     @InjectMocks @Spy private IDocumentDatabaseClient docDatabaseClientToTest;
     
@@ -42,36 +45,34 @@ public class DocumentDatabaseClientTest {
     
     @Before
     public void setUp() {
-        docDatabaseClientToTest = new DocumentDatabaseClient();
+        docDatabaseClientToTest = new DocumentDatabaseClient(documentRepository);
         MockitoAnnotations.initMocks(this);
         
         IDocument doc1 = new Document();
         doc1.setId(DOC1_ID);
         doc1.setUploadId(UPLOAD1_ID);
         
-        Mockito.when(em.find(Document.class, DOC1_ID)).thenReturn((Document) doc1);
-        
+        Mockito.when(documentRepository.findById(DOC1_ID)).thenReturn(Optional.of((Document) doc1));
     }
     
     @Test
-    public void test_saveDocument_new() throws UnstorableObjectException {
+    public void test_saveDocument_new() throws IllegalArgumentException {
         IDocument doc = new Document();
         doc.setId("id");
         docDatabaseClientToTest.saveDocument(doc);
-        Mockito.verify(em).persist(doc);
-        Mockito.verify(em).flush();;
+        Mockito.verify(documentRepository).save((Document) doc);
     }
     
     @Test
-    public void test_saveDocument_existingDoc() throws UnstorableObjectException {
+    public void test_saveDocument_existingDoc() throws IllegalArgumentException {
         IDocument doc = new Document();
         doc.setId(DOC1_ID);
         docDatabaseClientToTest.saveDocument(doc);
-        Mockito.verify(docDatabaseClientToTest).update(doc);
+        Mockito.verify(documentRepository).save((Document) doc);
     }
     
-    @Test(expected = UnstorableObjectException.class)
-    public void test_saveDocument_noId() throws UnstorableObjectException {
+    @Test(expected = IllegalArgumentException.class)
+    public void test_saveDocument_noId() throws IllegalArgumentException {
         IDocument doc = new Document();
         docDatabaseClientToTest.saveDocument(doc);
     }
@@ -84,7 +85,7 @@ public class DocumentDatabaseClientTest {
     
     @Test
     public void test_getDocumentById_docNotExists() {
-        Mockito.when(em.find(Document.class, DOC_ID_NOT_EXIST)).thenReturn(null);
+        Mockito.when(documentRepository.findById(DOC_ID_NOT_EXIST)).thenReturn(Optional.empty());
         IDocument doc = docDatabaseClientToTest.getDocumentById(DOC_ID_NOT_EXIST);
         Assert.assertNull(doc);
     }
@@ -96,19 +97,8 @@ public class DocumentDatabaseClientTest {
         doc1.setUploadId(UPLOAD1_ID);
         List<IDocument> result = new ArrayList<IDocument>();
         result.add(doc1);
-        
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                return result;
-            }
-            
-        };
-        
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentByUploadId(UPLOAD1_ID);
+        Mockito.when(documentRepository.findByUploadId(UPLOAD1_ID)).thenReturn(result);
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentByUploadId(UPLOAD1_ID);
         Assert.assertEquals(1, searchResult.size());
         Assert.assertEquals(UPLOAD1_ID, searchResult.get(0).getUploadId());
     }
@@ -118,45 +108,22 @@ public class DocumentDatabaseClientTest {
         IDocument doc1 = new Document();
         doc1.setId(DOC1_ID);
         doc1.setUploadId(UPLOAD1_ID);
-        
         IDocument doc2 = new Document();
         doc2.setId(DOC2_ID);
         doc2.setUploadId(UPLOAD1_ID);
-        
         List<IDocument> result = new ArrayList<IDocument>();
         result.add(doc1);
         result.add(doc2);
-        
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                return result;
-            }
-            
-        };
-        
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentByUploadId(UPLOAD1_ID);
+        Mockito.when(documentRepository.findByUploadId(UPLOAD1_ID)).thenReturn(result);
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentByUploadId(UPLOAD1_ID);
         Assert.assertEquals(2, searchResult.size());
         Assert.assertTrue(searchResult.stream().allMatch(r -> r.getUploadId().equals(UPLOAD1_ID)));
     }
     
     @Test
     public void test_getDocumentByUploadId_docDoesNotExist() {
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                return new ArrayList<IDocument>();
-            }
-            
-        };
-        
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentByUploadId(UPLOAD1_ID);
+        Mockito.when(documentRepository.findByUploadId(UPLOAD1_ID)).thenReturn(new ArrayList());
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentByUploadId(UPLOAD1_ID);
         Assert.assertEquals(0, searchResult.size());
     }
     
@@ -165,22 +132,10 @@ public class DocumentDatabaseClientTest {
         IDocument doc1 = new Document();
         doc1.setId(DOC1_ID);
         doc1.setUsername(USERNAME);
-        
         List<IDocument> result = new ArrayList<IDocument>();
         result.add(doc1);
-        
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                return result;
-            }
-            
-        };
-        
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentsByUsername(USERNAME);
+        Mockito.when(documentRepository.findByUsername(USERNAME)).thenReturn(result);
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentsByUsername(USERNAME);
         Assert.assertEquals(1, searchResult.size());
         Assert.assertEquals(USERNAME, searchResult.get(0).getUsername());
     }
@@ -199,37 +154,17 @@ public class DocumentDatabaseClientTest {
         result.add(doc1);
         result.add(doc2);
         
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                return result;
-            }
-            
-        };
+        Mockito.when(documentRepository.findByUsername(USERNAME)).thenReturn(result);
         
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentsByUsername(USERNAME);
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentsByUsername(USERNAME);
         Assert.assertEquals(2, searchResult.size());
         Assert.assertTrue(searchResult.stream().allMatch(r -> r.getUsername().equals(USERNAME)));
     }
     
     @Test
     public void test_getDocumentsByUsername_docDoesNotExists() {
-        // let's mock the superclass method
-        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
-
-            @Override
-            protected List<IDocument> searchByProperty(String propName, String propValue,
-                    Class<? extends IDocument> clazz) {
-                // TODO Auto-generated method stub
-                return new ArrayList<IDocument>();
-            }
-            
-        };
-        
-        List<IDocument> searchResult = partiallyMockedClient.getDocumentsByUsername(USERNAME);
+        Mockito.when(documentRepository.findByUploadId(UPLOAD1_ID)).thenReturn(new ArrayList());
+        List<IDocument> searchResult = docDatabaseClientToTest.getDocumentsByUsername(USERNAME);
         Assert.assertEquals(0, searchResult.size());
     }
     

@@ -36,7 +36,7 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
      */
     @Override
     public IRegisteredApp getAppById(String id) {
-        return registeredAppRepository.findById(id).orElse(null);
+        return (IRegisteredApp) registeredAppRepository.findById(id).orElse(null);
     }
     
     @Override

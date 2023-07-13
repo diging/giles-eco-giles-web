@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 
-@Transactional
 @Component
 public class UserDatabaseClient {
 
