@@ -67,6 +67,9 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             } catch (UnstorableObjectException e) {
                 // should never happen, we're setting the id
                 messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            } catch (IllegalArgumentException e) {
+                // should never happen, we're creating the file
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             }
             
             document.setExtractedTextFileId(completeText.getId());
@@ -84,6 +87,9 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                     filesService.saveFile(pageText);
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
+                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                } catch (IllegalArgumentException e) {
+                    // should never happen, we're creating the file
                     messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
                 }
                 
@@ -114,6 +120,9 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         
         try {

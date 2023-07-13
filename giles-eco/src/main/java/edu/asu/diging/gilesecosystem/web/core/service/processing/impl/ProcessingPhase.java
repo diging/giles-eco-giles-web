@@ -63,6 +63,9 @@ public abstract class ProcessingPhase<T extends IProcessingInfo> implements IPro
                 filesService.saveFile(file);
             } catch (UnstorableObjectException e) {
                 throw new GilesProcessingException(e);
+            } catch (IllegalArgumentException e) {
+                // should never happen, we're creating the file
+                throw new GilesProcessingException(e);
             }
             try {
                 RequestStatus status = processCoordinator.processFile(file, null);

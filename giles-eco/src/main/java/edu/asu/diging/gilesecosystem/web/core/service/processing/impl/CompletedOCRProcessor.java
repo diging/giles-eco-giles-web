@@ -72,6 +72,9 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         } catch (UnstorableObjectException e) {
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         
         // we are looking for the image that was ocred
@@ -125,6 +128,9 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         
         try {

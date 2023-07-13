@@ -119,6 +119,9 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             } catch (UnstorableObjectException e) {
                 // should never happen, we're setting the id
                 messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+            } catch (IllegalArgumentException e) {
+                // should never happen, we're creating the file
+                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             }
             
             FileType fileType = FileType.OTHER;

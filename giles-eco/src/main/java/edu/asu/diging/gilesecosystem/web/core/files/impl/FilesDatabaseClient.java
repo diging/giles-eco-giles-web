@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
@@ -34,7 +34,13 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
      * .File)
      */
     @Override
-    public IFile saveFile(IFile file) throws IllegalArgumentException {
+    public IFile saveFile(IFile file) throws IllegalArgumentException, UnstorableObjectException {
+        IFile existingFile = getFileById(file.getId());
+        if(existingFile == null) {
+            if (file.getId() == null) {
+                throw new UnstorableObjectException("The object does not have an id.");
+            }
+        }
         return fileRepository.save((File) file);
     }
 

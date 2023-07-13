@@ -66,6 +66,9 @@ public class CompletedStorageRequestProcessor extends ACompletedRequestProcessor
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         
         try {

@@ -44,7 +44,7 @@ public class TransactionalFileService implements ITransactionalFileService {
     }
     
     @Override
-    public void saveFile(IFile file) throws UnstorableObjectException {
+    public void saveFile(IFile file) throws IllegalArgumentException, UnstorableObjectException {
         filesDbClient.saveFile(file);
     }
     

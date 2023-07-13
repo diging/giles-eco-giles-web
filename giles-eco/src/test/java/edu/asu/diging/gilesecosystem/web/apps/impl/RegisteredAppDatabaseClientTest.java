@@ -116,5 +116,29 @@ public class RegisteredAppDatabaseClientTest {
         Mockito.when(registeredAppRepository.findById(APP_ID_2)).thenReturn(Optional.empty());
         IRegisteredApp app = dbClientToTest.getAppById(APP_ID_2);
         Assert.assertNull(app);
-    } 
+    }
+    
+    @Test
+    public void test_storeRegisteredApp_suceess() throws IllegalArgumentException, UnstorableObjectException {
+        dbClientToTest.storeRegisteredApp(app1);
+        Mockito.verify(registeredAppRepository).save(app1);
+    }
+    
+    @Test(expected=UnstorableObjectException.class)
+    public void test_storeRegisteredApp_throwsUnstorableObjectException() throws IllegalArgumentException, UnstorableObjectException {
+        RegisteredApp app3 = new RegisteredApp();
+        dbClientToTest.storeRegisteredApp(app3);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_storeRegisteredApp_throwsIllegalArgumentException() throws IllegalArgumentException, UnstorableObjectException {
+        Mockito.when(registeredAppRepository.save(app1)).thenThrow(new IllegalArgumentException());
+        dbClientToTest.storeRegisteredApp(app1);
+    }
+    
+    @Test
+    public void test_deleteRegisteredApp_success() {
+        dbClientToTest.deleteRegisteredApp(app1);
+        Mockito.verify(registeredAppRepository).delete(app1);
+    }
 }

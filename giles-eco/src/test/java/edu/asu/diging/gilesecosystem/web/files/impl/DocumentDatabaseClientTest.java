@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +54,7 @@ public class DocumentDatabaseClientTest {
     }
     
     @Test
-    public void test_saveDocument_new() throws IllegalArgumentException {
+    public void test_saveDocument_new() throws IllegalArgumentException, UnstorableObjectException {
         IDocument doc = new Document();
         doc.setId("id");
         docDatabaseClientToTest.saveDocument(doc);
@@ -64,7 +62,7 @@ public class DocumentDatabaseClientTest {
     }
     
     @Test
-    public void test_saveDocument_existingDoc() throws IllegalArgumentException {
+    public void test_saveDocument_existingDoc() throws IllegalArgumentException, UnstorableObjectException {
         IDocument doc = new Document();
         doc.setId(DOC1_ID);
         docDatabaseClientToTest.saveDocument(doc);
@@ -72,7 +70,15 @@ public class DocumentDatabaseClientTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void test_saveDocument_noId() throws IllegalArgumentException {
+    public void test_saveDocument_throwsIllegalArgumentException() throws IllegalArgumentException, UnstorableObjectException {
+        IDocument doc = new Document();
+        doc.setId(DOC1_ID);
+        Mockito.when(documentRepository.save((Document) doc)).thenThrow(new IllegalArgumentException());
+        docDatabaseClientToTest.saveDocument(doc);
+    }
+    
+    @Test(expected = UnstorableObjectException.class)
+    public void test_saveDocument_noId() throws IllegalArgumentException, UnstorableObjectException {
         IDocument doc = new Document();
         docDatabaseClientToTest.saveDocument(doc);
     }

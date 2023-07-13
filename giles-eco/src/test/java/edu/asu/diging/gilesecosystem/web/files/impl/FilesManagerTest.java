@@ -27,7 +27,6 @@ import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileSer
 
 public class FilesManagerTest {
 
-    @Mock private EntityManager em;
     @Mock private ITransactionalDocumentService documentService;
     @Mock private ITransactionalFileService fileService;
     @InjectMocks private IFilesManager filesManagerToTest;

@@ -7,11 +7,11 @@ public interface IRegisteredAppDatabaseClient extends IDatabaseClient<IRegistere
 
     IRegisteredApp getAppById(String id);
 
-    void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException;
+    void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException, IllegalArgumentException;
 
     IRegisteredApp[] getAllRegisteredApps();
     
-    void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException;
+    void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException, IllegalArgumentException;
     
     void deleteRegisteredApp(IRegisteredApp app);
 }

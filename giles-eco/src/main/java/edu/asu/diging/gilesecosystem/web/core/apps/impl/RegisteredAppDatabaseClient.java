@@ -40,7 +40,7 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
     }
     
     @Override
-    public void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException {
+    public void storeModifiedApp(IRegisteredApp app) throws UnstorableObjectException, IllegalArgumentException {
         if (app.getId() == null) {
             throw new UnstorableObjectException("App does not have an id.");
         }
@@ -62,7 +62,10 @@ public class RegisteredAppDatabaseClient extends DatabaseClient<IRegisteredApp> 
     }
     
     @Override
-    public void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException {
+    public void storeRegisteredApp(IRegisteredApp app) throws UnstorableObjectException, IllegalArgumentException {
+        if (app.getId() == null) {
+            throw new UnstorableObjectException("App does not have an id.");
+        }
         registeredAppRepository.save((RegisteredApp) app);
     }
     

@@ -67,6 +67,9 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
                 } catch (UnstorableObjectException e) {
                     // should never happen, we're setting the id
                     messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+                } catch (IllegalArgumentException e) {
+                    // should never happen, we're creating the file
+                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
                 }
                 
                 IPage documentPage = pages.get(page.getPageNr());
@@ -97,6 +100,9 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
             // fail silently...
             // this should never happen
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         
         try {

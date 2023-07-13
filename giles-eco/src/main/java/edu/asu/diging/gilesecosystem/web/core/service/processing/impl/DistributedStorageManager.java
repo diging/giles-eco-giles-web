@@ -20,6 +20,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
+import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.processing.TemporaryFilesController;
@@ -127,6 +128,9 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         try {
             fileService.saveFile(file);
         } catch (UnstorableObjectException e) {
+            throw new GilesProcessingException(e);
+        } catch (IllegalArgumentException e) {
+            // should never happen, we're creating the file
             throw new GilesProcessingException(e);
         }
         

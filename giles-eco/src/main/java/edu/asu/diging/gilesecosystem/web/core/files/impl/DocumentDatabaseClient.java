@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
@@ -32,7 +33,10 @@ public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
      * .core.IDocument)
      */
     @Override
-    public IDocument saveDocument(IDocument document) throws IllegalArgumentException {
+    public IDocument saveDocument(IDocument document) throws IllegalArgumentException, UnstorableObjectException {
+        if (document.getId() == null) {
+            throw new UnstorableObjectException("The object does not have an id.");
+        }
         return documentRepository.save((Document) document);
     }
 

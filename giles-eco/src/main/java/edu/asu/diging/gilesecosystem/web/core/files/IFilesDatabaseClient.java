@@ -8,7 +8,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 
 public interface IFilesDatabaseClient extends IDatabaseClient<IFile> {
 
-    public abstract IFile saveFile(IFile file) throws UnstorableObjectException;
+    public abstract IFile saveFile(IFile file) throws IllegalArgumentException, UnstorableObjectException;
 
     public abstract IFile getFile(String filename);
 

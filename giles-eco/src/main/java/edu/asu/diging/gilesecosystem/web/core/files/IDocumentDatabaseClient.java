@@ -2,12 +2,13 @@ package edu.asu.diging.gilesecosystem.web.core.files;
 
 import java.util.List;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.IDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 
 public interface IDocumentDatabaseClient extends IDatabaseClient<IDocument> {
 
-    public abstract IDocument saveDocument(IDocument document) throws IllegalArgumentException;
+    public abstract IDocument saveDocument(IDocument document) throws IllegalArgumentException, UnstorableObjectException;
 
     public abstract IDocument getDocumentById(String id);
 

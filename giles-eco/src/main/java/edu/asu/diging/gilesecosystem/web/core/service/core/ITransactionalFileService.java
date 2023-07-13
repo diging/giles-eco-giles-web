@@ -11,7 +11,7 @@ public interface ITransactionalFileService {
 
     String generateRequestId();
 
-    void saveFile(IFile file) throws UnstorableObjectException;
+    void saveFile(IFile file) throws IllegalArgumentException, UnstorableObjectException;
 
     String generateFileId();
 

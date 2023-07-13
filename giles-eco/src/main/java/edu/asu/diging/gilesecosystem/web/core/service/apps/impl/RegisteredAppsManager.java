@@ -57,6 +57,9 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         } catch (UnstorableObjectException e) {
             messageHandler.handleMessage("Could not store app.", e, MessageType.ERROR);
             return null;
+        } catch (IllegalArgumentException e) {
+            messageHandler.handleMessage("Could not store app.", e, MessageType.ERROR);
+            return null;
         }
         return app;
     }
@@ -96,6 +99,8 @@ public class RegisteredAppsManager implements IRegisteredAppManager {
         try {
             databaseClient.storeModifiedApp(app);
         } catch (UnstorableObjectException e) {
+            throw new TokenGenerationErrorException("Token was generated but app could not be stored.", e);
+        } catch (IllegalArgumentException e) {
             throw new TokenGenerationErrorException("Token was generated but app could not be stored.", e);
         }
         
