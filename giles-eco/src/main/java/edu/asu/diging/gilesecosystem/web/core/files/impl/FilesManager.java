@@ -130,6 +130,9 @@ public class FilesManager implements IFilesManager {
                 // let's silently fail because this should never happen
                 // we set the id
                 messageHandler.handleMessage("Could not store upload.", e, MessageType.ERROR);
+            } catch (IllegalArgumentException e) {
+                // should never happen, we're creating the upload and setting the id,
+                messageHandler.handleMessage("Could not store upload.", e, MessageType.ERROR);
             }
         }
 

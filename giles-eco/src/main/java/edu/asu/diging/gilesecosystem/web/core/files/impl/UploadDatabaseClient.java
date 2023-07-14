@@ -6,12 +6,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IUploadDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
@@ -30,7 +29,13 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
     }
     
     @Override
-    public IUpload saveUpload(IUpload upload) throws IllegalArgumentException {
+    public IUpload saveUpload(IUpload upload) throws IllegalArgumentException, UnstorableObjectException {
+        IUpload existing = getById(upload.getId());
+        if (existing == null) {
+            if (upload.getId() == null) {
+                throw new UnstorableObjectException("The object does not have an id.");
+            }
+        }
         return uploadRepository.save((Upload) upload);
     }
     

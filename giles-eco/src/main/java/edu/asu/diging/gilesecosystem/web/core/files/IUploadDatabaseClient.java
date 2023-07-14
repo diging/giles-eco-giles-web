@@ -18,7 +18,7 @@ public interface IUploadDatabaseClient extends IDatabaseClient<IUpload> {
     public abstract List<IUpload> getUploadsForUser(String username, int page,
             int pageSize, String sortBy, int sortDirection);
 
-    public abstract IUpload saveUpload(IUpload upload) throws UnstorableObjectException;
+    public abstract IUpload saveUpload(IUpload upload) throws IllegalArgumentException, UnstorableObjectException;
 
     public abstract IUpload getUploadsByProgressId(String progressId);
 

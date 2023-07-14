@@ -13,7 +13,7 @@ public interface ITransactionalUploadService {
 
     IUpload getUploadByProgressId(String progressId);
 
-    void saveUpload(IUpload upload) throws UnstorableObjectException;
+    void saveUpload(IUpload upload) throws IllegalArgumentException, UnstorableObjectException;
 
     /**
      * Get specified page of upload query. If pageSize is -1, default page size is 

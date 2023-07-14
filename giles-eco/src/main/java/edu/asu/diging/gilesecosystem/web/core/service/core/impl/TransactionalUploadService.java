@@ -52,7 +52,7 @@ public class TransactionalUploadService implements ITransactionalUploadService {
      * @see edu.asu.diging.gilesecosystem.web.service.core.impl.ITransactionalUploadService#saveUpload(edu.asu.diging.gilesecosystem.web.core.IUpload)
      */
     @Override
-    public void saveUpload(IUpload upload) throws UnstorableObjectException {
+    public void saveUpload(IUpload upload) throws IllegalArgumentException, UnstorableObjectException {
         uploadDatabaseClient.saveUpload(upload);
     }
  
