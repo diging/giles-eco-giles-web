@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -22,7 +21,6 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = {
         "edu.asu.diging.gilesecosystem.web"
 })
-//@EnableTransactionManagement
 @PropertySource("classpath:config.properties")
 public class PersistentContext {
 

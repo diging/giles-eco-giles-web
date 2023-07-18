@@ -32,18 +32,21 @@ public class UploadDatabaseClientTest {
     private UploadDatabaseClient uploadDatabaseClient;
     
     IUpload upload1;
+    private final String UPLOAD_ID = "UPL123";
+    private final String USERNAME = "testUser";
+    private final String PROGRESS_ID = "PROG123";
     
     @Before
     public void setUp() {
         uploadDatabaseClient = new UploadDatabaseClient(uploadRepository);
         MockitoAnnotations.initMocks(this);
-        upload1 = createUpload("UPL123", "testUser", "PROG123");
-        Mockito.when(uploadRepository.findById("UPL123")).thenReturn(Optional.of((Upload) upload1));
+        upload1 = createUpload(UPLOAD_ID, USERNAME, PROGRESS_ID);
+        Mockito.when(uploadRepository.findById(UPLOAD_ID)).thenReturn(Optional.of((Upload) upload1));
     }
     
     @Test
     public void test_saveUpload_success() throws IllegalArgumentException, UnstorableObjectException {
-        Mockito.when(uploadRepository.findById("UPL123")).thenReturn(Optional.empty());
+        Mockito.when(uploadRepository.findById(UPLOAD_ID)).thenReturn(Optional.empty());
         uploadDatabaseClient.saveUpload(upload1);
         Mockito.verify(uploadRepository).save((Upload) upload1);
     }
@@ -69,13 +72,13 @@ public class UploadDatabaseClientTest {
     
     @Test
     public void test_getUpload_success() {
-        Assert.assertEquals(uploadDatabaseClient.getUpload("UPL123"), upload1);
+        Assert.assertEquals(uploadDatabaseClient.getUpload(UPLOAD_ID), upload1);
     }
     
     @Test
     public void test_getUpload_returnsNull() {
         Mockito.when(uploadRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        Assert.assertNull(uploadDatabaseClient.getUpload("UPL123"));
+        Assert.assertNull(uploadDatabaseClient.getUpload(UPLOAD_ID));
     }
     
     @Test
@@ -83,14 +86,14 @@ public class UploadDatabaseClientTest {
         List<IUpload> uploads = new ArrayList();
         uploads.add(upload1);
         Mockito.when(uploadRepository.findByUsername(Mockito.anyString())).thenReturn(uploads);
-        Assert.assertEquals(1, uploadDatabaseClient.getUploadsForUser("testUser").size());
+        Assert.assertEquals(1, uploadDatabaseClient.getUploadsForUser(USERNAME).size());
     }
     
     @Test
     public void test_getUploadsForUser_returnsEmptyList() {
         List<IUpload> uploads = new ArrayList();
         Mockito.when(uploadRepository.findByUsername(Mockito.anyString())).thenReturn(uploads);
-        Assert.assertEquals(0, uploadDatabaseClient.getUploadsForUser("testUser").size());
+        Assert.assertEquals(0, uploadDatabaseClient.getUploadsForUser(USERNAME).size());
     }
     
     @Test
@@ -106,7 +109,7 @@ public class UploadDatabaseClientTest {
     @Test
     public void test_getUploadCountForUser_success() {
         Mockito.when(uploadRepository.countByUsername(Mockito.anyString())).thenReturn(1L);
-        Assert.assertEquals(1L, uploadDatabaseClient.getUploadCountForUser("testUser"));
+        Assert.assertEquals(1L, uploadDatabaseClient.getUploadCountForUser(USERNAME));
     }
     
     @Test
@@ -118,7 +121,7 @@ public class UploadDatabaseClientTest {
     @Test
     public void test_getUploadsByProgressId_success() {
         Mockito.when(uploadRepository.findByUploadProgressId(Mockito.anyString())).thenReturn((Upload) upload1);
-        Assert.assertEquals(upload1, uploadDatabaseClient.getUploadsByProgressId("PROG123"));
+        Assert.assertEquals(upload1, uploadDatabaseClient.getUploadsByProgressId(PROGRESS_ID));
     }
     
     @Test
@@ -128,7 +131,7 @@ public class UploadDatabaseClientTest {
         Mockito.when(uploadRepository.findByUsername(Mockito.anyString(), Mockito.any(PageRequest.class))).thenReturn(uploads);
         List<IUpload> expectedUploads = new ArrayList<>();
         expectedUploads.add(upload1);
-        Assert.assertEquals(expectedUploads, uploadDatabaseClient.getUploadsForUser("testUser", 1, 10, "createdDate", new Integer(IUploadDatabaseClient.DESCENDING)));
+        Assert.assertEquals(expectedUploads, uploadDatabaseClient.getUploadsForUser(USERNAME, 1, 10, "createdDate", new Integer(IUploadDatabaseClient.DESCENDING)));
     }
     
     @Test

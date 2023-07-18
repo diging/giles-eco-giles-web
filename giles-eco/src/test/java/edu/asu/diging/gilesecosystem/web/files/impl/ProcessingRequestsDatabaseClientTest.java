@@ -33,12 +33,17 @@ public class ProcessingRequestsDatabaseClientTest {
     private ProcessingRequestsDatabaseClient processingRequestsDatabaseClient;
     
     private IProcessingRequest processingRequest;
+    
+    private final String DOCUMENT_ID = "DOC123";
+    private final String FILE_ID = "FILE123";
+    private final String REQUEST_ID = "REQ123";
+    private final String PROCESSING_REQUEST_ID = "PROC123";
 
     @Before
     public void setUp() {
         processingRequestsDatabaseClient = new ProcessingRequestsDatabaseClient(processingRequestRepository);
         MockitoAnnotations.initMocks(this);
-        processingRequest = createProcessingRequest("DOC123", "FILE123", "REQ123", "PROC123");
+        processingRequest = createProcessingRequest(DOCUMENT_ID, FILE_ID, REQUEST_ID, PROCESSING_REQUEST_ID);
     }
     
     @Test
@@ -46,14 +51,14 @@ public class ProcessingRequestsDatabaseClientTest {
         List<ProcessingRequest> processingRequests = new ArrayList();
         processingRequests.add((ProcessingRequest) processingRequest);
         Mockito.when(processingRequestRepository.findByDocumentId(Mockito.anyString())).thenReturn(processingRequests);
-        Assert.assertEquals(processingRequests, processingRequestsDatabaseClient.getRequestByDocumentId("DOC123"));
+        Assert.assertEquals(processingRequests, processingRequestsDatabaseClient.getRequestByDocumentId(DOCUMENT_ID));
     }
     
     @Test
     public void test_getRequestByDocumentId_returnsEmptyList() {
         List<ProcessingRequest> processingRequests = new ArrayList();
         Mockito.when(processingRequestRepository.findByDocumentId(Mockito.anyString())).thenReturn(processingRequests);
-        List<IProcessingRequest> res = processingRequestsDatabaseClient.getRequestByDocumentId("DOC123");
+        List<IProcessingRequest> res = processingRequestsDatabaseClient.getRequestByDocumentId(DOCUMENT_ID);
         Assert.assertEquals(processingRequests, res);
         Assert.assertEquals(0, res.size());
     }
@@ -63,14 +68,14 @@ public class ProcessingRequestsDatabaseClientTest {
         List<ProcessingRequest> processingRequests = new ArrayList();
         processingRequests.add((ProcessingRequest) processingRequest);
         Mockito.when(processingRequestRepository.findByRequestId(Mockito.anyString())).thenReturn(processingRequests);
-        Assert.assertEquals(processingRequests, processingRequestsDatabaseClient.getProcRequestsByRequestId("REQ123"));
+        Assert.assertEquals(processingRequests, processingRequestsDatabaseClient.getProcRequestsByRequestId(REQUEST_ID));
     }
     
     @Test
     public void test_getProcRequestsByRequestId_returnsEmptyList() {
         List<ProcessingRequest> processingRequests = new ArrayList();
         Mockito.when(processingRequestRepository.findByRequestId(Mockito.anyString())).thenReturn(processingRequests);
-        List<IProcessingRequest> res = processingRequestsDatabaseClient.getRequestByDocumentId("DOC123");
+        List<IProcessingRequest> res = processingRequestsDatabaseClient.getRequestByDocumentId(DOCUMENT_ID);
         Assert.assertEquals(processingRequests, res);
         Assert.assertEquals(0, res.size());
     }
