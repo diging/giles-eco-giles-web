@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
@@ -17,7 +16,6 @@ import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
 
-@Transactional
 @Component
 public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessingRequest> implements IProcessingRequestsDatabaseClient {
 
@@ -49,7 +47,15 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
         try {
             processingRequestRepository.save((ProcessingRequest) request);
         } catch (IllegalArgumentException e) {
-            // should never happen
+            messageHandler.handleMessage("Could not store element.", e, MessageType.ERROR);
+        }
+    }
+    
+    @Override
+    public void saveRequest(IProcessingRequest request) {
+        try {
+            processingRequestRepository.save((ProcessingRequest) request);
+        } catch (IllegalArgumentException e) {
             messageHandler.handleMessage("Could not store element.", e, MessageType.ERROR);
         }
     }
@@ -61,22 +67,17 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     }
     
     @Override
+    protected IProcessingRequest getById(String id) {
+        return (IProcessingRequest) processingRequestRepository.findById(id).orElse(null);
+    }
+    
+    @Override
     protected String getIdPrefix() {
         return "PREQ";
     }
 
     @Override
-    protected IProcessingRequest getById(String id) {
-        return (IProcessingRequest) processingRequestRepository.findById(id).orElse(null);
-    }
-
-    @Override
     protected EntityManager getClient() {
        return null;
-    }
-
-    @Override
-    public void saveRequest(IProcessingRequest request) {
-        processingRequestRepository.save((ProcessingRequest) request);
     }
 }
