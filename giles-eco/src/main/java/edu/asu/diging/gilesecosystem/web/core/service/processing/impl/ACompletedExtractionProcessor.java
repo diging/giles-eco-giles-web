@@ -158,6 +158,8 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         } catch (UnstorableObjectException e) {
             // should never happen, we're setting the id
             messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        } catch (IllegalArgumentException e) {
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
         }
         return newFile;
     }
