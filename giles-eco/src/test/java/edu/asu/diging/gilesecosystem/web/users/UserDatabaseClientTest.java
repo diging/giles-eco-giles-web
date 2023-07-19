@@ -60,7 +60,7 @@ public class UserDatabaseClientTest {
         Mockito.when(userRepository.findByEmail("test@gmail.com")).thenReturn(users);
         List<User> resUsers = userDatabaseClient.findUsersByEmail("test@gmail.com");
         Assert.assertEquals(users, resUsers);
-     }
+    }
     
     @Test
     public void test_getAllUser() {

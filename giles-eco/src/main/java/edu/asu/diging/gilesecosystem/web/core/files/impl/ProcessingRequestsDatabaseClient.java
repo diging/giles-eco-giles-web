@@ -78,6 +78,6 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
 
     @Override
     protected EntityManager getClient() {
-       return null;
+        return null;
     }
 }

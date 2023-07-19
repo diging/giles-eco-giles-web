@@ -120,7 +120,6 @@ public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
 
     @Override
     protected EntityManager getClient() {
-       return null;
+        return null;
     }
-
 }

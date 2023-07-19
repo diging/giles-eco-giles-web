@@ -16,6 +16,6 @@ public interface UploadRepository extends JpaRepository<Upload, String> {
     long countByUsername(String username);
     Upload findByUploadProgressId(String progressId);
     List<IUpload> findByUsername(String username, Sort sort);
-    List<Upload> findAllOrderBy(String sortBy, Pageable pageable);
     List<Upload> findByUsername(String username, Pageable pageable);
+    List<Upload> findAllOrderBy(String sortBy, Pageable pageable);
 }
