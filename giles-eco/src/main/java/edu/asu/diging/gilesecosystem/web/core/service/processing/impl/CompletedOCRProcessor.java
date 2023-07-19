@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -61,24 +62,13 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
     public void processRequest(ICompletedOCRRequest request) {
         IDocument document = documentService.getDocument(request.getDocumentId());
         IFile file = filesService.getFileById(document.getUploadedFileId());
-        
         Map<String, IPage> pages = getPageMap(document.getPages());
         Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
-        
-        IFile textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-       
-        try {
-            filesService.saveFile(textFile);
-        } catch (UnstorableObjectException e) {
-            // should never happen, we're setting the id
-            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-        } catch (IllegalArgumentException e) {
-            // should never happen, we're creating the file
-            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-        }
-        
-        // we are looking for the image that was ocred
         IPage documentPage = pages.get(request.getFilename());
+        Function<IPage, String> getFileIdFunction = docPage -> docPage.getOcrFileId();
+        IFile textFile = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getFileIdFunction);
+
+        // we are looking for the image that was ocred
         if (documentPage != null) {
             documentPage.setOcrFileId(textFile.getId());
             if (request.getStatus() != null) {

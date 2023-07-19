@@ -1,10 +1,16 @@
 package edu.asu.diging.gilesecosystem.web.core.model.impl;
 
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
@@ -42,6 +48,16 @@ public class File implements IFile {
     private ProcessingStatus processingStatus;
     private String groupId;
     private String recordId;
+    /**
+     * List of old file version IDs for the file if the file was reprocessed.
+     * When a file is reprocessed, this list is populated with the older storage IDs associated with the file in Nepomuk.
+     * While the file is updated to store the newest storage ID after reprocessing.
+     * It allows us to maintain a record of its previous versions. 
+     * Which can be used in the deletion of stale records from storage in the future.
+    */
+    @ElementCollection 
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<String> oldFileVersionIds;
 
     public File() {}
 
@@ -286,5 +302,15 @@ public class File implements IFile {
         file.setUsername(username);
         file.setUsernameForStorage(usernameForStorage);
         return file;
-    } 
+    }
+    
+    @Override
+    public void setOldFileVersionIds(List<String> fileVersionIds) {
+        this.oldFileVersionIds = fileVersionIds;
+    }
+    
+    @Override
+    public List<String> getOldFileVersionIds() {
+        return this.oldFileVersionIds;
+    }
 }
