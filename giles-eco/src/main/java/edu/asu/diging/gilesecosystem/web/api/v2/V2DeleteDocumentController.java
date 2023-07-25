@@ -1,6 +1,7 @@
 package edu.asu.diging.gilesecosystem.web.api.v2;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,13 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
 import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
@@ -45,6 +49,9 @@ public class V2DeleteDocumentController {
     
     @Autowired
     private ICitesphereConnector citesphereConnector;
+
+    @Autowired
+    private ITransactionalProcessingRequestService processingRequestService;
     
     @Value("${giles_check_deletion_endpoint_v2}")
     private String checkDeleteEndpoint;
@@ -84,6 +91,16 @@ public class V2DeleteDocumentController {
             unauthorizedMsgs.put("errorMsg", "User is not authorized to check status for document id " + document.getId());
             unauthorizedMsgs.put("errorCode", "403");
             return responseHelper.generateResponse(unauthorizedMsgs, HttpStatus.FORBIDDEN);
+        }
+        if (!document.getRequestId().isEmpty()) {
+            List<IProcessingRequest> pRequests = processingRequestService.getProcRequestsByRequestId(document.getRequestId());
+            for (IProcessingRequest pReq : pRequests) {
+                if (pReq.getRequestStatus().equals(RequestStatus.FAILED)) {
+                    Map<String, String> deletionErrorMsg = new HashMap<String, String>();
+                    deletionErrorMsg.put("progressInfo", "There was an error in deleting the document. Please try again.");
+                    return responseHelper.generateResponse(deletionErrorMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
         }
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");

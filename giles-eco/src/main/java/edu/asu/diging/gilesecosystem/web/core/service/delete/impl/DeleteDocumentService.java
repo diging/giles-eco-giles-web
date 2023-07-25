@@ -29,6 +29,8 @@ import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
@@ -131,17 +133,19 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
             String requestId = documentService.generateRequestId(REQUEST_PREFIX);
-            storeRequestId(requestId, document);
             storageDeletionRequest = requestFactory.createRequest(requestId, document.getUploadId());
+            storeRequestId(requestId, document);
             storageDeletionRequest.setDocumentId(document.getId());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
-        } 
+        }
+        IProcessingRequest procReq = new ProcessingRequest();
+        procReq.setRequestId(storageDeletionRequest.getRequestId());
+        procReq.setDocumentId(document.getId());
+        procReq.setSentRequest(storageDeletionRequest);
+        procReq.setRequestStatus(storageDeletionRequest.getStatus());
+        processingRequestService.saveNewProcessingRequest(procReq);
         return storageDeletionRequest;
-    }
-    
-    private String getTopic() {
-        return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
     }
     
     private void storeRequestId(String requestId, IDocument document) {
@@ -151,5 +155,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         } catch (UnstorableObjectException e) {
             messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
+    }
+    
+    private String getTopic() {
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
     }
 }
