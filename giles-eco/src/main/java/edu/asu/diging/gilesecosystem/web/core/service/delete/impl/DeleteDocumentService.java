@@ -140,6 +140,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             throw new GilesProcessingException(e);
         }
         IProcessingRequest procReq = new ProcessingRequest();
+        
         procReq.setRequestId(storageDeletionRequest.getRequestId());
         procReq.setDocumentId(document.getId());
         procReq.setSentRequest(storageDeletionRequest);

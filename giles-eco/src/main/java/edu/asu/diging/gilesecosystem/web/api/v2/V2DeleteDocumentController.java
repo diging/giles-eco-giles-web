@@ -104,6 +104,6 @@ public class V2DeleteDocumentController {
         }
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("progressInfo", "Deletion in progress. Please check back later.");
-        return responseHelper.generateResponse(msgs, HttpStatus.OK);
+        return responseHelper.generateResponse(msgs, HttpStatus.ACCEPTED);
     }
 }
