@@ -17,6 +17,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageDeletionRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
@@ -136,6 +137,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
             storageDeletionRequest = requestFactory.createRequest(requestId, document.getUploadId());
             storeRequestId(requestId, document);
             storageDeletionRequest.setDocumentId(document.getId());
+            storageDeletionRequest.setStatus(RequestStatus.NEW);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
         }
