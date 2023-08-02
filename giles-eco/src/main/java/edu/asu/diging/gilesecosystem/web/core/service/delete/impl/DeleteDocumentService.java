@@ -36,6 +36,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
@@ -76,6 +77,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     @Autowired
     private ITransactionalProcessingRequestService processingRequestService;
     
+    @Autowired
+    private ITransactionalRequestService requestService;
+    
     private Map<String, FileType> fileTypes;
     
     @PostConstruct
@@ -111,6 +115,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     public void deleteDocumentAfterStorageDeletion(IDocument document) {
         processDeleteFilesOfDocument(document);
         processDeleteProcessingRequestsOfDocument(document);
+        processDeleteRequestsOfDocument(document);
         documentService.deleteDocument(document.getId());
         processDeleteUploadOfDocument(document.getUploadId());
     }
@@ -162,5 +167,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     private String getTopic() {
         return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
+    }
+    
+    private void processDeleteRequestsOfDocument(IDocument document) {
+        requestService.deleteRequestsByDocumentId(document.getId());
     }
 }
