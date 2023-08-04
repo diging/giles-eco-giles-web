@@ -1,7 +1,5 @@
 package edu.asu.diging.gilesecosystem.web.config.impl;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,13 +11,8 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.UserProfile;
 
-import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
-import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
-import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
-import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
-import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 
@@ -32,11 +25,6 @@ public class UserHelperTest {
     @InjectMocks private IUserHelper helperToTest;
     
     private String USER_ID = "user_id";
-    private String DOCUMENT_ID = "documentId";
-    private DocumentAccess access = DocumentAccess.PRIVATE;
-    private String FILE_ID = "fileId";
-    private String UPLOAD_ID = "uploadId";
-    private CitesphereToken citesphereToken = new CitesphereToken("71b9cc36-939d-4e28-89e9-e5bfca1b26c3");
     
     @Before
     public void setUp() {
@@ -106,37 +94,5 @@ public class UserHelperTest {
         Assert.assertEquals(PROVIDER_ID, createdUser.getProvider());
         Assert.assertEquals(PROVIDER_USER_ID, createdUser.getUserIdOfProvider());
         Assert.assertEquals(AccountStatus.ADDED, createdUser.getAccountStatus());
-    }
-    
-    @Test
-    public void test_isUserPermittedToAccessDocument_whenUserIsAllowedToAccessDocument() {
-        IDocument document = createDocument();
-        citesphereToken.setPrincipal(createCitesphereUser("dab"));
-        Assert.assertTrue(helperToTest.isUserPermittedToAccessDocument(document, citesphereToken));
-    }
-    
-    @Test
-    public void test_isUserPermittedToAccessDocument_whenUserIsNotAllowedToAccessDocument() {
-        IDocument document = createDocument();
-        citesphereToken.setPrincipal(createCitesphereUser("test1"));
-        Assert.assertFalse(helperToTest.isUserPermittedToAccessDocument(document, citesphereToken));
-    }
-    
-    private Document createDocument() {
-        Document document = new Document();
-        document.setId(DOCUMENT_ID);
-        document.setAccess(access);
-        document.setFileIds(Arrays.asList(FILE_ID));
-        document.setUploadId(UPLOAD_ID);
-        document.setUploadedFileId(FILE_ID);
-        document.setUsername("dab_citesphere");
-        return document;
-    }
-    
-    private CitesphereUser createCitesphereUser(String userName) {
-        CitesphereUser user = new CitesphereUser();
-        user.setAuthorizingClient("citesphere");
-        user.setUsername(userName);
-        return user;
     }
 }

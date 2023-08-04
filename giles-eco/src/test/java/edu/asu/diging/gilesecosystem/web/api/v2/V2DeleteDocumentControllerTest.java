@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -21,14 +22,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
+import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
@@ -49,6 +54,9 @@ public class V2DeleteDocumentControllerTest {
     
     @Mock
     private ICitesphereConnector citesphereConnector;
+    
+    @Mock
+    private ITransactionalProcessingRequestService processingRequestService;
     
     @InjectMocks
     private V2DeleteDocumentController v2DeleteDocumentController;
@@ -136,6 +144,21 @@ public class V2DeleteDocumentControllerTest {
         Assert.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
     
+    @Test
+    public void test_checkDocumentDeletion_whenDeletionFailed() {
+        Mockito.when(documentService.getDocument(DOCUMENT_ID)).thenReturn(document);
+        Map<String, String> msgs = new HashMap<String, String>();
+        msgs.put("progressInfo", "Deletion in progress. Please check back later.");
+        Mockito.when(responseHelper.generateResponse(Mockito.anyMap(), Mockito.any(HttpStatus.class))).thenReturn(generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR));
+        IProcessingRequest procRequest = new ProcessingRequest();
+        procRequest.setRequestStatus(RequestStatus.FAILED);
+        List<IProcessingRequest> procList = new ArrayList<IProcessingRequest>();
+        procList.add(procRequest);
+        Mockito.when(processingRequestService.getProcRequestsByRequestId(Mockito.anyString())).thenReturn(procList);
+        ResponseEntity<String> response = v2DeleteDocumentController.deleteDocument(DOCUMENT_ID, CITESPHERE_TOKEN);
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+    
     private Document createDocument() {
         Document document = new Document();
         document.setId(DOCUMENT_ID);
@@ -143,6 +166,7 @@ public class V2DeleteDocumentControllerTest {
         document.setFileIds(Arrays.asList(FILE_ID));
         document.setUploadId(UPLOAD_ID);
         document.setUploadedFileId(FILE_ID);
+        document.setRequestId("REQ123");
         return document;
     }
     
