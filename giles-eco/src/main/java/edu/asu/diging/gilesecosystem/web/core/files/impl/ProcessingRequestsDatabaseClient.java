@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
@@ -16,15 +17,12 @@ import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.repository.ProcessingRequestRepository;
 
+@Transactional
 @Component
 public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessingRequest> implements IProcessingRequestsDatabaseClient {
 
-    private final ProcessingRequestRepository processingRequestRepository;
-
     @Autowired
-    public ProcessingRequestsDatabaseClient(ProcessingRequestRepository processingRequestRepository) {
-        this.processingRequestRepository = processingRequestRepository;
-    }
+    private ProcessingRequestRepository processingRequestRepository;
     
     @Autowired
     private ISystemMessageHandler messageHandler;

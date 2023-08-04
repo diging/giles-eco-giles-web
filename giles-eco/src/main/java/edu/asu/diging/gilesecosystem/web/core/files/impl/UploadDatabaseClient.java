@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
@@ -17,16 +18,13 @@ import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.core.repository.UploadRepository;
 
+@Transactional
 @Service
 public class UploadDatabaseClient extends DatabaseClient<IUpload> implements
         IUploadDatabaseClient {
 
-    private final UploadRepository uploadRepository;
-
     @Autowired
-    public UploadDatabaseClient(UploadRepository uploadRepository) {
-        this.uploadRepository = uploadRepository;
-    }
+    private UploadRepository uploadRepository;
     
     @Override
     public IUpload saveUpload(IUpload upload) throws IllegalArgumentException, UnstorableObjectException {

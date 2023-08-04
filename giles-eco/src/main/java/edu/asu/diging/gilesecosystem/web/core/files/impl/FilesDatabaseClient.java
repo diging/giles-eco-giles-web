@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
@@ -15,16 +16,13 @@ import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
 import edu.asu.diging.gilesecosystem.web.core.repository.FileRepository;
 
+@Transactional
 @Component
 public class FilesDatabaseClient extends DatabaseClient<IFile> implements
         IFilesDatabaseClient {
     
-    private final FileRepository fileRepository;
-
     @Autowired
-    public FilesDatabaseClient(FileRepository fileRepository) {
-        this.fileRepository = fileRepository;
-    }
+    private FileRepository fileRepository;
 
     /*
      * (non-Javadoc)
@@ -36,10 +34,8 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     @Override
     public IFile saveFile(IFile file) throws IllegalArgumentException, UnstorableObjectException {
         IFile existingFile = getFileById(file.getId());
-        if(existingFile == null) {
-            if (file.getId() == null) {
-                throw new UnstorableObjectException("The object does not have an id.");
-            }
+        if(existingFile == null && file.getId() == null) {
+            throw new UnstorableObjectException("The object does not have an id.");
         }
         return fileRepository.save((File) file);
     }

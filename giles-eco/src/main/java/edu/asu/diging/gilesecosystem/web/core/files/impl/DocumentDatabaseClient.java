@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.store.objectdb.DatabaseClient;
@@ -14,16 +15,13 @@ import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.Document;
 import edu.asu.diging.gilesecosystem.web.core.repository.DocumentRepository;
 
+@Transactional
 @Component
 public class DocumentDatabaseClient extends DatabaseClient<IDocument> implements
         IDocumentDatabaseClient {
 
-    private final DocumentRepository documentRepository;
-
     @Autowired
-    public DocumentDatabaseClient(DocumentRepository documentRepository) {
-        this.documentRepository = documentRepository;
-    }
+    private DocumentRepository documentRepository;
     
     /*
      * (non-Javadoc)
