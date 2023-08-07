@@ -33,6 +33,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.impl.Upload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.impl.DeleteDocumentService;
@@ -68,6 +69,9 @@ public class DeleteDocumentServiceTest {
     
     @Mock
     private ITransactionalProcessingRequestService processingRequestService;
+    
+    @Mock
+    private ITransactionalRequestService requestService; 
     
     @InjectMocks
     private IDeleteDocumentService factoryToTest;
