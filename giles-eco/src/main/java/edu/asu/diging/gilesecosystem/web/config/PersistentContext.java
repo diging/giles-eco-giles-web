@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = {
         "edu.asu.diging.gilesecosystem.web"
 })
-@PropertySource("classpath:config.properties")
 @EnableTransactionManagement
+@PropertySource("classpath:config.properties")
 public class PersistentContext {
 
     @Bean(destroyMethod = "close")
