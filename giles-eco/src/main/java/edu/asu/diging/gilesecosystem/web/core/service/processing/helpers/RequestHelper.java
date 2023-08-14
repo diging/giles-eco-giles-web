@@ -9,6 +9,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageRequest;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageRequest;
+import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
@@ -18,6 +19,9 @@ public class RequestHelper {
     
     @Autowired
     private IRequestFactory<IStorageRequest, StorageRequest> requestFactory;
+    
+    @Autowired
+    protected IPropertiesManager propertyManager;
     
     @PostConstruct
     public void init() {
@@ -66,7 +70,7 @@ public class RequestHelper {
     * @throws GilesProcessingException If there is an error during the creation of the storage request.
     */
     public IStorageRequest createStorageRequest(IFile file, String pathToFile, String downloadUrl,
-            FileType filetype, String requestId, boolean derivedFile) throws GilesProcessingException {
+            FileType filetype, String requestId, String generatedByService) throws GilesProcessingException {
         IStorageRequest request = null;
         try {
             request = requestFactory.createRequest(requestId, file.getUploadId());
@@ -81,7 +85,7 @@ public class RequestHelper {
         request.setUploadDate(file.getUploadDate());
         request.setFilename(file.getFilename());
         request.setUsername(file.getUsernameForStorage());
-        request.setDerivedFile(derivedFile);
+        request.setGeneratedByService(generatedByService);
         return request;
     }
     

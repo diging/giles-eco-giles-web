@@ -112,7 +112,7 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         if (request.getDownloadPath() != null && !request.getDownloadPath().isEmpty()
                 && request.getDownloadUrl() != null & !request.getDownloadUrl().isEmpty() && request.getStatus() != RequestStatus.FAILED) {
             request.setStatus(RequestStatus.COMPLETE);
-            sendStorageRequest(textFile, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
+            sendStorageRequest(textFile, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT, request.getGeneratedByService());
         } else {
             request.setStatus(RequestStatus.FAILED);
         }

@@ -90,10 +90,10 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     @param type The type of the file.
     @param imageExtracted {@code true} if the image has been extracted, {@code false} otherwise.
     */
-    protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, boolean derivedFile) {
+    protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, String generatedByService) {
         IStorageRequest storageRequest;
         try {
-            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), derivedFile);
+            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), generatedByService);
         } catch (GilesProcessingException e) {
             messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
             return;

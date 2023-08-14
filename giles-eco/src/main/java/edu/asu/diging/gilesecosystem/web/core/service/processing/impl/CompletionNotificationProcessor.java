@@ -58,7 +58,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
             document.setTasks(new ArrayList<ITask>());
         }
         // if there was a new file created
-        IFile newFile = saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.isDerivedFile());
+        IFile newFile = saveFile(file, request.getStatus(), request.getNotifier(), document, fileDownloadUrl, request.getContentType(), request.getSize(), request.getFilename(), request.getGeneratedByService());
         // if the file is an image extracted by tardis and the original image is associated with a page 
         // we need to update the additional file id's of the page with the new file id.
         if (request.getNotifier().equals(propertiesManager.getProperty(Properties.TARDIS_NOTIFIR_ID))) {
@@ -83,12 +83,12 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                 }
                 document.getPages().add(documentPage);
                 
-                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.isDerivedFile());  
+                IFile additionalFile = saveFile(file, request.getStatus(), request.getNotifier(), document, page.getDownloadUrl(), page.getContentType(), page.getSize(), page.getFilename(), request.getGeneratedByService());  
                 if (additionalFile != null) {
                     documentPage.getAdditionalFileIds().add(additionalFile.getId());
                 }
                 for (PageElement element : page.getPageElements()) {
-                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.isDerivedFile());
+                    IFile elementFile = saveFile(file, request.getStatus(), request.getNotifier(), document, element.getDownloadUrl(), element.getContentType(), element.getSize(), element.getFilename(), request.getGeneratedByService());
                     if (elementFile != null) {
                         documentPage.getAdditionalFileIds().add(elementFile.getId());
                     }
@@ -111,7 +111,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
         return pageMap;
     }
 
-    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename, boolean derivedFile) {
+    public IFile saveFile(IFile file, RequestStatus status, String notifier, IDocument document, String downloadUrl, String contentType, long size, String filename, String generatedByService) {
         // if there was a new file created
         if (downloadUrl != null && !downloadUrl.isEmpty()) {
             IFile additionalFile = createFile(file, document, contentType, size, filename, REQUEST_PREFIX);
@@ -133,11 +133,7 @@ public class CompletionNotificationProcessor extends ACompletedExtractionProcess
                     fileType = FileType.PDF;
                 }
             }
-            if (derivedFile) {
-                sendStorageRequest(additionalFile, "", downloadUrl, fileType, derivedFile);
-            } else {
-                sendStorageRequest(additionalFile, "", downloadUrl, fileType);
-            }
+            sendStorageRequest(additionalFile, "", downloadUrl, fileType, generatedByService);
             
             ITask task = new Task();
             task.setFileId(file.getId());
