@@ -37,15 +37,9 @@ public class RequestHelperTest {
     }
     
     @Test
-    public void test_createStorageRequest_withDerivedFile_asFalse() throws GilesProcessingException {
-        IStorageRequest request = requestHelper.createStorageRequest(file, "pdfs/github_37469232/UPzabVVEAlajNL/DOCuEO0La7renx9/HW1.jpg", "http://localhost:8082/nepomuk/rest/files/FILEl17JlMz3axqi", FileType.IMAGE, "STREQqyx8EJZwmqaE", false);
-        Assert.assertEquals(request.isDerivedFile(), false);
-    }
-    
-    @Test
-    public void test_createStorageRequest_withDerivedFile_asTrue() throws GilesProcessingException {
-        IStorageRequest request = requestHelper.createStorageRequest(file, "pdfs/github_37469232/UPzabVVEAlajNL/DOCuEO0La7renx9/HW1.jpg", "http://localhost:8082/nepomuk/rest/files/FILEl17JlMz3axqi", FileType.IMAGE, "STREQqyx8EJZwmqaE", true);
-        Assert.assertEquals(request.isDerivedFile(), true);
+    public void test_createStorageRequest_withGeneratedByService_success() throws GilesProcessingException {
+        IStorageRequest request = requestHelper.createStorageRequest(file, "pdfs/github_37469232/UPzabVVEAlajNL/DOCuEO0La7renx9/HW1.jpg", "http://localhost:8082/nepomuk/rest/files/FILEl17JlMz3axqi", FileType.IMAGE, "STREQqyx8EJZwmqaE", "geco.giles");
+        Assert.assertEquals(request.getGeneratedByService(), "geco.giles");
     }
     
     private IStorageRequest createStorageRequest() {
