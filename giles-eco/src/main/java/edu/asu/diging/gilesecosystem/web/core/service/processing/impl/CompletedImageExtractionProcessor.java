@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,16 +61,9 @@ public class CompletedImageExtractionProcessor extends ACompletedExtractionProce
         
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
-                IFile pageText = createFile(file, document, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX);
-               
-                try {
-                    filesService.saveFile(pageText);
-                } catch (UnstorableObjectException e) {
-                    // should never happen, we're setting the id
-                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-                }
-                
                 IPage documentPage = pages.get(page.getPageNr());
+                Function<IPage, String> getFileIdFunction = docPage -> docPage.getImageFileId();
+                IFile pageText = getFile(documentPage, document, file, page.getContentType(), page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileIdFunction);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setPageNr(page.getPageNr());

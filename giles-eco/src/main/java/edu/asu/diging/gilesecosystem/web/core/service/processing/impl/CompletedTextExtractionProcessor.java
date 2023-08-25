@@ -60,17 +60,9 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         String completeTextDownload = request.getDownloadUrl();
         // text was extracted
         if (completeTextDownload != null && !completeTextDownload.isEmpty()) {
-            IFile completeText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
-            
-            try {
-                filesService.saveFile(completeText);
-            } catch (UnstorableObjectException e) {
-                // should never happen, we're setting the id
-                messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-            }
-            
+            Function<IDocument, String> getTextFileIdFunction = docPage -> docPage.getExtractedTextFileId();
+            IFile completeText = getFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getTextFileIdFunction);
             document.setExtractedTextFileId(completeText.getId());
-            
             sendStorageRequest(completeText, request.getDownloadPath(), request.getDownloadUrl(), FileType.TEXT);
         } 
         
@@ -78,16 +70,9 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
         
         if (request.getPages() != null ) {
             for (edu.asu.diging.gilesecosystem.requests.impl.Page page : request.getPages()) {
-                IFile pageText = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX);
-               
-                try {
-                    filesService.saveFile(pageText);
-                } catch (UnstorableObjectException e) {
-                    // should never happen, we're setting the id
-                    messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
-                }
-                
                 IPage documentPage = pageMap.get(page.getPageNr());
+                Function<IPage, String> getFileIdFunction = docPage -> docPage.getTextFileId();
+                IFile pageText = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, page.getSize(), page.getFilename(), REQUEST_PREFIX, getFileIdFunction);
                 if (documentPage == null) {
                     documentPage = new Page();
                     documentPage.setDocument(document);
@@ -141,5 +126,4 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
     public Class<? extends CompletedTextExtractionRequest> getRequestClass() {
         return CompletedTextExtractionRequest.class;
     }
-
 }

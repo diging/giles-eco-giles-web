@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -61,11 +62,11 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
     public void processRequest(ICompletedOCRRequest request) {
         IDocument document = documentService.getDocument(request.getDocumentId());
         IFile file = filesService.getFileById(document.getUploadedFileId());
-        
         Map<String, IPage> pages = getPageMap(document.getPages());
         Map<String, IPage> additionalFilesPagesMap = getAdditionalFilesPageMap(document.getPages());
-        
-        IFile textFile = createFile(file, document, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX);
+        IPage documentPage = pages.get(request.getFilename());
+        Function<IPage, String> getFileIdFunction = docPage -> docPage.getOcrFileId();
+        IFile textFile = getFile(documentPage, document, file, MediaType.TEXT_PLAIN_VALUE, request.getSize(), request.getTextFilename(), REQUEST_PREFIX, getFileIdFunction);
        
         try {
             filesService.saveFile(textFile);
@@ -76,7 +77,6 @@ public class CompletedOCRProcessor extends ACompletedExtractionProcessor impleme
         // if the uploaded file is an image file tardis and ocr will run on the file and in this case we dont want a new documentPage created as it should be linked as additional files to the original file.
         if (!document.getUploadedFileId().equals(request.getFileId()) && !file.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
             // we are looking for the image that was ocred
-            IPage documentPage = pages.get(request.getFilename());
             if (documentPage != null) {
                 documentPage.setOcrFileId(textFile.getId());
                 if (request.getStatus() != null) {
