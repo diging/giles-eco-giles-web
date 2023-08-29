@@ -132,7 +132,7 @@ public class DistributedStorageManager extends ProcessingPhase<StorageRequestPro
         
         IStorageRequest request = requestHelper.createStorageRequest(file,
                 storageManager.getFileFolderPath(username, upload.getId(), document.getId()), 
-                getFileUrl(file), fileTypes.get(file.getContentType()), file.getRequestId());
+                getFileUrl(file), fileTypes.get(file.getContentType()), file.getRequestId(), propertyManager.getProperty(Properties.APPLICATION_ID));
         
         return request;
     }
