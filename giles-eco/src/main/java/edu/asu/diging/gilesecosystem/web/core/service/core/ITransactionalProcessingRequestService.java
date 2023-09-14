@@ -20,6 +20,6 @@ public interface ITransactionalProcessingRequestService {
     Deletes processing requests associated with the specified document ID.
     @param documentId The ID of the document for which processing requests should be deleted.
     */
-    void deleteProcessingRequestsForDocumentId(String documentId);
+    void deleteRequestsByDocumentId(String documentId);
 
 }

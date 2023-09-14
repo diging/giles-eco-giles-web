@@ -42,7 +42,7 @@ public class TransactionalProcessingRequestService implements ITransactionalProc
     }
     
     @Override
-    public void deleteProcessingRequestsForDocumentId(String documentId) {
-        pReqDbClient.deleteProcessingRequestsForDocumentId(documentId);
+    public void deleteRequestsByDocumentId(String documentId) {
+        pReqDbClient.deleteRequestsByDocumentId(documentId);
     }
 }

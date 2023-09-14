@@ -19,7 +19,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumen
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 
 @PropertySource("classpath:/config.properties")
-public class KafkaDeletionCompletionProcessingListner {
+public class KafkaDeletionCompletionProcessingListener {
 
     @Autowired
     private ISystemMessageHandler messageHandler;
@@ -31,7 +31,7 @@ public class KafkaDeletionCompletionProcessingListner {
     private ITransactionalDocumentService documentService;
     
     @KafkaListener(id = "giles.deletion.topic.listener", topics = "${topic_delete_storage_request_complete}")
-    public void receiveDeletionCompletedMessageMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+    public void receiveDeletionCompletedMessage(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         ObjectMapper mapper = new ObjectMapper();
         ICompletedStorageDeletionRequest request = null;
         try {

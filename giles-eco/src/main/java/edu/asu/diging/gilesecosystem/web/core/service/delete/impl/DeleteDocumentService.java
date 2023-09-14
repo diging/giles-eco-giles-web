@@ -113,7 +113,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     }
     
     private void processDeleteProcessingRequestsOfDocument(IDocument document) {
-        processingRequestService.deleteProcessingRequestsForDocumentId(document.getId());
+        processingRequestService.deleteRequestsByDocumentId(document.getId());
     }
     
     private void processDeleteFilesOfDocument(IDocument document) {

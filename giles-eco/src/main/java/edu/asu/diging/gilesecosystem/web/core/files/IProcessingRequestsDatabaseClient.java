@@ -20,6 +20,6 @@ public interface IProcessingRequestsDatabaseClient extends IDatabaseClient<IProc
     Deletes processing requests associated with the specified document ID.
     @param documentId The ID of the document for which processing requests should be deleted.
     */
-    public abstract void deleteProcessingRequestsForDocumentId(String documentId);
+    public abstract void deleteRequestsByDocumentId(String documentId);
 
 }
