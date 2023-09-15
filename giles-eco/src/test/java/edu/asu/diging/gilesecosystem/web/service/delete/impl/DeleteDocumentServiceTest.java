@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationContext;
 
+import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
@@ -21,6 +22,7 @@ import edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
@@ -72,11 +74,11 @@ public class DeleteDocumentServiceTest {
     @InjectMocks
     private IDeleteDocumentService factoryToTest;
     
-    IDocument document;
-    IFile file1, file2;
-    IUpload upload;
-    List<IFile> files;
-    IStorageDeletionRequest storageDeletionRequest1;
+    private IDocument document;
+    private IFile file1, file2;
+    private IUpload upload;
+    private List<IFile> files;
+    private IStorageDeletionRequest storageDeletionRequest1;
     
     private String FILE_ID_1 = "fileId1";
     private String FILE_ID_2 = "fileId2";
@@ -108,14 +110,20 @@ public class DeleteDocumentServiceTest {
     }
     
     @Test
-    public void test_deleteDocument_success() throws MessageCreationException {
-        factoryToTest.deleteDocument(document);
+    public void test_deleteDocument_success() throws GilesProcessingException, MessageCreationException {
+        factoryToTest.initiateDeletion(document);
         Mockito.verify(requestProducer, times(1)).sendRequest(storageDeletionRequest1, "request_storage_deletion_topic");
+    }
+    
+    @Test(expected=MessageCreationException.class)
+    public void test_deleteDocument_throwsMessageCreationException() throws GilesProcessingException, MessageCreationException {
+        Mockito.doThrow(new MessageCreationException()).when(requestProducer).sendRequest(Mockito.any(IRequest.class), Mockito.anyString());
+        factoryToTest.initiateDeletion(document);
     }
     
     @Test
     public void test_deleteDocumentAfterStorageDeletion_success() {
-        factoryToTest.deleteDocumentAfterStorageDeletion(document);
+        factoryToTest.completeDeletion(document);
         Mockito.verify(documentService, times(1)).deleteDocument(document.getId());
         Mockito.verify(uploadService, times(1)).deleteUpload(document.getUploadId());
     }
@@ -125,7 +133,7 @@ public class DeleteDocumentServiceTest {
         List<IDocument> docs = new ArrayList<IDocument>();
         docs.add(document);
         Mockito.when(documentService.getDocumentsByUploadId(document.getUploadId())).thenReturn(docs);
-        factoryToTest.deleteDocumentAfterStorageDeletion(document);
+        factoryToTest.completeDeletion(document);
         Mockito.verify(documentService, times(1)).deleteDocument(document.getId());
         Mockito.verify(uploadService, times(0)).deleteUpload(document.getUploadId());
     }

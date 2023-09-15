@@ -43,6 +43,6 @@ public class KafkaDeletionCompletionProcessingListener {
         if (request.getStatus() == RequestStatus.FAILED) {
             return;
         }
-        deleteDocumentService.deleteDocumentAfterStorageDeletion(documentService.getDocument(request.getDocumentId()));
+        deleteDocumentService.completeDeletion(documentService.getDocument(request.getDocumentId()));
     }
 }
