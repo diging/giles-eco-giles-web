@@ -18,7 +18,7 @@
         <org.slf4j-version>1.7.5</org.slf4j-version>
         <com.fasterxml.jackson.version>2.12.7</com.fasterxml.jackson.version>
 
-        <geco.requests.version>0.15</geco.requests.version>
+        <geco.requests.version>0.16</geco.requests.version>
         <geco.util.version>0.6</geco.util.version>
         <geco.september.util.version>0.3</geco.september.util.version>
         <geco.kafka-util.version>0.2</geco.kafka-util.version>
