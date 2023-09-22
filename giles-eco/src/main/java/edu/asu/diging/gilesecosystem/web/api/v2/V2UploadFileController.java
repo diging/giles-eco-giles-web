@@ -37,6 +37,7 @@ import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler
 import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
+import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
@@ -85,6 +86,9 @@ public class V2UploadFileController {
     
     @Autowired
     private IUserHelper userHelper;
+    
+    @Autowired
+    private IResponseHelper responseHelper;
 
     @RequestMapping(value = "/api/v2/files/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadImages(
@@ -101,7 +105,7 @@ public class V2UploadFileController {
             msgs.put("errorMsg", "Access type: " + access + " does not exist.");
             msgs.put("errorCode", "400");
 
-            return generateResponse(msgs, HttpStatus.BAD_REQUEST);
+            return responseHelper.generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
 
         DocumentType documentType = DocumentType.valueOf(docType);
@@ -110,7 +114,7 @@ public class V2UploadFileController {
             msgs.put("errorMsg", "Document type: " + docType + " does not exist.");
             msgs.put("errorCode", "400");
 
-            return generateResponse(msgs, HttpStatus.BAD_REQUEST);
+            return responseHelper.generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
 
         if (files == null || files.length == 0) {
@@ -118,7 +122,7 @@ public class V2UploadFileController {
             msgs.put("errorMsg", "There were no files attached to request.");
             msgs.put("errorCode", "400");
 
-            return generateResponse(msgs, HttpStatus.BAD_REQUEST);
+            return responseHelper.generateResponse(msgs, HttpStatus.BAD_REQUEST);
         }
 
         List<byte[]> fileBytes = new ArrayList<byte[]>();
@@ -132,7 +136,7 @@ public class V2UploadFileController {
                 msgs.put("errorMsg", "File bytes could not be read.");
                 msgs.put("errorCode", "500");
 
-                return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
+                return responseHelper.generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
@@ -144,10 +148,10 @@ public class V2UploadFileController {
             messageHandler.handleMessage("Could not store non login user.", e,
                     MessageType.ERROR);
             Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("errorMsg", "An erro occurred. Request could not be processed.");
+            msgs.put("errorMsg", "An error occurred. Request could not be processed.");
             msgs.put("errorCode", "500");
 
-            return generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseHelper.generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         String id = uploadService.startUpload(docAccess, documentType, files, fileBytes,
@@ -159,7 +163,7 @@ public class V2UploadFileController {
                 propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
 
         logger.info("Uploaded file started with id " + id);
-        return generateResponse(msgs, HttpStatus.OK);
+        return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
 
     public User createUser(CitesphereToken citesphereToken)
@@ -194,7 +198,7 @@ public class V2UploadFileController {
             msgs.put("errorMsg", "User is not authorized to check status.");
             msgs.put("errorCode", "401");
 
-            return generateResponse(msgs, HttpStatus.UNAUTHORIZED);
+            return responseHelper.generateResponse(msgs, HttpStatus.UNAUTHORIZED);
         }
 
         List<StorageStatus> statusList = uploadService.getUploadStatus(id);
@@ -203,7 +207,7 @@ public class V2UploadFileController {
             msgs.put("errorMsg", "Upload does not exist.");
             msgs.put("errorCode", "404");
 
-            return generateResponse(msgs, HttpStatus.NOT_FOUND);
+            return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
         }
 
         boolean complete = true;
@@ -226,7 +230,7 @@ public class V2UploadFileController {
                 msgs.put("uploadUrl", uploadUrl);
             }
 
-            return generateResponse(msgs, HttpStatus.ACCEPTED);
+            return responseHelper.generateResponse(msgs, HttpStatus.ACCEPTED);
         }
 
         Set<String> docIds = new HashSet<String>();
@@ -255,27 +259,5 @@ public class V2UploadFileController {
         }
 
         return new ResponseEntity<String>(sw.toString(), HttpStatus.OK);
-    }
-
-    private ResponseEntity<String> generateResponse(Map<String, String> msgs,
-            HttpStatus status) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        ObjectNode root = mapper.createObjectNode();
-        for (String key : msgs.keySet()) {
-            root.put(key, msgs.get(key));
-        }
-
-        StringWriter sw = new StringWriter();
-        try {
-            mapper.writeValue(sw, root);
-        } catch (IOException e) {
-            messageHandler.handleMessage("Could not write json.", e, MessageType.ERROR);
-            return new ResponseEntity<String>(
-                    "{\"errorMsg\": \"Could not write json result.\", \"errorCode\": \"errorCode\": \"500\" }",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<String>(sw.toString(), status);
     }
 }

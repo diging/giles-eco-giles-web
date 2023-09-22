@@ -25,7 +25,7 @@ public class ResponseHelper implements IResponseHelper {
     
     @Autowired
     private ISystemMessageHandler messageHandler;
-    
+
     @Override
     public ResponseEntity<String> generateResponse(Map<String, String> msgs,
             HttpStatus status) {

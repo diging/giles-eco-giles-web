@@ -24,11 +24,34 @@
 	</c:if>
 
 	&nbsp; &nbsp; <a href="${document.uploadedFile.metadataLink}"><i class="fa fa-globe" aria-hidden="true"></i> view metadata</a>
-	<button type="button" class="btn btn-link" title="Delete" data-toggle="modal" data-docid="${document.id}" data-target="#deleteDocument">
+	<button type="button" class="btn btn-link" title="Reprocess" data-toggle="modal" data-docid="${document.id}" data-target="#reProcessDocument">
+     	<i class="fa fa-redo"></i>
+     	Re-process
+     </button>
+     <button type="button" class="btn btn-link" title="Delete" data-toggle="modal" data-docid="${document.id}" data-target="#deleteDocument">
 		<i class="fa fa-trash" aria-hidden="true"></i>
 		Delete Document
 	</button>
-	
+	<div class="modal fade" id="reProcessDocument" tabindex="-1" role="dialog">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title">Re-process Document</h4>
+      			</div>
+      			<div class="modal-body">
+       				<p>Are you sure you want to re-process this document.</p>
+      			</div>
+      			<div class="modal-footer">
+         			<form class="form-inline" method="POST" id="submitReprocessDocument" action="<c:url value='/documents/${document.id}/reprocess' />">
+         				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	       				<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
+	        			<button type="submit" class="btn btn-primary">Yes!</button>
+      				</form>
+      			</div>
+    		</div>
+  		</div>
+	</div>
 </p>
 
 <div class="modal fade" id="deleteDocument" tabindex="-1" role="dialog">

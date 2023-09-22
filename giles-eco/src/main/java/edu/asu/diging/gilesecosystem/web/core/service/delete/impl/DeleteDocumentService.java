@@ -102,33 +102,28 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     @Override
     @Async
-    public void deleteDocument(IDocument document) {
-        try {
-            IRequest storageDeletionRequest = createRequest(document);
-            requestProducer.sendRequest(storageDeletionRequest, getTopic());
-        } catch (GilesProcessingException | MessageCreationException e) {
-            messageHandler.handleMessage("Could not create Request", e, MessageType.ERROR);
-        }
+    public void initiateDeletion(IDocument document) throws GilesProcessingException, MessageCreationException {
+        IRequest storageDeletionRequest = createRequest(document);
+        requestProducer.sendRequest(storageDeletionRequest, getTopic());
     }
     
     @Override
-    public void deleteDocumentAfterStorageDeletion(IDocument document) {
-        processDeleteFilesOfDocument(document);
-        processDeleteProcessingRequestsOfDocument(document);
-        processDeleteRequestsOfDocument(document);
+    public void completeDeletion(IDocument document) {
+        deleteFiles(document);
+        deleteProcessingRequests(document);
         documentService.deleteDocument(document.getId());
-        processDeleteUploadOfDocument(document.getUploadId());
+        deleteUpload(document.getUploadId());
     }
     
-    private void processDeleteProcessingRequestsOfDocument(IDocument document) {
-        processingRequestService.deleteProcessingRequestsForDocumentId(document.getId());
+    private void deleteProcessingRequests(IDocument document) {
+        processingRequestService.deleteRequestsByDocumentId(document.getId());
     }
     
-    private void processDeleteFilesOfDocument(IDocument document) {
+    private void deleteFiles(IDocument document) {
         fileService.deleteFiles(document.getId());
     }
     
-    private void processDeleteUploadOfDocument(String uploadId) {
+    private void deleteUpload(String uploadId) {
         // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
         if(documentService.getDocumentsByUploadId(uploadId).isEmpty()) {
             uploadService.deleteUpload(uploadId);

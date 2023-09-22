@@ -17,7 +17,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import edu.asu.diging.gilesecosystem.requests.kafka.KafkaConfig;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
-import edu.asu.diging.gilesecosystem.web.core.kafka.KafkaDeletionCompletionProcessingListner;
+import edu.asu.diging.gilesecosystem.web.core.kafka.KafkaDeletionCompletionProcessingListener;
 import edu.asu.diging.gilesecosystem.web.core.kafka.KafkaProcessingListener;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 
@@ -66,8 +66,8 @@ public class GilesKafkaConfig implements KafkaConfig {
     }
     
     @Bean
-    public KafkaDeletionCompletionProcessingListner deletionReceiver() {
-        return new KafkaDeletionCompletionProcessingListner();
+    public KafkaDeletionCompletionProcessingListener deletionReceiver() {
+        return new KafkaDeletionCompletionProcessingListener();
     }
 
     @Override

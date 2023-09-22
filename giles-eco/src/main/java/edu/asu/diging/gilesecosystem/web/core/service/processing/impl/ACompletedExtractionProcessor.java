@@ -2,6 +2,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.processing.impl;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,10 +12,12 @@ import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationExceptio
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.septemberutil.properties.MessageType;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IPage;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.impl.File;
@@ -53,6 +56,9 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
     
     @Autowired
     private IProcessingRequestService requestService;
+    
+    @Autowired
+    private ITransactionalFileService filesService;
 
     protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type) {
         IStorageRequest storageRequest;
@@ -98,5 +104,61 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         pagefile.setId(fileService.generateFileId());
         
         return pagefile;
+    }
+    
+    /**
+     * Retrieves a file based on the provided parameters. 
+     * If the document page is not null, it attempts to retrieve the file using the file ID obtained from the provided document page and the getFileIdFunction. 
+     * If the file ID is valid and not empty, the corresponding file is fetched from the files service. 
+     * If the file ID is not available or empty, a new file is created using the specified parameters.
+     * @param ipage : The document page being processed
+     * @param document : The document associated with the page
+     * @param file : The file associated with the page
+     * @param contentType : The content type of the file
+     * @param size : the size of the file
+     * @param fileName : the file name
+     * @param requestPrefix : the request prefix for example text request will have TXTREQ
+     * @param getFileIdFunction : the function that returns the required file id
+     * @return existing file or newly created file
+     */
+    protected IFile getFile(IPage documentPage, IDocument document, IFile file, String contentType, long size, String fileName, String requestPrefix, Function<IPage, String> getFileIdFunction) {
+        if(documentPage != null) {
+            String fileId = getFileIdFunction.apply(documentPage);
+            if (fileId != null && !fileId.isEmpty()) {
+                return filesService.getFileById(fileId);
+            }
+        }    
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
+    }
+    /**
+     * Retrieves a file based on the provided parameters. 
+     * It first attempts to retrieve the file using the file ID obtained from the getFileIdFunction applied to the provided document. 
+     * If the file ID is valid and not empty, the corresponding file is fetched from the files service. 
+     * If the file ID is not available or empty, a new file is created using the specified parameters.
+     * @param file : The file associated with the page
+     * @param document : The document associated with the page
+     * @param contentType : The content type of the file
+     * @param size : the size of the file
+     * @param fileName : the file name
+     * @param requestPrefix : the request prefix for example text request will have TXTREQ
+     * @return existing file or newly created file
+     */
+    protected IFile getFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix, Function<IDocument, String> getFileIdFunction) {
+        String fileId = getFileIdFunction.apply(document);
+        if (fileId != null && !fileId.isEmpty()) {
+            return filesService.getFileById(fileId);
+        }
+        return createNewFile(file, document, contentType, size, fileName, requestPrefix);
+    }
+    
+    private IFile createNewFile(IFile file, IDocument document, String contentType, long size, String fileName, String requestPrefix) {
+        IFile newFile = createFile(file, document, contentType, size, fileName, requestPrefix);
+        try {
+            filesService.saveFile(newFile);
+        } catch (UnstorableObjectException e) {
+            // should never happen, we're setting the id
+            messageHandler.handleMessage("Could not store file.", e, MessageType.ERROR);
+        }
+        return newFile;
     }
 }

@@ -78,7 +78,7 @@ public class ProcessingRequestsDatabaseClient extends DatabaseClient<IProcessing
     }
     
     @Override
-    public void deleteProcessingRequestsForDocumentId(String documentId) {
+    public void deleteRequestsByDocumentId(String documentId) {
         CriteriaBuilder builder = getClient().getCriteriaBuilder();
         CriteriaDelete<ProcessingRequest> deleteQuery = builder.createCriteriaDelete(ProcessingRequest.class);
         Root<ProcessingRequest> root = deleteQuery.from(ProcessingRequest.class);
