@@ -83,5 +83,4 @@ public interface IFile extends IStorableObject {
     public abstract void setOldFileVersionIds(List<String> fileVersionIds);
 
     public abstract List<String> getOldFileVersionIds();
-
 }

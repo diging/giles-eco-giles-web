@@ -125,4 +125,9 @@ public class TransactionalUploadService implements ITransactionalUploadService {
         return upload;
     }
 
+    @Override
+    public void deleteUpload(String uploadId) {
+        IUpload upload = getUpload(uploadId);
+        uploadDatabaseClient.delete(upload);
+    }
 }

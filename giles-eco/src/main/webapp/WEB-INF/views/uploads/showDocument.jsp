@@ -28,6 +28,10 @@
      	<i class="fa fa-redo"></i>
      	Re-process
      </button>
+     <button type="button" class="btn btn-link" title="Delete" data-toggle="modal" data-docid="${document.id}" data-target="#deleteDocument">
+		<i class="fa fa-trash" aria-hidden="true"></i>
+		Delete Document
+	</button>
 	<div class="modal fade" id="reProcessDocument" tabindex="-1" role="dialog">
   		<div class="modal-dialog">
     		<div class="modal-content">
@@ -48,10 +52,25 @@
     		</div>
   		</div>
 	</div>
-
 </p>
 
-
+<div class="modal fade" id="deleteDocument" tabindex="-1" role="dialog">
+  	<div class="modal-dialog">
+    	<div class="modal-content">
+      		<div class="modal-header">
+        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        		<h4 class="modal-title">Delete Document</h4>
+      		</div>
+      		<div class="modal-body">
+       			<p>Are you sure you want to delete this document.</p>
+      		</div>
+      		<div class="modal-footer">
+      			<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel.</button>
+	        	<button type="button" id="deleteDocumentConfirm" data-docid="${document.id}" class="btn btn-primary">Yes!</button>
+      		</div>
+    	</div>
+  	</div>
+</div>
 <p>Uploaded on <span class="date">${document.createdDate}</span>.</p>
 
 
@@ -154,3 +173,21 @@
 </c:if>
 </div>
 </div>
+<script>
+const confirmBtn = document.getElementById('deleteDocumentConfirm');
+confirmBtn.addEventListener('click', function() {
+	  var docId = "${document.id}";
+	  var modal = $(this);
+	  var deleteUrl = "/giles/documents/${document.id}?${_csrf.parameterName}=${_csrf.token}";
+	  $.ajax({
+		  url: deleteUrl,
+		  method: "POST",
+		  success: function (result) {  
+              window.location.href = '/giles/uploads'; // redirect          
+          },
+          error: function (e) {
+              console.log(e);
+          }
+	  });
+	})
+</script>

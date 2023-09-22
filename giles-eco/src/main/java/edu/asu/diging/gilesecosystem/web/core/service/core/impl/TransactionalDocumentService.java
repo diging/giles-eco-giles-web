@@ -78,4 +78,15 @@ public class TransactionalDocumentService implements ITransactionalDocumentServi
 
         return document;
     }
+    
+    @Override
+    public void deleteDocument(String documentId) {
+        IDocument document = getDocument(documentId);
+        documentDatabaseClient.delete(document);
+    }
+    
+    @Override
+    public String generateRequestId(String prefix) {
+        return documentDatabaseClient.generateId(prefix, documentDatabaseClient::getDocumentByRequestId);
+    }
 }

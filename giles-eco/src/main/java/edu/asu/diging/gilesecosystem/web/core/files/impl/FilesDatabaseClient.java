@@ -6,6 +6,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
 
@@ -108,5 +112,20 @@ public class FilesDatabaseClient extends DatabaseClient<IFile> implements
     protected EntityManager getClient() {
         return em;
     }
+    
+    @Override
+    public void deleteFiles(String documentId) {
+        CriteriaBuilder builder = getClient().getCriteriaBuilder();
+        CriteriaQuery<File> query = builder.createQuery(File.class);
+        Root<File> root = query.from(File.class);
+        query.where(builder.equal(root.get("documentId"), documentId));
+        
+        // Fetch the list of files to be deleted
+        List<File> filesToDelete = getClient().createQuery(query).getResultList();
 
+        for (File file : filesToDelete) {
+            file.getOldFileVersionIds().clear();
+            getClient().remove(file);
+        }
+    }
 }

@@ -39,6 +39,7 @@ public class DocumentDatabaseClientTest {
     private final String DOC_ID_NOT_EXIST = "DOC_NOT_EXISTS";
     private final String UPLOAD1_ID = "UP1";
     private final String USERNAME = "testuser";
+    private final String REQUEST_ID = "DELREQ123";
     
     @Before
     public void setUp() {
@@ -231,6 +232,48 @@ public class DocumentDatabaseClientTest {
         
         List<IDocument> searchResult = partiallyMockedClient.getDocumentsByUsername(USERNAME);
         Assert.assertEquals(0, searchResult.size());
+    }
+    
+    @Test
+    public void test_getDocumentByRequestId_docExists() throws Exception {
+        IDocument doc1 = new Document();
+        doc1.setId(DOC1_ID);
+        doc1.setRequestId(REQUEST_ID);
+        
+        List<IDocument> result = new ArrayList<IDocument>();
+        result.add(doc1);
+        
+        // let's mock the superclass method
+        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
+
+            @Override
+            protected List<IDocument> searchByProperty(String propName, String propValue,
+                    Class<? extends IDocument> clazz) {
+                return result;
+            }
+            
+        };
+        
+        IDocument searchResult = partiallyMockedClient.getDocumentByRequestId(REQUEST_ID);
+        Assert.assertEquals(doc1, searchResult);
+        Assert.assertEquals(REQUEST_ID, searchResult.getRequestId());
+    }
+    
+    @Test
+    public void test_getDocumentByRequestId_docDoesNotExists() throws Exception {
+        // let's mock the superclass method
+        IDocumentDatabaseClient partiallyMockedClient = new DocumentDatabaseClient() {
+
+            @Override
+            protected List<IDocument> searchByProperty(String propName, String propValue,
+                    Class<? extends IDocument> clazz) {
+                return new ArrayList<IDocument>();
+            }
+            
+        };
+        
+        IDocument searchResult = partiallyMockedClient.getDocumentByRequestId(REQUEST_ID);
+        Assert.assertEquals(null, searchResult);
     }
     
     class DocumentIdArgumentMatcher extends ArgumentMatcher<Document> {

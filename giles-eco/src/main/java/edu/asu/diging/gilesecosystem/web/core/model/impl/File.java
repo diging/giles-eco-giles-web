@@ -48,6 +48,7 @@ public class File implements IFile {
     private ProcessingStatus processingStatus;
     private String groupId;
     private String recordId;
+
     /**
      * List of old file version IDs for the file if the file was reprocessed.
      * When a file is reprocessed, this list is populated with the older storage IDs associated with the file in Nepomuk.
@@ -308,7 +309,7 @@ public class File implements IFile {
     public void setOldFileVersionIds(List<String> fileVersionIds) {
         this.oldFileVersionIds = fileVersionIds;
     }
-    
+
     @Override
     public List<String> getOldFileVersionIds() {
         return this.oldFileVersionIds;

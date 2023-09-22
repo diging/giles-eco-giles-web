@@ -15,5 +15,12 @@ public interface IDocumentDatabaseClient extends IDatabaseClient<IDocument> {
     public abstract List<IDocument> getDocumentByUploadId(String uploadId);
 
     public abstract List<IDocument> getDocumentsByUsername(String username);
-
+    
+    /**
+     * Retrieves a document by its request ID.
+     *
+     * @param requestId The unique identifier of the request.
+     * @return The document associated with the specified request ID, or null if no document is found.
+     */
+    public abstract IDocument getDocumentByRequestId(String requestId);
 }
