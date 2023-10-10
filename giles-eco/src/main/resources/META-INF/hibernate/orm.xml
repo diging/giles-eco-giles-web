@@ -77,6 +77,9 @@
             <key column="id" />
             <property name="filename" type="string" />
         </joined-subclass>
+        <joined-subclass name="edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest" table="StorageDeletionRequest">
+            <key column="id" />
+        </joined-subclass>
     </class>
     <class name="edu.asu.diging.gilesecosystem.requests.impl.Page" table="RequestPage" >
         <id name="id" column="pageId">

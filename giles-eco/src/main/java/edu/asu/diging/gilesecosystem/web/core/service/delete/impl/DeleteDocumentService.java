@@ -17,6 +17,7 @@ import edu.asu.diging.gilesecosystem.requests.FileType;
 import edu.asu.diging.gilesecosystem.requests.IRequest;
 import edu.asu.diging.gilesecosystem.requests.IRequestFactory;
 import edu.asu.diging.gilesecosystem.requests.IStorageDeletionRequest;
+import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
 import edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
@@ -29,10 +30,13 @@ import edu.asu.diging.gilesecosystem.web.core.files.IDocumentDatabaseClient;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
 import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IFile;
+import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
+import edu.asu.diging.gilesecosystem.web.core.model.impl.ProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.service.IFileTypeHandler;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalFileService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalProcessingRequestService;
+import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalRequestService;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalUploadService;
 import edu.asu.diging.gilesecosystem.web.core.service.delete.IDeleteDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
@@ -72,6 +76,9 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     @Autowired
     private ITransactionalProcessingRequestService processingRequestService;
+    
+    @Autowired
+    private ITransactionalRequestService requestService;
     
     private Map<String, FileType> fileTypes;
     
@@ -127,17 +134,21 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
             String requestId = documentService.generateRequestId(REQUEST_PREFIX);
-            storeRequestId(requestId, document);
             storageDeletionRequest = requestFactory.createRequest(requestId, document.getUploadId());
+            storeRequestId(requestId, document);
             storageDeletionRequest.setDocumentId(document.getId());
+            storageDeletionRequest.setStatus(RequestStatus.NEW);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new GilesProcessingException(e);
-        } 
+        }
+        IProcessingRequest procReq = new ProcessingRequest();
+        
+        procReq.setRequestId(storageDeletionRequest.getRequestId());
+        procReq.setDocumentId(document.getId());
+        procReq.setSentRequest(storageDeletionRequest);
+        procReq.setRequestStatus(storageDeletionRequest.getStatus());
+        processingRequestService.saveNewProcessingRequest(procReq);
         return storageDeletionRequest;
-    }
-    
-    private String getTopic() {
-        return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
     }
     
     private void storeRequestId(String requestId, IDocument document) {
@@ -147,5 +158,13 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         } catch (UnstorableObjectException e) {
             messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
         }
+    }
+    
+    private String getTopic() {
+        return propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST);
+    }
+    
+    private void processDeleteRequestsOfDocument(IDocument document) {
+        requestService.deleteRequestsByDocumentId(document.getId());
     }
 }
