@@ -64,7 +64,7 @@ public class V2ReprocessDocumentController {
         }
         reprocessingService.reprocessDocument(document);
         IUpload upload = uploadService.getUpload(document.getUploadId());
-        msgs.put("id", documentId);
+        msgs.put("id", upload.getUploadProgressId());
         msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + upload.getUploadProgressId());
         return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
