@@ -98,4 +98,7 @@ public interface Properties {
 
     public final static String TARDIS_NOTIFIR_ID = "tardis_notifier_id";
     public final static String IMAGE_FILE_TYPE = "image_file_type";
+    public final static String IMOGEN_NOTIFIER_ID = "imogen_notifier_id";
+    public final static String NON_CORE_COMPONENTS_TO_IGNORE_FOR_ORIGINAL_PDF_FILE = "non_core_components_to_ignore_for_original_pdf_file";
+    public final static String NON_CORE_COMPONENTS = "non_core_components";
 }
