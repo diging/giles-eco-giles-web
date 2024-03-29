@@ -36,6 +36,6 @@ public class RegisteredAppController {
         model.addAttribute("providerName", providerRegistry.getProviderName(app.getProviderId()));
         
         model.addAttribute("app", app);
-        return "admin/app";
+        return "admin/apps/app";
     }
 }
