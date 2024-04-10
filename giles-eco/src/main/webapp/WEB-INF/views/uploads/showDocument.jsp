@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<script type="text/javascript" src="<c:url value="/resources/notify/bootstrap-notify.min.js" />"></script>
 
 <ol class="breadcrumb">
   <li>Upload</li>
@@ -182,10 +183,11 @@ confirmBtn.addEventListener('click', function() {
 	$.ajax({
 		url: deleteUrl,
 		method: "POST",
-		success: function (result) {  
+		success: function (result) {
 			window.location.href = '/giles/uploads'; // redirect          
         },
         error: function (e) {
+        	$('#deleteDocument').modal('hide');
         	showNotification("Deletion of the document failed.", "danger", 20000)
         }
 	});
