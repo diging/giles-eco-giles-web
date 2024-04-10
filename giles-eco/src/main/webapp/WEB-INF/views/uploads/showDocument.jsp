@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<script type="text/javascript" src="<c:url value="/resources/notify/bootstrap-notify.min.js" />"></script>
 
 <ol class="breadcrumb">
   <li>Upload</li>
@@ -176,18 +177,33 @@
 <script>
 const confirmBtn = document.getElementById('deleteDocumentConfirm');
 confirmBtn.addEventListener('click', function() {
-	  var docId = "${document.id}";
-	  var modal = $(this);
-	  var deleteUrl = "/giles/documents/${document.id}?${_csrf.parameterName}=${_csrf.token}";
-	  $.ajax({
-		  url: deleteUrl,
-		  method: "POST",
-		  success: function (result) {  
-              window.location.href = '/giles/uploads'; // redirect          
-          },
-          error: function (e) {
-              console.log(e);
-          }
-	  });
-	})
+	var docId = "${document.id}";
+	var modal = $(this);
+	var deleteUrl = "/giles/documents/${document.id}?${_csrf.parameterName}=${_csrf.token}";
+	$.ajax({
+		url: deleteUrl,
+		method: "POST",
+		success: function (result) {
+			window.location.href = '/giles/uploads'; // redirect          
+        },
+        error: function (e) {
+        	$('#deleteDocument').modal('hide');
+        	showNotification("Deletion of the document failed.", "danger", 20000)
+        }
+	});
+})
+function showNotification(message, status, time){
+	$.notify('<i class="fas fa-exclamation-circle"></i>'+message, {
+		type: status,
+		offset: {
+			x: 50,
+			y: 90
+		},
+		timer: time,
+		animate: {
+			enter: 'animated fadeInRight',
+			exit: 'animated fadeOutRight'
+		},
+	});
+}
 </script>
