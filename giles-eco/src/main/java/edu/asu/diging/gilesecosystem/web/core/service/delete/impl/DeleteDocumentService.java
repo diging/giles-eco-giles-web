@@ -32,48 +32,48 @@ import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 
 @Service
 public class DeleteDocumentService implements IDeleteDocumentService {
-
+    
     public final static String REQUEST_PREFIX = "DELREQ";
-
+    
     @Autowired
     private IRequestFactory<IStorageDeletionRequest, StorageDeletionRequest> requestFactory;
-
+    
     @Autowired
     private ApplicationContext ctx;
-
+    
     @Autowired
     private ISystemMessageHandler messageHandler;
-
+    
     @Autowired
     private IRequestProducer requestProducer;
-
+    
     @Autowired
     private IPropertiesManager propertyManager;
-
+    
     @Autowired
     private ITransactionalFileService fileService;
-
+    
     @Autowired
     private ITransactionalUploadService uploadService;
-
+    
     @Autowired
     private ITransactionalDocumentService documentService;
-
+    
     @Autowired
     private ITransactionalProcessingRequestService processingRequestService;
-
+    
     @PostConstruct
     public void init() {
         requestFactory.config(StorageDeletionRequest.class);
     }
-
+    
     @Override
     @Async
     public void initiateDeletion(IDocument document) throws GilesProcessingException, MessageCreationException {
         IRequest storageDeletionRequest = createRequest(document);
         requestProducer.sendRequest(storageDeletionRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST));
     }
-
+    
     @Override
     public void completeDeletion(IDocument document) {
         fileService.deleteFiles(document.getId());
@@ -81,14 +81,14 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         documentService.deleteDocument(document.getId());
         deleteUpload(document.getUploadId());
     }
-
+    
     private void deleteUpload(String uploadId) {
         // if an upload has multiple documents and only one of the documents is deleted the upload does not have to be deleted.
         if(documentService.getDocumentsByUploadId(uploadId).isEmpty()) {
             uploadService.deleteUpload(uploadId);
         }
     }
-
+    
     private IRequest createRequest(IDocument document) throws GilesProcessingException {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
@@ -101,7 +101,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         } 
         return storageDeletionRequest;
     }
-
+    
     private void storeRequestId(String requestId, IDocument document) {
         document.setRequestId(requestId);
         try {
