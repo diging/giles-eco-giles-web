@@ -48,8 +48,7 @@ public class ViewUploadController {
     
     @Autowired
     private IProcessingRequestsDatabaseClient procReqDbClient;
-
-    
+        
     @AccountCheck
     @UploadIdAccessCheck
     @RequestMapping(value = {"/uploads/{uploadId}"})
@@ -98,7 +97,7 @@ public class ViewUploadController {
             }
             
             List<IProcessingRequest> procRequests = procReqDbClient.getRequestByDocumentId(doc.getId());
-            statusHelper.createBadges(docBean, procRequests);
+            statusHelper.createBadges(docBean, procRequests, doc);
         }
         
         model.addAttribute("upload", upload);

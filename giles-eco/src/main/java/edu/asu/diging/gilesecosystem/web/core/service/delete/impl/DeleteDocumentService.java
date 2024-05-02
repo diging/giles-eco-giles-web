@@ -39,12 +39,6 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     private IRequestFactory<IStorageDeletionRequest, StorageDeletionRequest> requestFactory;
     
     @Autowired
-    private ApplicationContext ctx;
-    
-    @Autowired
-    private ISystemMessageHandler messageHandler;
-    
-    @Autowired
     private IRequestProducer requestProducer;
     
     @Autowired
@@ -69,7 +63,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
     
     @Override
     @Async
-    public void initiateDeletion(IDocument document) throws GilesProcessingException, MessageCreationException {
+    public void initiateDeletion(IDocument document) throws GilesProcessingException, MessageCreationException, UnstorableObjectException {
         IRequest storageDeletionRequest = createRequest(document);
         requestProducer.sendRequest(storageDeletionRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_DELETION_REQUEST));
     }
@@ -89,7 +83,7 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         }
     }
     
-    private IRequest createRequest(IDocument document) throws GilesProcessingException {
+    private IRequest createRequest(IDocument document) throws GilesProcessingException, UnstorableObjectException {
         IStorageDeletionRequest storageDeletionRequest = null;
         try {
             String requestId = documentService.generateRequestId(REQUEST_PREFIX);
@@ -102,12 +96,8 @@ public class DeleteDocumentService implements IDeleteDocumentService {
         return storageDeletionRequest;
     }
     
-    private void storeRequestId(String requestId, IDocument document) {
+    private void storeRequestId(String requestId, IDocument document) throws UnstorableObjectException {
         document.setRequestId(requestId);
-        try {
-            documentService.saveDocument(document);
-        } catch (UnstorableObjectException e) {
-            messageHandler.handleMessage("Could not store document.", e, MessageType.ERROR);
-        }
+        documentService.saveDocument(document);
     }
 }

@@ -65,6 +65,9 @@ public interface Properties {
     public final static String BADGE_IMAGE_EXTRACTION_COLOR = "image_extraction_color";
     public final static String BADGE_OCR_SUBJECT = "ocr_subject";
     public final static String BADGE_OCR_COLOR = "ocr_color";
+    public final static String BADGE_DELETION_SUBJECT = "deletion_subject";
+    public final static String BADGE_DELETION_COLOR = "deletion_color";
+    public final static String BADGE_DELETION_STATUS = "status_submitted";
     
     public final static String BADGE_STATUS_PREFIX = "status_";
     

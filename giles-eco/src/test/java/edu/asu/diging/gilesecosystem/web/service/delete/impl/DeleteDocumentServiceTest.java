@@ -21,6 +21,7 @@ import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationExceptio
 import edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest;
 import edu.asu.diging.gilesecosystem.requests.kafka.IRequestProducer;
 import edu.asu.diging.gilesecosystem.septemberutil.service.ISystemMessageHandler;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
 import edu.asu.diging.gilesecosystem.web.core.files.IFilesManager;
@@ -72,7 +73,7 @@ public class DeleteDocumentServiceTest {
     private ITransactionalProcessingRequestService processingRequestService;
     
     @InjectMocks
-    private IDeleteDocumentService factoryToTest;
+    private IDeleteDocumentService deleteDocumentService;
     
     private IDocument document;
     private IFile file1, file2;
@@ -95,7 +96,7 @@ public class DeleteDocumentServiceTest {
     
     @Before
     public void setUp() throws InstantiationException, IllegalAccessException{
-        factoryToTest = new DeleteDocumentService();
+        deleteDocumentService = new DeleteDocumentService();
         upload = createUpload();
         document = createDocument();
         file1 = createFile(FILE_ID_1, STORAGE_ID_1, REQUEST_ID_1);
@@ -110,20 +111,20 @@ public class DeleteDocumentServiceTest {
     }
     
     @Test
-    public void test_deleteDocument_success() throws GilesProcessingException, MessageCreationException {
-        factoryToTest.initiateDeletion(document);
+    public void test_deleteDocument_success() throws GilesProcessingException, MessageCreationException, UnstorableObjectException {
+        deleteDocumentService.initiateDeletion(document);
         Mockito.verify(requestProducer, times(1)).sendRequest(storageDeletionRequest1, "request_storage_deletion_topic");
     }
     
     @Test(expected=MessageCreationException.class)
-    public void test_deleteDocument_throwsMessageCreationException() throws GilesProcessingException, MessageCreationException {
+    public void test_deleteDocument_throwsMessageCreationException() throws GilesProcessingException, MessageCreationException, UnstorableObjectException {
         Mockito.doThrow(new MessageCreationException()).when(requestProducer).sendRequest(Mockito.any(IRequest.class), Mockito.anyString());
-        factoryToTest.initiateDeletion(document);
+        deleteDocumentService.initiateDeletion(document);
     }
     
     @Test
     public void test_deleteDocumentAfterStorageDeletion_success() {
-        factoryToTest.completeDeletion(document);
+        deleteDocumentService.completeDeletion(document);
         Mockito.verify(documentService, times(1)).deleteDocument(document.getId());
         Mockito.verify(uploadService, times(1)).deleteUpload(document.getUploadId());
     }
@@ -133,7 +134,7 @@ public class DeleteDocumentServiceTest {
         List<IDocument> docs = new ArrayList<IDocument>();
         docs.add(document);
         Mockito.when(documentService.getDocumentsByUploadId(document.getUploadId())).thenReturn(docs);
-        factoryToTest.completeDeletion(document);
+        deleteDocumentService.completeDeletion(document);
         Mockito.verify(documentService, times(1)).deleteDocument(document.getId());
         Mockito.verify(uploadService, times(0)).deleteUpload(document.getUploadId());
     }

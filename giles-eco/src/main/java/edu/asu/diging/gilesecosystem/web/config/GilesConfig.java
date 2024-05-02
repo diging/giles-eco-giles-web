@@ -46,7 +46,7 @@ import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 @EnableAspectJAutoProxy
 @EnableAsync
 @PropertySource("classpath:/config.properties")
-@ComponentScan({ "edu.asu.diging.gilesecosystem.web", "edu.asu.diging.gilesecosystem.requests", "edu.asu.diging.gilesecosystem.util.store", "edu.asu.diging.gilesecosystem.util.properties", "edu.asu.diging.gilesecosystem.util.files", "edu.asu.diging.gilesecosystem.kafka.util", "edu.asu.diging.gilesecosystem.web.core.service" })
+@ComponentScan({ "edu.asu.diging.gilesecosystem.web", "edu.asu.diging.gilesecosystem.requests", "edu.asu.diging.gilesecosystem.util.store", "edu.asu.diging.gilesecosystem.util.properties", "edu.asu.diging.gilesecosystem.util.files", "edu.asu.diging.gilesecosystem.kafka.util" })
 public class GilesConfig implements WebMvcConfigurer {
     
     @Value("${giles_files_tmp_dir}")

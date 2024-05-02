@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.asu.diging.gilesecosystem.requests.exceptions.MessageCreationException;
+import edu.asu.diging.gilesecosystem.util.exceptions.UnstorableObjectException;
 import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.AccountCheck;
 import edu.asu.diging.gilesecosystem.web.core.aspects.access.annotations.DocumentIdAccessCheck;
 import edu.asu.diging.gilesecosystem.web.core.exceptions.GilesProcessingException;
@@ -26,7 +27,7 @@ public class DeleteDocumentController {
     @AccountCheck
     @DocumentIdAccessCheck("documentId")
     @RequestMapping(value = "/documents/{documentId}", method = RequestMethod.POST)
-    public String deleteDocument(@PathVariable("documentId") String documentId) throws GilesProcessingException, MessageCreationException {
+    public String deleteDocument(@PathVariable("documentId") String documentId) throws GilesProcessingException, MessageCreationException, UnstorableObjectException {
         IDocument document = documentService.getDocument(documentId);
         deleteDocumentService.initiateDeletion(document);
         

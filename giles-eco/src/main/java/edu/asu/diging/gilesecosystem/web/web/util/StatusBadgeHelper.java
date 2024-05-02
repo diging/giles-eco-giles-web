@@ -13,6 +13,7 @@ import edu.asu.diging.gilesecosystem.requests.IOCRRequest;
 import edu.asu.diging.gilesecosystem.requests.ITextExtractionRequest;
 import edu.asu.diging.gilesecosystem.requests.RequestStatus;
 import edu.asu.diging.gilesecosystem.util.properties.IPropertiesManager;
+import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.model.IProcessingRequest;
 import edu.asu.diging.gilesecosystem.web.core.model.ITask;
 import edu.asu.diging.gilesecosystem.web.core.model.ProcessingStatus;
@@ -32,6 +33,8 @@ public class StatusBadgeHelper {
     
     @Autowired
     private IStatusHelper statusHelper;
+    
+    public static final String DELETION_PREFIX = "DELREQ";
 
     public String getLabelText(RequestStatus status, Locale locale) {
         String label = "upload_status_text_"
@@ -45,7 +48,7 @@ public class StatusBadgeHelper {
     }
 
     public void createBadges(DocumentPageBean docBean,
-            List<IProcessingRequest> procRequests) {
+            List<IProcessingRequest> procRequests, IDocument document) {
         // create text extraction badges
         if (procRequests.stream()
                 .filter(preq -> preq.getSentRequest() instanceof ITextExtractionRequest)
@@ -92,7 +95,18 @@ public class StatusBadgeHelper {
                             .getProperty(Properties.BADGE_OCR_COLOR),
                     2));
         }
-        
+        if (document.getRequestId() != null && document.getRequestId().startsWith(DELETION_PREFIX)) {
+            System.out.println("Diya Test");
+            docBean.getBadges()
+            .add(new Badge(
+                propertiesManager
+                        .getProperty(Properties.BADGE_DELETION_SUBJECT),
+                propertiesManager
+                        .getProperty(Properties.BADGE_DELETION_STATUS),
+                propertiesManager
+                        .getProperty(Properties.BADGE_DELETION_COLOR),
+                3));
+        }
         docBean.getBadges().sort((b1, b2) -> b1.getOrder() - b2.getOrder());
     }
     
