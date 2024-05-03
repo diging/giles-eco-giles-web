@@ -92,7 +92,7 @@ public class ViewDocumentController {
             }
         });
 
-        statusHelper.createBadges(docBean, procRequests);
+        statusHelper.createBadges(docBean, procRequests, doc);
         statusHelper.createExternalBadges(docBean);
 
         Map<String, List<Badge>> badgesByFile = new HashMap<>();
