@@ -28,6 +28,8 @@
     </embeddable>
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.TextExtractionRequest" access="FIELD">
     </embeddable>
+    <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.StorageDeletionRequest" access="FIELD">
+    </embeddable>
     
     <embeddable class="edu.asu.diging.gilesecosystem.requests.impl.Page" access="FIELD">
     </embeddable>
