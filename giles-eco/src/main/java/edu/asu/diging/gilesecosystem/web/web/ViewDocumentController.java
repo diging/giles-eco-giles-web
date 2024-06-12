@@ -1,12 +1,14 @@
 package edu.asu.diging.gilesecosystem.web.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -69,6 +71,8 @@ public class ViewDocumentController {
     @RequestMapping(value = {"/documents/{docId}"}, method = RequestMethod.GET)
     public String showDocument(@PathVariable String docId, Model model, Locale locale)
             throws GilesMappingException {
+        List<String> nonCoreComponentsToIgnoreForOriginalFile = Arrays.asList(propertiesManager.getProperty(Properties.NON_CORE_COMPONENTS_TO_IGNORE_FOR_ORIGINAL_PDF_FILE).split(","));
+        List<String> nonCoreComponents = Arrays.asList(propertiesManager.getProperty(Properties.NON_CORE_COMPONENTS).split(","));
         IDocument doc = documentService.getDocument(docId);
 
         IGilesMappingService<IFile, FilePageBean> fileMappingService = new GilesMappingService<>();
@@ -115,19 +119,32 @@ public class ViewDocumentController {
             }
         });
         Map<String, IFile> additionalFilesMap = fileService.getFilesForIds(ids);
-        
-        
+        // these are tasks filtered for files to avoid duplication of non-core component extracted files in the UI when creating the additional files bean.
+        // tasksForOriginalFile is a list of tasks to be considered for the original file while ignoring non-core components like imogen, ocr
+        // as they will be present in the page and constructed as part of createAdditionalFileBean for the page.
+        List<ITask> tasksForOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponentsToIgnoreForOriginalFile.contains(task.getTaskHandlerId())).collect(Collectors.toList());
+        // tasksForOtherFiles is the list of tasks to be considered for other files like image file ocr file etc. 
+        // Here we filter non-core components like imogen, ocr, tardis as they will be present in the page and constructed as part of createAdditionalFileBean for the page.
+        List<ITask> tasksForOtherFiles = docBean.getTasks().stream().filter(task -> task != null && !nonCoreComponents.contains(task.getTaskHandlerId())).collect(Collectors.toList());
         IFile origFile = fileService.getFileById(doc.getUploadedFileId());
         if (origFile != null) {
-            FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, origFile, docBean.getTasks(), additionalFilesMap);
+            FilePageBean bean;
+            if (origFile.getContentType().contains(propertiesManager.getProperty(Properties.IMAGE_FILE_TYPE))) {
+                // tasksForImageOriginalFile is the tasks needed (tardis and cassiopeia) if the original file is an image
+                List<ITask> tasksForImageOriginalFile = docBean.getTasks().stream().filter(task -> task != null && !task.getTaskHandlerId().equals(propertiesManager.getProperty(Properties.IMOGEN_NOTIFIER_ID))).collect(Collectors.toList());
+                bean = createFilePageBean(fileMappingService, requestsByFileId,
+                        badgesByFile, origFile, tasksForImageOriginalFile, additionalFilesMap);
+            } else {
+                bean = createFilePageBean(fileMappingService, requestsByFileId,
+                        badgesByFile, origFile, tasksForOriginalFile, additionalFilesMap);
+            }
             docBean.setUploadedFile(bean);
         }
 
         IFile textFile = fileService.getFileById(doc.getExtractedTextFileId());
         if (textFile != null) {
             FilePageBean bean = createFilePageBean(fileMappingService, requestsByFileId,
-                    badgesByFile, textFile, docBean.getTasks(), additionalFilesMap);
+                    badgesByFile, textFile, tasksForOriginalFile, additionalFilesMap);
             docBean.setExtractedTextFile(bean);
         }
         
@@ -146,27 +163,25 @@ public class ViewDocumentController {
             }
             
             docBean.getPages().add(bean);
-            
-            
+
             IFile imageFile = pageFiles.get(page.getImageFileId());
             if (imageFile != null) {
                 FilePageBean pageBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, imageFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, imageFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setImageFile(pageBean);
-
             }
 
             IFile pageTextFile = pageFiles.get(page.getTextFileId());
             if (pageTextFile != null) {
                 FilePageBean textBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, pageTextFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, pageTextFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setTextFile(textBean);
             }
 
             IFile ocrFile = pageFiles.get(page.getOcrFileId());
             if (ocrFile != null) {
                 FilePageBean ocrBean = createFilePageBean(fileMappingService,
-                        requestsByFileId, badgesByFile, ocrFile, docBean.getTasks(), additionalFilesMap);
+                        requestsByFileId, badgesByFile, ocrFile, tasksForOtherFiles, additionalFilesMap);
                 bean.setOcrFile(ocrBean);
             }
         }
