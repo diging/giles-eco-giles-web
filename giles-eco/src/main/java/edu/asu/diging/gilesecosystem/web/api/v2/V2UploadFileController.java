@@ -191,20 +191,6 @@ public class V2UploadFileController {
     public ResponseEntity<String> checkAndGetResults(HttpServletRequest request,
             @PathVariable String id, CitesphereToken citesphereToken) {
 
-        IUpload upload = uploadService.getUpload(id);
-        String username = upload.getUsername();
-        String uploadingApp = upload.getUploadingApp();
-        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        String usernameInSystem = userHelper.createUsername(user.getUsername(), user.getAuthorizingClient());
-        if (!usernameInSystem.equals(username)
-                || !user.getAuthorizingClient().equals(uploadingApp)) {
-            Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("errorMsg", "User is not authorized to check status.");
-            msgs.put("errorCode", "401");
-
-            return responseHelper.generateResponse(msgs, HttpStatus.UNAUTHORIZED);
-        }
-
         List<StorageStatus> statusList = uploadService.getUploadStatus(id);
         if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
