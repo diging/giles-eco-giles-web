@@ -40,6 +40,7 @@ import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
@@ -71,6 +72,9 @@ public class V2UploadFileController {
 
     @Autowired
     private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ICitesphereConnector citesphereConnector;
 
     @Autowired
     private IJSONHelper jsonHelper;
@@ -208,6 +212,14 @@ public class V2UploadFileController {
             msgs.put("errorCode", "404");
 
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
+        }
+        
+        // check if user has access to all documents in upload
+        for (StorageStatus status : statusList) {
+        	String documentId = status.getDocument().getId();
+            if (!citesphereConnector.hasAccess(documentId, ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
+                return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+            }
         }
 
         boolean complete = true;

@@ -17,6 +17,11 @@ public interface IUploadService {
 
     public abstract List<StorageStatus> getUploadStatus(String id);
 
+    /** 
+     * Get an upload by its progress id.
+     * 
+     * @param id Progress id of upload.
+     */
     IUpload getUpload(String id);
 
 }

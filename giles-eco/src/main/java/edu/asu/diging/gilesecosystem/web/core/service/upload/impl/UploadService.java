@@ -75,6 +75,11 @@ public class UploadService implements IUploadService {
         return statuses;
     }
     
+    /** 
+     * Get an upload by its progress id.
+     * 
+     * @param id Progress id of upload.
+     */
     @Override
     public IUpload getUpload(String id) {
         return uploadService.getUploadByProgressId(id);
