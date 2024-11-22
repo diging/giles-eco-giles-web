@@ -40,6 +40,7 @@ import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
@@ -71,6 +72,9 @@ public class V2UploadFileController {
 
     @Autowired
     private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ICitesphereConnector citesphereConnector;
 
     @Autowired
     private IJSONHelper jsonHelper;
@@ -187,20 +191,6 @@ public class V2UploadFileController {
     public ResponseEntity<String> checkAndGetResults(HttpServletRequest request,
             @PathVariable String id, CitesphereToken citesphereToken) {
 
-        IUpload upload = uploadService.getUpload(id);
-        String username = upload.getUsername();
-        String uploadingApp = upload.getUploadingApp();
-        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        String usernameInSystem = userHelper.createUsername(user.getUsername(), user.getAuthorizingClient());
-        if (!usernameInSystem.equals(username)
-                || !user.getAuthorizingClient().equals(uploadingApp)) {
-            Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("errorMsg", "User is not authorized to check status.");
-            msgs.put("errorCode", "401");
-
-            return responseHelper.generateResponse(msgs, HttpStatus.UNAUTHORIZED);
-        }
-
         List<StorageStatus> statusList = uploadService.getUploadStatus(id);
         if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
@@ -208,6 +198,14 @@ public class V2UploadFileController {
             msgs.put("errorCode", "404");
 
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
+        }
+        
+        // check if user has access to all documents in upload
+        for (StorageStatus status : statusList) {
+            String documentId = status.getDocument().getId();
+            if (!citesphereConnector.hasAccess(documentId, ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
+                return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+            }
         }
 
         boolean complete = true;
