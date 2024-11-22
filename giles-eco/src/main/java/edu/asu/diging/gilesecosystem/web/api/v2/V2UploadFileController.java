@@ -216,7 +216,7 @@ public class V2UploadFileController {
         
         // check if user has access to all documents in upload
         for (StorageStatus status : statusList) {
-        	String documentId = status.getDocument().getId();
+            String documentId = status.getDocument().getId();
             if (!citesphereConnector.hasAccess(documentId, ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
                 return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
             }
