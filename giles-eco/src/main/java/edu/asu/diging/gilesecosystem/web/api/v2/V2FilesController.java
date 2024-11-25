@@ -125,18 +125,20 @@ public class V2FilesController {
     public ResponseEntity<String> getUpload(
             @RequestParam(defaultValue = "") String accessToken,
             HttpServletRequest request, @PathVariable("uploadId") String uploadId,
-            User user) {
+            CitesphereToken citesphereToken) {
 
         IUpload upload = uploadService.getUpload(uploadId);
         if (upload == null) {
             return new ResponseEntity<String>("{'error': 'Upload does not exist.'}",
                     HttpStatus.NOT_FOUND);
         }
-        if (!upload.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity<String>(
-                    "{'error': 'Upload id not valid for user.'}", HttpStatus.BAD_REQUEST);
+        
+        // make it backwards compatible because Citesphere does not store yet the document ids
+        // of freshly uploaded files
+        if (!citesphereConnector.hasAccessViaProgressId(upload.getUploadProgressId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
+            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
-
+        
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         ArrayNode root = mapper.createArrayNode();
