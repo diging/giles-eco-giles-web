@@ -3,6 +3,7 @@ package edu.asu.diging.gilesecosystem.web.core.service.upload.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,12 +51,14 @@ public class UploadService implements IUploadService {
      * org.springframework.web.multipart.MultipartFile[], java.lang.String)
      */
     @Override
-    public String startUpload(DocumentAccess access, DocumentType type,
+    public UploadIds startUpload(DocumentAccess access, DocumentType type,
             MultipartFile[] files, List<byte[]> fileBytes, User user) {
         String uploadProgressId = generateId();
-        uploadHelper.processUpload(access, type, files, fileBytes, user, uploadProgressId);
+        List<StorageStatus> statuses = uploadHelper.processUpload(access, type, files, fileBytes, user, uploadProgressId);
      
-        return uploadProgressId;
+        UploadIds ids = new UploadIds(uploadProgressId, statuses.stream().map(s -> s.getDocument().getId()).collect(Collectors.toList()));
+        
+        return ids;
     }
 
     @Override
@@ -75,6 +78,11 @@ public class UploadService implements IUploadService {
         return statuses;
     }
     
+    /** 
+     * Get an upload by its progress id.
+     * 
+     * @param id Progress id of upload.
+     */
     @Override
     public IUpload getUpload(String id) {
         return uploadService.getUploadByProgressId(id);
@@ -113,5 +121,15 @@ public class UploadService implements IUploadService {
         }
 
         return builder.toString();
+    }
+    
+    public class UploadIds {
+        
+        public UploadIds(String progressId, List<String> uploadIds) {
+            this.progressId = progressId;
+            this.uploadIds = uploadIds;
+        }
+        public String progressId;
+        public List<String> uploadIds;
     }
 }

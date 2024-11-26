@@ -40,6 +40,7 @@ import edu.asu.diging.gilesecosystem.web.api.util.IJSONHelper;
 import edu.asu.diging.gilesecosystem.web.api.util.IResponseHelper;
 import edu.asu.diging.gilesecosystem.web.config.CitesphereToken;
 import edu.asu.diging.gilesecosystem.web.config.IUserHelper;
+import edu.asu.diging.gilesecosystem.web.core.citesphere.ICitesphereConnector;
 import edu.asu.diging.gilesecosystem.web.core.files.impl.StorageStatus;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentAccess;
 import edu.asu.diging.gilesecosystem.web.core.model.DocumentType;
@@ -48,6 +49,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IUpload;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.core.service.upload.impl.UploadService.UploadIds;
 import edu.asu.diging.gilesecosystem.web.core.users.AccountStatus;
 import edu.asu.diging.gilesecosystem.web.core.users.CitesphereUser;
 import edu.asu.diging.gilesecosystem.web.core.users.IUserManager;
@@ -71,6 +73,9 @@ public class V2UploadFileController {
 
     @Autowired
     private ITransactionalDocumentService documentService;
+    
+    @Autowired
+    private ICitesphereConnector citesphereConnector;
 
     @Autowired
     private IJSONHelper jsonHelper;
@@ -154,15 +159,16 @@ public class V2UploadFileController {
             return responseHelper.generateResponse(msgs, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes,
+        UploadIds ids = uploadService.startUpload(docAccess, documentType, files, fileBytes,
                 user);
 
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("id", id);
+        msgs.put("id", ids.progressId);
+        //msgs.put("documentIds", "[\"" + String.join("\",\"", ids.uploadIds) + "\"]");
         msgs.put("checkUrl",
-                propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
+                propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + ids.progressId);
 
-        logger.info("Uploaded file started with id " + id);
+        logger.info("Uploaded file started with id " + ids.progressId);
         return responseHelper.generateResponse(msgs, HttpStatus.OK);
     }
 
@@ -187,20 +193,6 @@ public class V2UploadFileController {
     public ResponseEntity<String> checkAndGetResults(HttpServletRequest request,
             @PathVariable String id, CitesphereToken citesphereToken) {
 
-        IUpload upload = uploadService.getUpload(id);
-        String username = upload.getUsername();
-        String uploadingApp = upload.getUploadingApp();
-        CitesphereUser user = (CitesphereUser) citesphereToken.getPrincipal();
-        String usernameInSystem = userHelper.createUsername(user.getUsername(), user.getAuthorizingClient());
-        if (!usernameInSystem.equals(username)
-                || !user.getAuthorizingClient().equals(uploadingApp)) {
-            Map<String, String> msgs = new HashMap<String, String>();
-            msgs.put("errorMsg", "User is not authorized to check status.");
-            msgs.put("errorCode", "401");
-
-            return responseHelper.generateResponse(msgs, HttpStatus.UNAUTHORIZED);
-        }
-
         List<StorageStatus> statusList = uploadService.getUploadStatus(id);
         if (statusList == null || statusList.isEmpty()) {
             Map<String, String> msgs = new HashMap<String, String>();
@@ -208,6 +200,13 @@ public class V2UploadFileController {
             msgs.put("errorCode", "404");
 
             return responseHelper.generateResponse(msgs, HttpStatus.NOT_FOUND);
+        }
+        
+        // check if user has access to all documents in upload via progress id
+        for (StorageStatus status : statusList) {
+            if (!citesphereConnector.hasAccessViaProgressId(id, ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
+                return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+            }
         }
 
         boolean complete = true;
@@ -228,6 +227,7 @@ public class V2UploadFileController {
                 String uploadUrl = urlHelper.getUrl(V2FilesController.GET_UPLOAD_PATH
                         .replace(V2FilesController.UPLOAD_ID_PLACEHOLDER, uploadId));
                 msgs.put("uploadUrl", uploadUrl);
+                msgs.put("uploadId", uploadId);
             }
 
             return responseHelper.generateResponse(msgs, HttpStatus.ACCEPTED);

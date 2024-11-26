@@ -44,6 +44,7 @@ import edu.asu.diging.gilesecosystem.web.core.model.IDocument;
 import edu.asu.diging.gilesecosystem.web.core.service.core.ITransactionalDocumentService;
 import edu.asu.diging.gilesecosystem.web.core.service.properties.Properties;
 import edu.asu.diging.gilesecosystem.web.core.service.upload.IUploadService;
+import edu.asu.diging.gilesecosystem.web.core.service.upload.impl.UploadService.UploadIds;
 import edu.asu.diging.gilesecosystem.web.core.users.User;
 import edu.asu.diging.gilesecosystem.web.core.util.IGilesUrlHelper;
 
@@ -123,13 +124,13 @@ public class UploadImagesController {
             }
         }
 
-        String id = uploadService.startUpload(docAccess, documentType, files, fileBytes, user);
+        UploadIds ids = uploadService.startUpload(docAccess, documentType, files, fileBytes, user);
        
         Map<String, String> msgs = new HashMap<String, String>();
-        msgs.put("id", id);
-        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + id);
+        msgs.put("id", ids.progressId);
+        msgs.put("checkUrl", propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + ids.progressId);
         
-        logger.info("Uploaded file started with id " + id);
+        logger.info("Uploaded file started with id " + ids.progressId);
         return generateResponse(msgs, HttpStatus.OK);
     }
     

@@ -72,6 +72,24 @@ public class CitesphereConnector implements ICitesphereConnector {
         }
     }
     
+    @Override
+    public boolean hasAccessViaProgressId(String progressId, String username) {
+        String citesphereTokenEndpoint = propertiesManager
+                .getProperty(Properties.CITESPHERE_CHECK_ACCESS_ENDPOINT_PROGRESS_ID).replace("{0}", progressId);
+        
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("username", username);
+        
+        try {
+            // we get a 200 if user has access, so unless there is an exception all is good
+            sendRequest(citesphereTokenEndpoint, parameters, String.class);
+            return true;
+        } catch (HttpClientErrorException e) {
+            logger.warn("Access denied.", e);
+            return false;
+        }
+    }
+    
     private String getAccessToken() {
         String clientId = propertiesManager.getProperty(Properties.CITESPHERE_CLIENT_ID);
         String secret = propertiesManager
