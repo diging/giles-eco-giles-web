@@ -11,4 +11,6 @@ public interface ICitesphereConnector {
     <T> T sendRequest(String endpoint, Map<String, String> parameters,
             Class<T> responseType) throws HttpClientErrorException;
 
+    boolean hasAccessViaProgressId(String progressId, String username);
+
 }
