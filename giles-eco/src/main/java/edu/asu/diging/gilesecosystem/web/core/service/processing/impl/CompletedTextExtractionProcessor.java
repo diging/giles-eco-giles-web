@@ -86,7 +86,7 @@ public class CompletedTextExtractionProcessor extends ACompletedExtractionProces
                 }
                 documentPage.setTextFileErrorMsg(page.getErrorMsg());
                 
-                sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.TEXT);
+                sendStorageRequest(pageText, page.getPathToFile(), page.getDownloadUrl(), FileType.TEXT, request.getGeneratedByService());
             }
         }
         
