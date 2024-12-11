@@ -208,8 +208,13 @@ public class V2FilesController {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
 
-        
-        if (!citesphereConnector.hasAccess(file.getDocumentId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
+        /* 
+         * Citesphere does not have the document id until Giles is done processing. Also, if there
+         * is an issue and Citesphere never updates the status of the uploaded file, it doesn't have
+         * the document id either. So we send the progress id here.
+         */
+        IUpload upload = uploadService.getUpload(file.getUploadId());
+        if (!citesphereConnector.hasAccessViaProgressId(upload.getUploadProgressId(), ((CitesphereUser)citesphereToken.getPrincipal()).getUsername())) {
             return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
         }
         

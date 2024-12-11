@@ -61,6 +61,12 @@ public class UploadService implements IUploadService {
         return ids;
     }
 
+    /**
+     * Get a list of statuses for each file uploaded in an upload identified by its
+     * progress id.
+     * 
+     * @param id Progress id of upload to check.
+     */
     @Override
     public List<StorageStatus> getUploadStatus(String id) {
         List<StorageStatus> statuses = new ArrayList<>();
