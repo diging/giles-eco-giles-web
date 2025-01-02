@@ -164,7 +164,9 @@ public class V2UploadFileController {
 
         Map<String, String> msgs = new HashMap<String, String>();
         msgs.put("id", ids.progressId);
-        //msgs.put("documentIds", "[\"" + String.join("\",\"", ids.uploadIds) + "\"]");
+        System.out.println("================================================== " + ids.uploadIds);
+       msgs.put("uploadIds", "[\"" + String.join("\",\"", ids.uploadIds) + "\"]");
+        // msgs.put("uploadIds", ids.uploadIds);
         msgs.put("checkUrl",
                 propertyManager.getProperty(Properties.GILES_URL) + uploadEndpoint + ids.progressId);
 
