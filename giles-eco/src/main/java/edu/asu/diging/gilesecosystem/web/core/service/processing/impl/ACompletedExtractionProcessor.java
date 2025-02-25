@@ -87,6 +87,39 @@ public abstract class ACompletedExtractionProcessor extends ACompletedRequestPro
         }
     }
     
+    /**
+
+    Sends a storage request for the specified image file after receiving the completion notification event and sets imageExtracted property in the request.
+    @param file The file to be stored.
+    @param downloadPath The path where the file should be downloaded.
+    @param downloadUrl The URL for downloading the file.
+    @param type The type of the file.
+    @param imageExtracted {@code true} if the image has been extracted, {@code false} otherwise.
+    */
+    protected void sendStorageRequest(IFile file, String downloadPath, String downloadUrl, FileType type, String generatedByService) {
+        IStorageRequest storageRequest;
+        try {
+            storageRequest = requestHelper.createStorageRequest(file, downloadPath, downloadUrl, type, fileService.generateRequestId(REQUEST_PREFIX), generatedByService);
+        } catch (GilesProcessingException e) {
+            messageHandler.handleMessage("Could not create request.", e, MessageType.ERROR);
+            return;
+        }
+        
+        IProcessingRequest procReq = new ProcessingRequest();
+        procReq.setDocumentId(file.getDocumentId());
+        procReq.setFileId(file.getId());
+        procReq.setSentRequest(storageRequest);
+        procReq.setRequestId(storageRequest.getRequestId());
+        processingRequestService.saveNewProcessingRequest(procReq);
+        
+        requestService.addSentRequest(storageRequest);
+        try {
+            requestProducer.sendRequest(storageRequest, propertyManager.getProperty(Properties.KAFKA_TOPIC_STORAGE_REQUEST));
+        } catch (MessageCreationException e) {
+            messageHandler.handleMessage("Could not send message.", e, MessageType.ERROR);
+        }
+    }
+    
     protected IFile createFile(IFile file, IDocument document, String contentType, long size, String filename, String requestPrefix) {
         IFile pagefile = new File();
         pagefile.setAccess(document.getAccess());

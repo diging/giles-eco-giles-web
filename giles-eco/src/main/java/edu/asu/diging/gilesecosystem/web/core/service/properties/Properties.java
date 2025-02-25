@@ -96,4 +96,7 @@ public interface Properties {
     public final static String CITESPHERE_CHECK_ACCESS_ENDPOINT = "citesphere_check_access_endpoint";
     public final static String CITESPHERE_CHECK_ACCESS_ENDPOINT_PROGRESS_ID = "citesphere_check_access_endpoint_progress_id";
     public final static String CITESPHERE_SCOPES = "citesphere_scopes";
+
+    public final static String TARDIS_NOTIFIR_ID = "tardis_notifier_id";
+    public final static String IMAGE_FILE_TYPE = "image_file_type";
 }
